@@ -1,0 +1,152 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Array2D.h" />
+    <ClInclude Include="BoxedText.hpp" />
+    <ClInclude Include="BoxedTextScrollable.hpp" />
+    <ClInclude Include="CallBackSystem.h" />
+    <ClInclude Include="Character.hpp" />
+    <ClInclude Include="Collectible.hpp" />
+    <ClInclude Include="Constants.hpp" />
+    <ClInclude Include="Entity.hpp" />
+    <ClInclude Include="EntityPhysical.hpp" />
+    <ClInclude Include="GameClock.hpp" />
+    <ClInclude Include="GameResource.h" />
+    <ClInclude Include="GameScene.hpp" />
+    <ClInclude Include="GameTicks.hpp" />
+    <ClInclude Include="GatewayZC.hpp" />
+    <ClInclude Include="LightEntity.hpp" />
+    <ClInclude Include="Map.hpp" />
+    <ClInclude Include="MapEntitiesLoader.h" />
+    <ClInclude Include="MapTile.hpp" />
+    <ClInclude Include="MoveAnimation.h" />
+    <ClInclude Include="NPC.h" />
+    <ClInclude Include="Overlay.hpp" />
+    <ClInclude Include="OverlayScreen.hpp" />
+    <ClInclude Include="OverWorldCamera.h" />
+    <ClInclude Include="OverWorldScene.hpp" />
+    <ClInclude Include="OverWorldTone.hpp" />
+    <ClInclude Include="PlayerCharacter.hpp" />
+    <ClInclude Include="SceneManager.hpp" />
+    <ClInclude Include="StorageProvider.h" />
+    <ClInclude Include="Tile.hpp" />
+    <ClInclude Include="TileAnimator.h" />
+    <ClInclude Include="TilePlane.hpp" />
+    <ClInclude Include="Tileset.hpp" />
+    <ClInclude Include="TitleMenuScene.hpp" />
+    <ClInclude Include="utils\SetUnionIterator.h" />
+    <ClInclude Include="ZoneContainer.hpp" />
+    <ClInclude Include="ZoneContainerData.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="BoxedText.cpp" />
+    <ClCompile Include="BoxedTextScrollable.cpp" />
+    <ClCompile Include="CallBackSystem.cpp" />
+    <ClCompile Include="Character.cpp" />
+    <ClCompile Include="Collectible.cpp" />
+    <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="EntityPhysical.cpp" />
+    <ClCompile Include="GameResource.cpp" />
+    <ClCompile Include="GameTicks.cpp" />
+    <ClCompile Include="GatewayZC.cpp" />
+    <ClCompile Include="LightEntity.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Map.cpp" />
+    <ClCompile Include="MapEntitiesLoader.cpp" />
+    <ClCompile Include="MoveAnimation.cpp" />
+    <ClCompile Include="NPC.cpp" />
+    <ClCompile Include="Overlay.cpp" />
+    <ClCompile Include="OverWorldCamera.cpp" />
+    <ClCompile Include="OverWorldScene.cpp" />
+    <ClCompile Include="OverWorldTone.cpp" />
+    <ClCompile Include="PlayerCharacter.cpp" />
+    <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="TilePlane.cpp" />
+    <ClCompile Include="Tileset.cpp" />
+    <ClCompile Include="ZoneContainer.cpp" />
+    <ClCompile Include="ZoneContainerData.cpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{8783287E-A837-4D33-8511-B105B3AF1083}</ProjectGuid>
+    <RootNamespace>SFML2_test</RootNamespace>
+    <ProjectName>OverWorld</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>C:\SFML-master\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LibraryPath>C:\SFML-master\lib;C:\Users\Vincent\Documents\Visual Studio 2010\Projects\SFML2_test\SFML2_test\Debug;$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>C:\SFML-master\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LibraryPath>C:\SFML-master\lib;C:\Users\Vincent\Documents\Visual Studio 2010\Projects\SFML2_test\SFML2_test\Debug;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_ITERATOR_DEBUG_LEVEL=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>sfml-audio-d.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-network-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\Vincent\Documents\Visual Studio 2010\Projects\SFML2_test\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>C:\Users\Vincent\Documents\Visual Studio 2010\Projects\pokemon_battle\pokemon_battle;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>sfml-graphics.lib;sfml-audio.lib;sfml-window.lib;sfml-network.lib;sfml-system.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OverWorld", "SFML2_test\SFML2_test.vcxproj", "{8783287E-A837-4D33-8511-B105B3AF1083}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8783287E-A837-4D33-8511-B105B3AF1083}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8783287E-A837-4D33-8511-B105B3AF1083}.Debug|Win32.Build.0 = Debug|Win32
+		{8783287E-A837-4D33-8511-B105B3AF1083}.Release|Win32.ActiveCfg = Release|Win32
+		{8783287E-A837-4D33-8511-B105B3AF1083}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
+EndGlobal
