@@ -6,14 +6,16 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "Tile.hpp"
-#include "ZoneContainer.hpp"
-#include "utils/StorageProvider.h"
-#include "OverWorldScene.hpp"
+#include "utils/Array2D.h"
+#include "Constants.hpp"
+
 
 class Map;
 class Tileset;
 class Entity;
+class OverWorldCamera;
+struct OverWorldDisplay;
+struct Tile;
 
 
 struct MapElement {

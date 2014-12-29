@@ -18,6 +18,7 @@
 #include "MapEntitiesLoader.h"
 #include "GameResource.h"
 #include "ZoneContainerData.h"
+#include "Map.hpp"
 
 bool z_orderer (const Entity* lhs, const Entity* rhs) {
 	return lhs->getPosition().y < rhs->getPosition().y;

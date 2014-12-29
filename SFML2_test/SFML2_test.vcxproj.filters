@@ -117,12 +117,6 @@
     <ClInclude Include="OverlayScreen.hpp">
       <Filter>Header Files\Overlay Screens</Filter>
     </ClInclude>
-    <ClInclude Include="Array2D.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="StorageProvider.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
     <ClInclude Include="utils\SetUnionIterator.h">
       <Filter>Header Files\utils</Filter>
     </ClInclude>

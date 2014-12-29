@@ -3,15 +3,16 @@
 #include <set>
 #include <memory>
 
-#include "Map.hpp"
-#include "GameClock.hpp"
+#include <SFML/Graphics/Rect.hpp>
+
 #include "utils/Array2D.h"
-#include "Entity.hpp"
 #include "ZoneContainerData.h"
 
 class LightEntity;
 class Tileset;
 class GameResource;
+class Map;
+class Entity;
 
 class ZoneContainer
 {
@@ -28,21 +29,13 @@ private:
 	std::set<std::unique_ptr<Entity>> to_delete;
 
 public:
-	const ZoneContainerData& getData() const {
-		return data;
-	}
+	const ZoneContainerData& getData() const;
 
-	Tileset& getTileset() {
-		return tileset;
-	}
+	Tileset& getTileset();
 
-	void deleteElements() {
-		to_delete.clear();
-	}
+	void deleteElements();
 
-	void addForDeletion(Entity* e) {
-		to_delete.insert(std::unique_ptr<Entity>(e));
-	}
+	void addForDeletion(Entity* e);
 
 	std::set<Map*> getCollidingMaps(const sf::FloatRect& rect) ;
 };

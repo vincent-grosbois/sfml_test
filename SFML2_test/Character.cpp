@@ -4,7 +4,8 @@
 #include "ZoneContainer.hpp"
 #include "Collectible.hpp"
 #include "TilePlane.hpp"
-
+#include "Map.hpp"
+#include "OverWorldScene.hpp"
 
 Character::Character(const sf::Vector2f& position,  ZoneContainer& ZC, MoveAnimation& move_anim):
 	EntityPhysical(position, ZC),

@@ -8,6 +8,7 @@
 #include "Tileset.hpp"
 #include "Map.hpp"
 #include "TileAnimator.h"
+#include "OverWorldScene.hpp"
 
 
 TilePlane::TilePlane(Tileset& tileset, sf::Vector2<tile_units> size, sf::Vector2<tile_units> offset, Array2D<int>& table):

@@ -1,6 +1,6 @@
 #include "Map.hpp"
 #include "TilePlane.hpp"
-
+#include "Entity.hpp"
 
 const int map_elements_cell_start = 1000;
 const int map_elements_cell_max_before_delete = 1500;

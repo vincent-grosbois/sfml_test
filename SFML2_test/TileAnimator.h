@@ -3,7 +3,6 @@
 #include <numeric>
 
 #include "Tile.hpp"
-#include "GameTicks.hpp"
 #include "CallBackSystem.h"
 
 class TileAnimator : public CallBackReceiver {

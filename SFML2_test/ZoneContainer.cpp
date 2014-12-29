@@ -4,6 +4,7 @@
 #include "TilePlane.hpp"
 #include "Tileset.hpp"
 #include "GameResource.h"
+#include "Map.hpp"
 
 Array2D<Map*> gameMapGenerator(const std::string& theFile, Tileset* theTileSet, ZoneContainer& ZC);
 
@@ -140,4 +141,20 @@ void ZoneContainer::dumpLoadedTiles() const {
 	for(int i =0; i < maps.size().x; ++i) 
 		for(int j =0; j < maps.size().y; ++j)
 			maps(i,j)->dumpLoadedTiles();
+}
+
+const ZoneContainerData& ZoneContainer::getData() const {
+	return data;
+}
+
+Tileset& ZoneContainer::getTileset() {
+	return tileset;
+}
+
+void ZoneContainer::deleteElements() {
+	to_delete.clear();
+}
+
+void ZoneContainer::addForDeletion(Entity* e) {
+	to_delete.insert(std::unique_ptr<Entity>(e));
 }

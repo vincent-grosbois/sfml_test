@@ -13,6 +13,7 @@
 #include "TilePlane.hpp"
 #include "utils/StringUtils.h"
 #include "GameResource.h"
+#include "Map.hpp"
 
 using namespace utils;
 

@@ -4,7 +4,7 @@
 #include <map>
 #include <list>
 
-typedef int frame_time_t ;
+typedef int frame_time_t;
 
 struct ActiveCallBackInfo;
 
