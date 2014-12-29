@@ -96,7 +96,7 @@ bool Character::draw(int value, DIRECTION::e dir, int ticks) {
 	for ( it_maps = new_maps.begin() ; it_maps != new_maps.end(); ++it_maps ) {
 
 		//check collision with the static world:
-		if ( (*it_maps)->layer0->collideWith(BoundingBoxRect, &coll_coords) )  {
+		if ( (*it_maps)->collideWithLayer(0, BoundingBoxRect, &coll_coords) )  {
 
 			switch(dir) {
 			case DIRECTION::RIGHT:

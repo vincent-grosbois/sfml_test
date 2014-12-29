@@ -12,6 +12,7 @@
 #include "NPC.h"
 #include "TilePlane.hpp"
 #include "utils/StringUtils.h"
+#include "GameResource.h"
 
 using namespace utils;
 
@@ -126,51 +127,22 @@ FieldValue::FieldValue(const std::string& str, EntityFieldType value_type):
 	value_type(value_type)
 {
 	if(value_type == EntityFieldType::INTEGER) {
-		std::istringstream ( str ) >> int_value;
+		int_value = readFromStr<int>(str);
 	}
 	else if(value_type == EntityFieldType::FLOAT) {
-		std::istringstream ( str ) >> float_value;
+		float_value = readFromStr<float>(str);
 	}
 	else if(value_type == EntityFieldType::VECT2I) {
-		auto res = split(str, ",", false);
-		assert(res.size() == 2);
-		assert(res[0].at(0) == '(');
-		assert(res[1].at(res[1].size()-1) == ')');
-
-		std::istringstream ( res[0].substr(1) ) >> vect2i_value.x ;
-		std::istringstream ( res[1].substr(0, res[1].size()-1) ) >> vect2i_value.y ;
+		vect2i_value = readFromStr<sf::Vector2i>(str);
 	}
 	else if(value_type == EntityFieldType::VECT2F) {
-		auto res = split(str, ",", false);
-		assert(res.size() == 2);
-		assert(res[0].at(0) == '(');
-		assert(res[1].at(res[1].size()-1) == ')');
-
-		std::istringstream ( res[0].substr(1) ) >> vect2f_value.x ;
-		std::istringstream ( res[1].substr(0, res[1].size()-1) ) >> vect2f_value.y ;
+		vect2f_value = readFromStr<sf::Vector2f>(str);
 	}
 	else if(value_type == EntityFieldType::COLOR) {
-		auto res = split(str, ",", false);
-		assert(res.size() == 4);
-		assert(res[0].at(0) == '(');
-		assert(res[3].at(res[3].size()-1) == ')');
-
-		int temp;
-		std::istringstream ( res[0].substr(1) ) >> temp;
-		assert(temp >= 0 && temp <= 255);
-		color_value.r = static_cast<sf::Uint8>(temp);
-
-		std::istringstream ( res[1] ) >> temp;
-		assert(temp >= 0 && temp <= 255);
-		color_value.g = static_cast<sf::Uint8>(temp);
-
-		std::istringstream ( res[2]) >> temp;
-		assert(temp >= 0 && temp <= 255);
-		color_value.b = static_cast<sf::Uint8>(temp);
-
-		std::istringstream ( res[3].substr(0, res[3].size()-1) ) >> temp;
-		assert(temp >= 0 && temp <= 255);
-		color_value.a = static_cast<sf::Uint8>(temp);
+		color_value = readFromStr<sf::Color>(str);
+	}
+	else if(value_type == EntityFieldType::STRING) {
+		string_value = str;
 	}
 	else {
 		assert(false); //TODO : other types
@@ -211,7 +183,6 @@ EntityFieldType FieldValue::type() const {
 }
 
 std::map<std::string, FieldValue> processString(const std::string& str) {
-
 
 	std::map<std::string, FieldValue> map;
 
@@ -268,7 +239,7 @@ std::map<std::string, FieldValue> processString(const std::string& str) {
 	return map;
 }
 
-void generateEntityFromFile(const std::string& fileName, ZoneContainer& ZC, OverWorldResources& owResources) {
+void generateEntityFromFile(const std::string& fileName, ZoneContainer& ZC, GameResource& gr) {
 
 	std::string line;
 	std::ifstream myfile (fileName);
@@ -276,14 +247,14 @@ void generateEntityFromFile(const std::string& fileName, ZoneContainer& ZC, Over
 	{
 		while ( std::getline (myfile,line) )
 		{
-			entityFactory(line, ZC, owResources);
+			entityFactory(line, ZC, gr);
 		}
 		myfile.close();
 	}
 	else std::cout << "Unable to open file " << fileName; 
 }
 
-void entityFactory(const std::string& desc, ZoneContainer& ZC, OverWorldResources& owResources) {
+void entityFactory(const std::string& desc, ZoneContainer& ZC, GameResource& gr) {
 
 	auto map = processString(desc);
 
@@ -300,7 +271,9 @@ void entityFactory(const std::string& desc, ZoneContainer& ZC, OverWorldResource
 	}
 	else if (type == LoadableEntityType::NPC) {
 		auto pos = map["pos"].vect2f();
-		new NPC(pos, ZC, owResources.walking_animations.front());
+
+		auto& anim = gr.getMoveAnimation("../../ressources/sprites/001.png");
+		new NPC(pos, ZC, anim);
 	}
 	else if (type == LoadableEntityType::RANDOM_NPC_ZONE) {
 		auto origin = map["origin"].vect2f();
@@ -318,6 +291,8 @@ void entityFactory(const std::string& desc, ZoneContainer& ZC, OverWorldResource
 
 		int deleted = 0;
 
+		auto& anim = gr.getMoveAnimation("../../ressources/sprites/001.png");
+		
 		for( int i=0; i<max_NPC; ++i) {
 			bool failed = false;
 			sf::Vector2f pos(float(x_min+rand()%x_range), float(y_min+rand()%y_range));
@@ -335,14 +310,14 @@ void entityFactory(const std::string& desc, ZoneContainer& ZC, OverWorldResource
 			for ( it_maps = new_maps.begin() ; it_maps != new_maps.end(); ++it_maps ) {
 
 				//check collision with the static world:
-				if ( (*it_maps)->layer0->collideWith(r, &coll_coords) )  {
+				if ( (*it_maps)->collideWithLayer(0, r, &coll_coords) )  {
 					failed = true;
 					deleted++;
 					break;
 				}
 			}
 			if (!failed)
-				new NPC(pos, ZC, owResources.walking_animations.front()) ;
+				new NPC(pos, ZC, anim) ;
 
 		}
 		std::cout << "done, deleted "<< deleted <<" out of "<< max_NPC << " NPCs\n";

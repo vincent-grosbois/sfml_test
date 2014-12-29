@@ -102,7 +102,13 @@ public:
 
 	void dumpLoadedTiles() const ;
 
-public:
+	std::set<Entity*>& entities_list()  {
+		return entities_on_map;
+	}
+
+	bool collideWithLayer(int layer_id, const sf::FloatRect& rect, sf::Vector2f* collidingPos) const;
+
+private:
 	TilePlane* layer0;
 	TilePlane* layer1;
 	TilePlane* layer2;
@@ -111,16 +117,12 @@ public:
 	sf::Vector2<tile_units> size;
 	sf::Vector2<tile_units> offset;
 
-	bool isLoaded;
-
 	std::set<Entity*> entities_on_map;
 
 	Array2D<EntitySet> entities_grid;
 
 	//Array2D<void*> light_grid; //TODO
 
-
-private:
 	int id;
 	ZoneContainer* myZC;
 

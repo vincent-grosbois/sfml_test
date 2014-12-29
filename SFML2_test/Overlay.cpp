@@ -17,7 +17,7 @@ overlayScene(NULL)
 
 	////
 	MapInfosText.setFont(myFont);
-	MapInfosText.setPosition(0, 20);
+	MapInfosText.setPosition(0, 22*3);
 	MapInfosText.setColor(sf::Color::White);
 	MapInfosText.setCharacterSize(15);
 

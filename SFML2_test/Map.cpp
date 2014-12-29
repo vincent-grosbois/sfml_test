@@ -20,7 +20,6 @@ Map::Map(ZoneContainer& ZC, TilePlane* layer0, TilePlane* layer1, TilePlane* lay
 	position(position),
 	id(id),
 	size(layer0->size),
-	isLoaded(false),
 	entities_grid(size),
 	offset(layer0->offset),
 	myZC(&ZC)
@@ -74,9 +73,6 @@ void Map::updateGraphics(const OverWorldCamera& camera, bool checkAnimatedTilesU
 }
 
 void Map::loadTilesFromNothing(const OverWorldCamera& camera) {
-
-	isLoaded = true;
-
 	if(layer0)
 		layer0->loadAndWakeUp(camera);
 
@@ -85,15 +81,11 @@ void Map::loadTilesFromNothing(const OverWorldCamera& camera) {
 
 	if(layer2)
 		layer2->loadAndWakeUp(camera);
-
-	for(std::set<Entity*>::iterator it = entities_on_map.begin(); it != entities_on_map.end(); ++it) 
-		(*it)->tryToWakeUp();
 }
 
 
 
 void Map::unloadAll() {
-
 	if(layer0)
 		layer0->unloadAllGraphics();
 
@@ -102,11 +94,6 @@ void Map::unloadAll() {
 
 	if(layer2)
 		layer2->unloadAllGraphics();
-
-	for(std::set<Entity*>::iterator it = entities_on_map.begin(); it != entities_on_map.end(); ++it)
-		(*it)->tryToSleep();
-
-	isLoaded = false;
 }
 
 void Map::getCollidingTiles(const sf::FloatRect& rect, std::set<EntitySet*>& result)  {
@@ -138,4 +125,21 @@ void Map::getCollidingTiles(const sf::FloatRect& rect, std::set<EntitySet*>& res
 void Map::dumpLoadedTiles() const  {
 	if(layer0)
 		layer0->dumpLoadedTiles();
+}
+
+bool Map::collideWithLayer(int layer_id, const sf::FloatRect& rect, sf::Vector2f* collidingPos) const
+{
+	if(layer0 && layer_id == 0) {
+		return layer0->collideWith(rect, collidingPos);
+	}
+	else if(layer1 && layer_id == 1) {
+		return layer1->collideWith(rect, collidingPos);
+	}
+	else if(layer2 && layer_id == 2) {
+		return layer2->collideWith(rect, collidingPos);
+	}
+	else {
+		assert(false);
+		return false;
+	}
 }

@@ -11,7 +11,6 @@
 Entity::Entity(const sf::Vector2f& position,  ZoneContainer& ZC): 
 	position(position),
 	ZC(&ZC),
-	isAsleep(true),
 	markedForDeletion(false)
 {
 	updateEntityPositionInfo();
@@ -21,7 +20,7 @@ Entity::Entity(const sf::Vector2f& position,  ZoneContainer& ZC):
 void Entity::unregister() {
 
 	for(auto it = locationList.begin(); it != locationList.end(); ++it) {
-		it->first->entities_on_map.erase(this);
+		it->first->entities_list().erase(this);
 
 		for(auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
 					(**it2).remove_entity(this);
@@ -58,12 +57,9 @@ void Entity::updateEntityPositionInfo() {
 	//maps that the entity is in:
 	std::set<Map*> colliding_maps = ZC->getCollidingMaps(getVisibilityRectangle());
 
-	bool testSleep = false;
-
 	//delete the maps we are not in anymore, and unregister from their global list of characters:
 	for (auto it = locationList.begin() ; it != locationList.end(); ) {
 		if( colliding_maps.count ( it->first ) == 0 ) {
-			testSleep = true;
 
 			//std::cout << "leaving map\n";
 			//OnLeavingMap();
@@ -72,7 +68,7 @@ void Entity::updateEntityPositionInfo() {
 			}
 
 			//remove from the map's global list of characters:
-			it->first->entities_on_map.erase(this);
+			it->first->entities_list().erase(this);
 
 			//remove from own list of tiles:
 			locationList.erase(it++);
@@ -93,7 +89,7 @@ void Entity::updateEntityPositionInfo() {
 
 		if(old_set.empty())  { 
 			//insert ourself in the global list of characters from the map:
-			(*it2)->entities_on_map.insert(this);
+			(*it2)->entities_list().insert(this);
 		} 
 
 		iterate_over_union(old_set, new_set, UpdateElementSetOldNew(this));
@@ -102,14 +98,10 @@ void Entity::updateEntityPositionInfo() {
 		old_set = std::move(new_set); 
 
 	}
-
-
-	if(testSleep)
-		tryToSleep();
 }
 
 void Entity::debug_dump_positions() {
-	
+	/*
 	std::cout << "----Dumping position start\n";
 	for (auto it= locationList.begin() ; it != locationList.end(); ++it ) {
 
@@ -119,34 +111,14 @@ void Entity::debug_dump_positions() {
 		for(int i =0; i<60; ++i) {
 			for(int j =0; j<60; ++j) {
 				if ((*it).first->entities_grid(i,j).has_entities()) {
-						std::cout << "tile <"<<i<<","<<j<<"> has entities<n";//<<(*it)->elements(i,j).entities_on_tile->size()  <<" elements\n";
+						std::cout << "tile <"<<i<<","<<j<<"> has entities<n";
 				}
 			}
 		}
 
 	}
-	std::cout << "----Dumping end\n";
+	std::cout << "----Dumping end\n";*/
 
-}
-
-bool Entity::tryToSleep() {
-
-	if(isAsleep)
-		return true;
-
-	//if any of the map the entity is on is still active -> impossible to go to sleep
-	for (auto it = locationList.begin(); it != locationList.end(); ++it) {
-		if( !it->first->layer0->isGraphicsTotallyUnloaded() )
-			return false;
-	}
-
-	isAsleep = true;
-	return true;
-}
-
-bool Entity::tryToWakeUp() {
-	isAsleep = false;
-	return true;
 }
 
 void Entity::markForDeletion() { 

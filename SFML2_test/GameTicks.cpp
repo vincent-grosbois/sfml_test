@@ -30,9 +30,9 @@ void GameTicks::update(int dt_ms) {
 			ticks[i] = elapsed_time[i] / durations[i] ;
 			elapsed_time[i] = elapsed_time[i] % durations[i];
 
-			for(auto& func : callbacks[i]) {
+			/*for(auto& func : callbacks[i]) {
 				func(ticks[i]);
-			}
+			}*/
 
 		}
 		else {

@@ -19,7 +19,7 @@ CallBackInfo::CallBackInfo(std::list<ActiveCallBackInfo>& targetCallbackList):
 	isExecuting(false)
 { }
 
-void CallBackInfo::call(time_tt original_time, time_tt actual_time) {
+void CallBackInfo::call(frame_time_t original_time, frame_time_t actual_time) {
 	scoped_bool scoped_bool_instance(isExecuting);
 
 	function(original_time, actual_time);
@@ -31,7 +31,7 @@ CallBackSystem::CallBackSystem() {
 
 }
 
-void CallBackSystem::callAllUpToTime(time_tt time) {
+void CallBackSystem::callAllUpToTime(frame_time_t time) {
 
 	for(auto it = events.begin(); it != events.end();  ) {
 
@@ -50,7 +50,7 @@ CallBackSystem::~CallBackSystem() {
 
 	//unbind all callbacks
 
-	for(auto it = events.begin(); it != events.end();  ) {
+	for(auto it = events.begin(); it != events.end();  ++it) {
 		for(auto& callback : it->second) {
 			callback.targetCallbackList.erase(callback.targetCallbackPosition);
 		}
@@ -59,7 +59,9 @@ CallBackSystem::~CallBackSystem() {
 }
 
 
-ActiveCallBackInfo CallBackSystem::addCallback(time_tt time, const std::function<void(time_tt,time_tt)>& function, std::list<ActiveCallBackInfo>& targetCallbackList) {
+ActiveCallBackInfo CallBackSystem::addCallback
+	(frame_time_t time, const std::function<void(frame_time_t,frame_time_t)>& function, 
+	std::list<ActiveCallBackInfo>& targetCallbackList) {
 
 	std::list<CallBackInfo>& event_list = events[time];
 
@@ -76,21 +78,19 @@ ActiveCallBackInfo::ActiveCallBackInfo(std::list<CallBackInfo>& list, std::list<
 { }
 
 CallBackReceiver::~CallBackReceiver() {
-	for(auto& activeCallback : activeCallbacks) {
-		activeCallback.list.erase(activeCallback.callbackPosition);
-	}
+	removePendingCallbacks();
 }
 
-void CallBackReceiver::createCallback(time_tt time, CallBackSystem& cbs, const std::function<void(time_tt,time_tt)>& function) {
+void CallBackReceiver::createCallback(frame_time_t time, CallBackSystem& cbs, const std::function<void(frame_time_t,frame_time_t)>& function) {
 	auto callbackInfo = cbs.addCallback(time, function, activeCallbacks);
 	activeCallbacks.push_back(callbackInfo);
 	callbackInfo.callbackPosition->targetCallbackPosition = --activeCallbacks.end();
 }
 
 
-void function_repeat(time_tt t1, time_tt t2, 
-					 const std::function<void(time_tt,time_tt)>& function,
-					 time_tt period,
+void function_repeat(frame_time_t t1, frame_time_t t2, 
+					 const std::function<void(frame_time_t,frame_time_t)>& function,
+					 frame_time_t period,
 					 CallBackSystem& cbs,
 					 CallBackReceiver& cbr)
 {
@@ -98,9 +98,9 @@ void function_repeat(time_tt t1, time_tt t2,
 	cbr.createPeriodicCallback(t1 + period, period, cbs, function);
 }
 
-void function_repeat_until(time_tt t1, time_tt t2,
-					 const std::function<void(time_tt,time_tt)>& function,
-					 time_tt period, time_tt last,
+void function_repeat_until(frame_time_t t1, frame_time_t t2,
+					 const std::function<void(frame_time_t,frame_time_t)>& function,
+					 frame_time_t period, frame_time_t last,
 					 CallBackSystem& cbs,
 					 CallBackReceiver& cbr)
 {
@@ -112,9 +112,9 @@ void function_repeat_until(time_tt t1, time_tt t2,
 	}
 }
 
-void CallBackReceiver::createPeriodicCallback(time_tt timeStart, time_tt period,
+void CallBackReceiver::createPeriodicCallback(frame_time_t timeStart, frame_time_t period,
 											  CallBackSystem& cbs, 
-											  const std::function<void(time_tt,time_tt)>& function)
+											  const std::function<void(frame_time_t,frame_time_t)>& function)
 {
 	assert(period > 0);
 
@@ -124,9 +124,9 @@ void CallBackReceiver::createPeriodicCallback(time_tt timeStart, time_tt period,
 	createCallback(timeStart, cbs, function2);
 }
 
-void CallBackReceiver::createPeriodicCallback(time_tt timeStart, time_tt period, time_tt last,
+void CallBackReceiver::createPeriodicCallback(frame_time_t timeStart, frame_time_t period, frame_time_t last,
 											  CallBackSystem& cbs, 
-											  const std::function<void(time_tt,time_tt)>& function)
+											  const std::function<void(frame_time_t,frame_time_t)>& function)
 {
 	assert(period > 0);
 
@@ -134,4 +134,12 @@ void CallBackReceiver::createPeriodicCallback(time_tt timeStart, time_tt period,
 	auto function2 = std::bind(function_repeat_until, _1, _2, function, period, last, std::ref(cbs), std::ref(*this));
 
 	createCallback(timeStart, cbs, function2);
+}
+
+void CallBackReceiver::removePendingCallbacks()
+{
+	for(auto& activeCallback : activeCallbacks) {
+		activeCallback.list.erase(activeCallback.callbackPosition);
+	}
+	activeCallbacks.clear();
 }

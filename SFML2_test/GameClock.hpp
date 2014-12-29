@@ -27,8 +27,8 @@ public:
 			currentGameTime += increment;
 		}
 		if(real_ms_remainder > 1000) {
-			int increment = game_ms_remainder/1000;
-			game_ms_remainder%=1000;
+			int increment = real_ms_remainder/1000;
+			real_ms_remainder%=1000;
 			totalGameTime += increment;
 		}
 	}

@@ -16,7 +16,7 @@ public:
 		return ticks[tick_type]; 
 	}
 
-	std::list<std::function<void(int)>>::iterator addCallback(std::function<void(int)> function, TICKS::e tick) {
+	/*std::list<std::function<void(int)>>::iterator addCallback(std::function<void(int)> function, TICKS::e tick) {
 		callbacks[tick].push_back(function);
 		auto it = callbacks[tick].end();
 		it--;
@@ -26,7 +26,7 @@ public:
 	bool removeCallback(std::list<std::function<void(int)>>::iterator iter, TICKS::e tick) {
 		callbacks[tick].erase(iter);
 		return true;
-	}
+	}*/
 
 private:
 	GameTicks(GameTicks const&);            
@@ -36,6 +36,6 @@ private:
 	int durations[TICKS::total];
 	int ticks[TICKS::total];
 
-	std::list<std::function<void(int)>> callbacks[TICKS::total];
+	//std::list<std::function<void(int)>> callbacks[TICKS::total];
 };
 

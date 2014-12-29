@@ -1,4 +1,5 @@
 #include "StringUtils.h"
+#include <SFML/Graphics/Color.hpp>
 #include <algorithm>
 
 namespace utils {
@@ -62,6 +63,56 @@ namespace utils {
 
 		std::istringstream ( res[0].substr(1) ) >> value.x ;
 		std::istringstream ( res[1].substr(0, res[1].size()-1) ) >> value.y ;
+
+		return value;
+	}
+
+	template<>
+	sf::Vector2f readFromStr(const std::string& str) {
+		sf::Vector2f value;
+
+		auto res = split(str, ",", false);
+
+		bool ok = res.size() == 2 && res[0].at(0) == '(' && res[1].at(res[1].size()-1) == ')' ;
+
+		if(!ok) {
+			throw std::exception(std::string("Unable to parse " + str + " as a sf::Vect2f").c_str());
+		}
+
+		std::istringstream ( res[0].substr(1) ) >> value.x ;
+		std::istringstream ( res[1].substr(0, res[1].size()-1) ) >> value.y ;
+
+		return value;
+	}
+
+	template<>
+	sf::Color readFromStr(const std::string& str) {
+		sf::Color value;
+
+		auto res = split(str, ",", false);
+
+		bool ok = res.size() == 4 && res[0].at(0) == '(' && res[3].at(res[3].size()-1) == ')' ;
+
+		if(!ok) {
+			throw std::exception(std::string("Unable to parse " + str + " as a sf::Color").c_str());
+		}
+
+		int temp;
+		std::istringstream ( res[0].substr(1) ) >> temp;
+		assert(temp >= 0 && temp <= 255);
+		value.r = static_cast<sf::Uint8>(temp);
+
+		std::istringstream ( res[1] ) >> temp;
+		assert(temp >= 0 && temp <= 255);
+		value.g = static_cast<sf::Uint8>(temp);
+
+		std::istringstream ( res[2]) >> temp;
+		assert(temp >= 0 && temp <= 255);
+		value.b = static_cast<sf::Uint8>(temp);
+
+		std::istringstream ( res[3].substr(0, res[3].size()-1) ) >> temp;
+		assert(temp >= 0 && temp <= 255);
+		value.a = static_cast<sf::Uint8>(temp);
 
 		return value;
 	}

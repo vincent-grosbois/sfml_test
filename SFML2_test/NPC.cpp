@@ -3,11 +3,17 @@
 #include "GameTicks.hpp"
 
 DIRECTION::e getOppositeDir(DIRECTION::e dir) {
-	if(dir == DIRECTION::UP) return DIRECTION::DOWN;
-	else if(dir == DIRECTION::DOWN) return DIRECTION::UP;
-	else if(dir == DIRECTION::LEFT) return DIRECTION::RIGHT;
-	else if(dir == DIRECTION::RIGHT) return DIRECTION::LEFT;
 
+	if(dir == DIRECTION::UP)
+		return DIRECTION::DOWN;
+	else if(dir == DIRECTION::DOWN)
+		return DIRECTION::UP;
+	else if(dir == DIRECTION::LEFT)
+		return DIRECTION::RIGHT;
+	else if(dir == DIRECTION::RIGHT)
+		return DIRECTION::LEFT;
+
+	assert(false);
 	return DIRECTION::UP;
 }
 
@@ -24,9 +30,6 @@ NPC::~NPC()
 
 bool NPC::moveAtRandom(float value, int ticks) {
 	
-	if(isAsleep)
-		return isMoving;
-
 	DIRECTION::e dir;
 
 	if(!isMoving || rand()%100 == 0) 
@@ -111,7 +114,7 @@ sf::FloatRect NPC::getAwarenessZone() const {
 		return sf::FloatRect(BoundingBoxRectReal.left - side_size_x, BoundingBoxRectReal.top - advance, width, advance);
 		break;
 	}
-
+	assert(false);
 	return sf::FloatRect();
 }
 
@@ -130,4 +133,4 @@ void  NPC::drawCollisionBox(OverWorldDisplay& owDisplay)  {
 	rect2.setOutlineColor(sf::Color::Green);
 	rect2.setOutlineThickness(1);
 	owDisplay.overWorld_texture.draw(rect2); 
-};
+}

@@ -16,6 +16,8 @@
 #include "utils/SetUnionIterator.h"
 
 #include "MapEntitiesLoader.h"
+#include "GameResource.h"
+#include "ZoneContainerData.h"
 
 bool z_orderer (const Entity* lhs, const Entity* rhs) {
 	return lhs->getPosition().y < rhs->getPosition().y;
@@ -54,41 +56,41 @@ void OverWorldDisplay::clearAndSetView(const sf::View& view) {
 	light_texture.setView(view);
 }
 
+OverWorldScene::OverWorldScene(const MetaGameData& metaGameData, GameResource& gr) :
+	metaGameData(metaGameData),
+	camera(
+	sf::View(sf::Vector2f(0,0), 
+	sf::Vector2f(float(metaGameData.resolution.x),float(metaGameData.resolution.y))) 
+	),
+	gameClock(
+	metaGameData.start_time_hours*3600 + metaGameData.start_time_minutes*60, 
+	metaGameData.clock_speed_factor),
+	myTotalTime(0),
+	gameResources(gr)
+{ }
+
 OverWorldScene::~OverWorldScene() {
 	delete ZC;
 }
 
-void OverWorldScene::initGlobalContent() {
+void OverWorldScene::bindContentToClock() {
 
 	for(auto anim : ZC->getTileset().get_tile_animators()) {
 		using namespace std::placeholders;
-		auto func = std::bind(&TileAnimator::process_frame, anim, _1);
-		ticks.addCallback(func , anim->base_tick);
+		auto changeAnimatedTileFrame = std::bind(&TileAnimator::process_frame, anim, _1, _2);
+		anim->createPeriodicCallback(0, 400, callbackSystem, changeAnimatedTileFrame);
 	}
+}
 
-	std::cout << "tileset loaded\n";
+void OverWorldScene::unbindContentToClock() {
 
-	for (int i =1; i<=1; ++i) {
-		std::string str("../../ressources/sprites/");
-
-		std::ostringstream out;
-		out << i;
-		if (out.str().size() == 1) {
-			str += "00";
-		}
-		else if(out.str().size() == 2) {
-			str += "0";
-		}
-		str += out.str();
-		str += ".png";
-		owResources.walking_animations.emplace_back(MoveAnimation(str));
+	for(auto anim : ZC->getTileset().get_tile_animators()) {
+		anim->removePendingCallbacks();
 	}
-
-	owResources.walking_animations.emplace_back( MoveAnimation("../../ressources/male_walkcycle.png") );
 }
 
 void OverWorldScene::loadEntities() {
-	generateEntityFromFile(ZC->getData().entitiesDataPath , *ZC, owResources);
+	generateEntityFromFile(ZC->getData().entitiesDataPath , *ZC, gameResources);
 }
 
 void OverWorldScene::onInit() {
@@ -102,9 +104,9 @@ void OverWorldScene::onInit() {
 
 	overlay = new Overlay(*App);
 
-	ZC = new ZoneContainer(zone, gameResource);
+	ZC = new ZoneContainer(metaGameData.firstZonePath, gameResources);
 
-	initGlobalContent();
+	bindContentToClock();
 
 	loadEntities();
 
@@ -112,7 +114,8 @@ void OverWorldScene::onInit() {
 	startingPos.x = ZC->getData().startingPos.x;
 	startingPos.y = ZC->getData().startingPos.y;
 
-	PC = new PlayerCharacter(startingPos, *ZC, owResources.walking_animations.back(), *overlay);
+	auto& anim = gameResources.getMoveAnimation("../../ressources/male_walkcycle.png");
+	PC = new PlayerCharacter(startingPos, *ZC, anim, *overlay);
 }
 
 
@@ -144,16 +147,16 @@ struct UpdateMapGraphics {
 
 void OverWorldScene::update(int deltaTime) {
 
+	myDeltaTime = deltaTime;
 	myTotalTime += deltaTime;
 
 	ZC->getTileset().setNeedUpdating(false);
-
 	camera.newFrame();
-
-	myDeltaTime = deltaTime;
 
 	gameClock.update(deltaTime);
 	ticks.update(deltaTime);
+
+	callbackSystem.callAllUpToTime(myTotalTime);
 
 	bool debug = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift);
 
@@ -236,28 +239,10 @@ void OverWorldScene::update(int deltaTime) {
 		ZC->dumpLoadedTiles();
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))  { 
-
-		auto ZC2 = new ZoneContainer("../../ressources/overworld.txt", gameResource);
-		sf::Vector2f startingPos;
-		startingPos.x = ZC2->getData().startingPos.x;
-		startingPos.y = ZC2->getData().startingPos.y;
-		PC->teleportTo(startingPos, ZC2);
-		delete ZC;
-		ZC = ZC2;
-		loadedMaps.clear();
-		loadEntities();
+		changeZoneContainer("../../ressources/overworld.txt");
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))  { 
-
-		auto ZC2 = new ZoneContainer("../../ressources/cave.txt", gameResource);
-		sf::Vector2f startingPos;
-		startingPos.x = ZC2->getData().startingPos.x;
-		startingPos.y = ZC2->getData().startingPos.y;
-		PC->teleportTo(startingPos, ZC2);
-		delete ZC;
-		ZC = ZC2;
-		loadedMaps.clear();
-		loadEntities();
+		changeZoneContainer("../../ressources/cave.txt");
 	}
 
 	if(!PC_moved)
@@ -280,13 +265,13 @@ void OverWorldScene::update(int deltaTime) {
 
 	camera.cameraSetForFrame();
 
-	std::set<Map*> mapsOnScreen = ZC->getCollidingMaps(camera.getViewRect());
+	//update list of visible maps :
 
+	std::set<Map*> newVisibleMaps = ZC->getCollidingMaps(camera.getViewRect());
 	UpdateMapGraphics updater(camera, ZC->getTileset().getNeedUpdating());
+	iterate_over_union(newVisibleMaps, loadedMaps, updater);
+	loadedMaps = std::move(newVisibleMaps);
 
-	iterate_over_union(mapsOnScreen, loadedMaps, updater);
-
-	loadedMaps = std::move(mapsOnScreen);
 }
 
 
@@ -329,12 +314,9 @@ void OverWorldScene::draw() {
 
 	for (auto map = loadedMaps.begin() ; map != loadedMaps.end(); ++map ) {
 
-		for(std::set<Entity*>::iterator it_ent = (*map)->entities_on_map.begin(); it_ent != (*map)->entities_on_map.end(); ) {
+		for(std::set<Entity*>::iterator it_ent = (*map)->entities_list().begin(); it_ent != (*map)->entities_list().end(); ) {
 
-			if( (*it_ent)->getAsleep() ) { 
-				++it_ent;
-			}
-			else if(entities_updated.count((*it_ent)) == 0) { 
+			if(entities_updated.count((*it_ent)) == 0) { 
 				Entity* entity_ptr;
 				entity_ptr = *it_ent;
 				part1_start = clock();
@@ -412,7 +394,8 @@ void OverWorldScene::draw() {
 		std::stringstream oss;
 		int FPS = int(1000/myDeltaTime);
 		oss << "FPS: " << FPS<<  " ent update: " << 1000.f*(float)part1_total/CLOCKS_PER_SEC  << "ms, ent z sort: " << 1000.f*(float)part2_total/CLOCKS_PER_SEC <<"ms";
-		oss << "\tmap drawing time: " << 1000.f*(float)world_draw/CLOCKS_PER_SEC<< "ms\tent draw time:" << 1000.f*(float)entities_draw/CLOCKS_PER_SEC << "ms\tfinal shader drawing: "<<1000.f*(float)shader_draw/CLOCKS_PER_SEC;
+		oss << "\nmap drawing time: " << 1000.f*(float)world_draw/CLOCKS_PER_SEC<< "ms\tent draw time:" << 1000.f*(float)entities_draw/CLOCKS_PER_SEC << "ms\tfinal shader drawing: "<<1000.f*(float)shader_draw/CLOCKS_PER_SEC;
+		oss << "\n" << ZC->getData().name;
 		overlay->FPStext.setString(oss.str());
 	}
 	overlay->draw(DrawMap);
@@ -422,3 +405,18 @@ void OverWorldScene::draw() {
 
 	App->display();
 }
+
+void OverWorldScene::changeZoneContainer(const std::string& newZC) {
+	
+	auto ZC2 = new ZoneContainer(newZC, gameResources);
+	sf::Vector2f startingPos;
+	startingPos.x = ZC2->getData().startingPos.x;
+	startingPos.y = ZC2->getData().startingPos.y;
+	PC->teleportTo(startingPos, ZC2);
+	unbindContentToClock();
+	delete ZC;
+	ZC = ZC2;
+	loadedMaps.clear();
+	loadEntities();
+	bindContentToClock();
+};

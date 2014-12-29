@@ -39,9 +39,8 @@ void PlayerCharacter::receiveItem(Collectible* collectible) {
 }
 
 void PlayerCharacter::teleportTo(sf::Vector2f pos, ZoneContainer* destinationZC) {
-	
 	position = pos;
-	BoundingBoxRectReal = sf::FloatRect(pos.x, pos.x, boundingBoxSize.x,  boundingBoxSize.y);
+	BoundingBoxRectReal = sf::FloatRect(pos.x, pos.y, boundingBoxSize.x,  boundingBoxSize.y);
 	positionSprite();
 
 	unregister();
@@ -50,7 +49,6 @@ void PlayerCharacter::teleportTo(sf::Vector2f pos, ZoneContainer* destinationZC)
 		ZC = destinationZC;
 		updateEntityPositionInfo();
 	}
-
 }
 
 void PlayerCharacter::drawCollisionBox(OverWorldDisplay& owDisplay) { 

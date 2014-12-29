@@ -20,16 +20,12 @@ protected:
 
 	sf::Vector2f position;
 
-	bool isAsleep;
 	bool markedForDeletion;
 
 public:
 	Entity(sf::Vector2f const& position,  ZoneContainer& ZC);
 	sf::Vector2f getPosition() const { return position; };
 	void debug_dump_positions();
-	bool tryToSleep();
-	bool tryToWakeUp();
-	bool getAsleep() const { return isAsleep ; };
 	bool isMarkedForDeletion() const { return markedForDeletion; } ;
 	void markForDeletion();
 

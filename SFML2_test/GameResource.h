@@ -3,6 +3,7 @@
 #include <map>
 
 #include "Tileset.hpp"
+#include "MoveAnimation.h"
 
 class Tileset;
 
@@ -25,6 +26,7 @@ public:
 
 class GameResource {
 	ResourceCache<Tileset> tilesetCache;
+	ResourceCache<MoveAnimation> animationCache;
 
 public:
 	GameResource()  {
@@ -32,6 +34,10 @@ public:
 
 	Tileset& getTileset(const std::string& key) {
 		return tilesetCache.get(key);
+	}
+
+	MoveAnimation& getMoveAnimation(const std::string& key) {
+		return animationCache.get(key);
 	}
 
 private:

@@ -2,7 +2,8 @@
 
 const int frames = 9;
 MoveAnimation::MoveAnimation(const std::string& filename):
-animations_rect(4, frames)
+animations_rect(4, frames),
+fileName(fileName)
 {
 	atlas.loadFromFile(filename);
 	int sizeY = atlas.getSize().y / 4;

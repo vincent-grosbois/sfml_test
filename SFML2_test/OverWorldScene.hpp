@@ -6,9 +6,9 @@
 #include "MoveAnimation.h"
 #include "GameClock.hpp"
 #include "GameTicks.hpp"
-
 #include "OverWorldCamera.h"
-#include "ZoneContainerData.h"
+
+#include "CallBackSystem.h"
 
 struct Tone;
 class PlayerCharacter;
@@ -16,6 +16,7 @@ class Overlay;
 class Map;
 class ZoneContainer;
 class Tileset;
+class MetaGameData;
 
 struct OverWorldDisplay 
 {
@@ -29,7 +30,7 @@ struct OverWorldDisplay
 
 	void init(const MetaGameData& metaGameData);
 	void draw(sf::RenderWindow& app);
-	void updateToneParameters(const Tone& t);
+	void updateToneParameters(const Tone& tone);
 
 	void clearAndSetView(const sf::View& view);
 };
@@ -54,10 +55,6 @@ struct OverWorldCommands {
 	}
 };
 
-struct OverWorldResources {
-		std::vector<MoveAnimation> walking_animations;
-};
-
 class GameResource;
 
 class OverWorldScene : public GameScene
@@ -66,19 +63,7 @@ public:
 	
 	virtual ~OverWorldScene() override;
 
-	OverWorldScene(const MetaGameData& metaGameData, GameResource& gr) :
-		metaGameData(metaGameData),
-		zone(metaGameData.firstZonePath),
-		camera(
-		sf::View(sf::Vector2f(0,0), 
-		sf::Vector2f(float(metaGameData.resolution.x),float(metaGameData.resolution.y))) 
-		),
-		gameClock(
-		metaGameData.start_time_hours*3600 + metaGameData.start_time_minutes*60, 
-		metaGameData.clock_speed_factor),
-		myTotalTime(0),
-		gameResource(gr)
-	{ };
+	OverWorldScene(const MetaGameData& metaGameData, GameResource& gr);
 
 	virtual void draw() override;
 
@@ -87,37 +72,35 @@ public:
 	virtual void onInit() override;
 
 private:
-	MetaGameData metaGameData;
+	const MetaGameData& metaGameData;
 
-	std::string zone;
+	GameResource& gameResources;
 
-	OverWorldResources owResources;
+	OverWorldCamera camera;
+	OverWorldDisplay owDisplay;
+	OverWorldCommands owCommands;
+
+	CallBackSystem callbackSystem;
 
 	GameClock gameClock;
+	GameTicks ticks;
+
 	bool DrawMap;
-
-
 	bool PC_moved;
-
-	int myDeltaTime;
 
 	Overlay* overlay;
 	PlayerCharacter* PC;
-	OverWorldCamera camera;
 
 	std::set<Map*> loadedMaps;
 	ZoneContainer* ZC;
 
-	OverWorldDisplay owDisplay;
-	OverWorldCommands owCommands;
-
-	GameTicks ticks;
-
-	void initGlobalContent();
-	void loadEntities();
-
+	int myDeltaTime;
 	int myTotalTime;
 
-	GameResource& gameResource;
+private:
+	void changeZoneContainer(const std::string& newZC);
+	void bindContentToClock();
+	void unbindContentToClock();
+	void loadEntities();
 };
 

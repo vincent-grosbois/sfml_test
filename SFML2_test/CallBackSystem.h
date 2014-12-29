@@ -4,33 +4,33 @@
 #include <map>
 #include <list>
 
-typedef unsigned int time_tt ;
+typedef int frame_time_t ;
 
 struct ActiveCallBackInfo;
 
 struct CallBackInfo {
 	bool isExecuting;
-	std::function<void(time_tt,time_tt)> function;
+	std::function<void(frame_time_t,frame_time_t)> function;
 
 	std::list<ActiveCallBackInfo>& targetCallbackList;
 	std::list<ActiveCallBackInfo>::iterator targetCallbackPosition;
 
-	void call(time_tt original_time, time_tt actual_time);
+	void call(frame_time_t original_time, frame_time_t actual_time);
 
 	explicit CallBackInfo(std::list<ActiveCallBackInfo>& targetCallbackList);
 };
 
 class CallBackSystem
 {
-	std::map<time_tt, std::list<CallBackInfo>> events;
+	std::map<frame_time_t, std::list<CallBackInfo>> events;
 
 public:
 	CallBackSystem();
 
-	void callAllUpToTime(time_tt time);
+	void callAllUpToTime(frame_time_t time);
 
-	ActiveCallBackInfo addCallback(time_tt time, 
-		const std::function<void(time_tt,time_tt)>& function, 
+	ActiveCallBackInfo addCallback(frame_time_t time, 
+		const std::function<void(frame_time_t,frame_time_t)>& function, 
 		std::list<ActiveCallBackInfo>& targetCallbackList);
 
 	~CallBackSystem();
@@ -53,19 +53,21 @@ class CallBackReceiver
 	std::list<ActiveCallBackInfo> activeCallbacks;
 
 public:
-	~CallBackReceiver();
+	virtual ~CallBackReceiver();
 
-	void createCallback(time_tt time, 
+	void createCallback(frame_time_t time, 
 		CallBackSystem& cbs, 
-		const std::function<void(time_tt,time_tt)>& function);
+		const std::function<void(frame_time_t,frame_time_t)>& function);
 
-	void createPeriodicCallback(time_tt timeStart, time_tt period,
+	void createPeriodicCallback(frame_time_t timeStart, frame_time_t period,
 		CallBackSystem& cbs, 
-		const std::function<void(time_tt,time_tt)>& function);
+		const std::function<void(frame_time_t,frame_time_t)>& function);
 
-	void createPeriodicCallback(time_tt timeStart, time_tt period,
-		time_tt last,
+	void createPeriodicCallback(frame_time_t timeStart, frame_time_t period,
+		frame_time_t last,
 		CallBackSystem& cbs, 
-		const std::function<void(time_tt,time_tt)>& function);
+		const std::function<void(frame_time_t,frame_time_t)>& function);
+
+	void removePendingCallbacks();
 
 };

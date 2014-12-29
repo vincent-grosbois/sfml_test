@@ -4,17 +4,16 @@
 
 #include "Tile.hpp"
 #include "GameTicks.hpp"
+#include "CallBackSystem.h"
 
-class TileAnimator {
+class TileAnimator : public CallBackReceiver {
 public:
 	std::vector<sf::IntRect> frames;
-	std::vector<int> ticks_per_frame;
+	int frame_duration;
 
 	int current_index;
 	int current_tick;
-	int total_ticks;
-
-	TICKS::e base_tick;
+	int total_duration;
 
 	Tile& tile_to_animate;
 	Tileset& tileset;
@@ -25,7 +24,7 @@ public:
 		tileset(tileset),
 		tile_to_animate(tile) {
 			tile_to_animate.myAnimator = this;
-
+			frame_duration = 400;
 			for(auto vect : in) {
 				frames.push_back(
 					sf::IntRect(
@@ -34,30 +33,25 @@ public:
 					TILE_SIZE_X,TILE_SIZE_Y)
 					);
 
-				ticks_per_frame.push_back(4);
 			}
 
-			base_tick = TICKS::_100MS;
 			//
 
 			current_index = 0;
 			current_tick = 0;
-			total_ticks = std::accumulate(ticks_per_frame.begin(), ticks_per_frame.end(), 0);
+			total_duration = frame_duration*frames.size();
 	}
 
-	void process_frame(int ticks) {
+	void process_frame(frame_time_t ideal_frame, frame_time_t actual_frame) {
 		//will update current_index and set tile_changed_on_this_frame to 1 
 
-		int new_ticks = ticks;
-
-		current_tick += new_ticks;
+		//std::cout << "exec at time " << actual_frame << " instead of " << ideal_frame << std::endl;
 
 		int old_index = current_index;
+		
+		int delay = (actual_frame - ideal_frame) / frame_duration ;
 
-		while (current_tick  > ticks_per_frame[current_index]) {
-			current_tick -= ticks_per_frame[current_index];
-			current_index = (current_index + 1) % frames.size();
-		}
+		current_index = (current_index + 1 + delay) % frames.size();
 
 		tile_changed_on_this_frame = old_index != current_index;
 
