@@ -68,7 +68,8 @@ FieldValue default_value;
 enum class LoadableEntityType {
 	NPC,
 	LIGHT,
-	RANDOM_NPC_ZONE
+	RANDOM_NPC_ZONE,
+	TELEPORTER
 };
 
 class MapEntitiesLoader

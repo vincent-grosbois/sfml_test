@@ -60,16 +60,16 @@ void Map::printDebug() const {
 	std::cout << "Map @" << id << " X:" << position.x << " Y:"  << position.y << "\n"; 
 }
 
-void Map::updateGraphics(const OverWorldCamera& camera) {
+void Map::updateGraphics(const OverWorldCamera& camera, bool checkAnimatedTilesUpdate) {
 
 	if(layer0)
-		layer0->updateGraphics(camera);
+		layer0->updateGraphics(camera, checkAnimatedTilesUpdate);
 
 	if(layer1)
-		layer1->updateGraphics(camera);
+		layer1->updateGraphics(camera, checkAnimatedTilesUpdate);
 
 	if(layer2)
-		layer2->updateGraphics(camera);
+		layer2->updateGraphics(camera, checkAnimatedTilesUpdate);
 
 }
 

@@ -17,12 +17,13 @@
 
 #include "MapEntitiesLoader.h"
 
-bool z_orderer2 (const Entity* lhs, const Entity* rhs) {
+bool z_orderer (const Entity* lhs, const Entity* rhs) {
 	return lhs->getPosition().y < rhs->getPosition().y;
 }
 
 void OverWorldDisplay::init(const MetaGameData& metaGameData) {
-	colorizeShader.loadFromFile("../ressources/shader/colorize.sfx", sf::Shader::Fragment);
+
+	colorizeShader.loadFromFile(metaGameData.basePath+"shader/colorize.sfx", sf::Shader::Fragment);
 
 	overWorld_texture.create(metaGameData.resolution.x, metaGameData.resolution.y);
 	light_texture.create(metaGameData.resolution.x, metaGameData.resolution.y);
@@ -59,8 +60,6 @@ OverWorldScene::~OverWorldScene() {
 
 void OverWorldScene::initGlobalContent() {
 
-	//tileset = &ZC->getTileset();
-
 	for(auto anim : ZC->getTileset().get_tile_animators()) {
 		using namespace std::placeholders;
 		auto func = std::bind(&TileAnimator::process_frame, anim, _1);
@@ -70,7 +69,7 @@ void OverWorldScene::initGlobalContent() {
 	std::cout << "tileset loaded\n";
 
 	for (int i =1; i<=1; ++i) {
-		std::string str("../ressources/sprites/");
+		std::string str("../../ressources/sprites/");
 
 		std::ostringstream out;
 		out << i;
@@ -85,11 +84,11 @@ void OverWorldScene::initGlobalContent() {
 		owResources.walking_animations.emplace_back(MoveAnimation(str));
 	}
 
-	owResources.walking_animations.emplace_back( MoveAnimation("../ressources/male_walkcycle.png") );
+	owResources.walking_animations.emplace_back( MoveAnimation("../../ressources/male_walkcycle.png") );
 }
 
 void OverWorldScene::loadEntities() {
-	generateEntityFromFile(ZC->getEntitiesDataPath() , *ZC, owResources);
+	generateEntityFromFile(ZC->getData().entitiesDataPath , *ZC, owResources);
 }
 
 void OverWorldScene::onInit() {
@@ -103,20 +102,25 @@ void OverWorldScene::onInit() {
 
 	overlay = new Overlay(*App);
 
-	ZC = new ZoneContainer(zone);
+	ZC = new ZoneContainer(zone, gameResource);
 
 	initGlobalContent();
 
 	loadEntities();
 
-	PC = new PlayerCharacter(ZC->startingPos, *ZC, owResources.walking_animations.back(), *overlay);
+	sf::Vector2f startingPos;
+	startingPos.x = ZC->getData().startingPos.x;
+	startingPos.y = ZC->getData().startingPos.y;
+
+	PC = new PlayerCharacter(startingPos, *ZC, owResources.walking_animations.back(), *overlay);
 }
 
 
 struct UpdateMapGraphics {
 
-	UpdateMapGraphics(OverWorldCamera& camera) :
-		camera(camera) { }
+	UpdateMapGraphics(OverWorldCamera& camera, bool checkAnimatedTilesUpdate) :
+		camera(camera), checkAnimatedTilesUpdate(checkAnimatedTilesUpdate)
+	{ }
 
 	void visit_first(Map* map) {
 		map->loadTilesFromNothing(camera);
@@ -131,13 +135,18 @@ struct UpdateMapGraphics {
 	}
 
 	void visit_both(Map* map, Map*) {
-		map->updateGraphics(camera);
+		map->updateGraphics(camera, checkAnimatedTilesUpdate);
 	}
 
 	OverWorldCamera& camera;
+	bool checkAnimatedTilesUpdate;
 };
 
 void OverWorldScene::update(int deltaTime) {
+
+	myTotalTime += deltaTime;
+
+	ZC->getTileset().setNeedUpdating(false);
 
 	camera.newFrame();
 
@@ -226,6 +235,30 @@ void OverWorldScene::update(int deltaTime) {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::P))  { 
 		ZC->dumpLoadedTiles();
 	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))  { 
+
+		auto ZC2 = new ZoneContainer("../../ressources/overworld.txt", gameResource);
+		sf::Vector2f startingPos;
+		startingPos.x = ZC2->getData().startingPos.x;
+		startingPos.y = ZC2->getData().startingPos.y;
+		PC->teleportTo(startingPos, ZC2);
+		delete ZC;
+		ZC = ZC2;
+		loadedMaps.clear();
+		loadEntities();
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))  { 
+
+		auto ZC2 = new ZoneContainer("../../ressources/cave.txt", gameResource);
+		sf::Vector2f startingPos;
+		startingPos.x = ZC2->getData().startingPos.x;
+		startingPos.y = ZC2->getData().startingPos.y;
+		PC->teleportTo(startingPos, ZC2);
+		delete ZC;
+		ZC = ZC2;
+		loadedMaps.clear();
+		loadEntities();
+	}
 
 	if(!PC_moved)
 		PC->isMoving = false;
@@ -249,7 +282,7 @@ void OverWorldScene::update(int deltaTime) {
 
 	std::set<Map*> mapsOnScreen = ZC->getCollidingMaps(camera.getViewRect());
 
-	UpdateMapGraphics updater(camera);
+	UpdateMapGraphics updater(camera, ZC->getTileset().getNeedUpdating());
 
 	iterate_over_union(mapsOnScreen, loadedMaps, updater);
 
@@ -265,10 +298,7 @@ void OverWorldScene::draw() {
 	if(ticks.getTicks(TICKS::_100MS) > 0) {
 		std::stringstream text;
 		text << EntitySet::entitySetStorage.size_in_use() << " entities set in use, "<< EntitySet::entitySetStorage.size_available()<< " extra available\n";
-		float resolution_ratio = float(metaGameData.resolution.x) / metaGameData.resolution.y;
-		int sqrt_ = int(sqrt(MapElement::storage_size_in_use() / resolution_ratio));
-		text << MapElement::storage_size_in_use() << " sprites ("<<int(sqrt_*resolution_ratio)<<"x"<<sqrt_<<") in use, "<< MapElement::storage_size_available() << " extra available\n";
-
+	
 		text << loadedMaps.size() << " maps in view\n";
 		if (loadedMaps.size() < 20) {
 			for (auto map= loadedMaps.begin() ; map != loadedMaps.end(); ++map ) {
@@ -321,7 +351,7 @@ void OverWorldScene::draw() {
 		}
 	}
 
-	std::sort(entities_v.begin(), entities_v.end(), z_orderer2);
+	std::sort(entities_v.begin(), entities_v.end(), z_orderer);
 	end = clock();
 	end1 = clock();
 
@@ -367,9 +397,10 @@ void OverWorldScene::draw() {
 
 	//
 	clock_t shader_draw = clock();
-	Tone t = ZC->isOutside ? 
+	Tone t = ZC->getData().isOutside ? 
 		OverWorldTone::getToneAt( gameClock.getCurrentTimeOfDay()/3600.f) :
-		(ZC->isDark ? OverWorldTone::getDarknessTone() : Tone());
+		(ZC->getData().isDark ? OverWorldTone::getDarknessTone() : Tone());
+
 	owDisplay.updateToneParameters(t);
 
 	owDisplay.draw(*App);
@@ -380,7 +411,7 @@ void OverWorldScene::draw() {
 	if(ticks.getTicks(TICKS::_100MS) > 0) {
 		std::stringstream oss;
 		int FPS = int(1000/myDeltaTime);
-		oss << "FPS: " << FPS<<  " part1: " << 1000.f*(float)part1_total/CLOCKS_PER_SEC  << "ms, part2: " << 1000.f*(float)part2_total/CLOCKS_PER_SEC <<"ms";
+		oss << "FPS: " << FPS<<  " ent update: " << 1000.f*(float)part1_total/CLOCKS_PER_SEC  << "ms, ent z sort: " << 1000.f*(float)part2_total/CLOCKS_PER_SEC <<"ms";
 		oss << "\tmap drawing time: " << 1000.f*(float)world_draw/CLOCKS_PER_SEC<< "ms\tent draw time:" << 1000.f*(float)entities_draw/CLOCKS_PER_SEC << "ms\tfinal shader drawing: "<<1000.f*(float)shader_draw/CLOCKS_PER_SEC;
 		overlay->FPStext.setString(oss.str());
 	}

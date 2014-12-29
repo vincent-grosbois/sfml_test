@@ -87,7 +87,7 @@ public:
 
 	void unloadAll();
 
-	void updateGraphics(const OverWorldCamera& camera);
+	void updateGraphics(const OverWorldCamera& camera, bool checkAnimatedTilesUpdate);
 	void loadTilesFromNothing(const OverWorldCamera& camera);
 
 	sf::Vector2i getMapCoords() const { 

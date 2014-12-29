@@ -16,7 +16,6 @@ public:
 	std::string basePath;
 	std::string name;
 	std::string mapDataPath;
-	std::string tilesetSheetPath;
 	std::string tilesetDataPath;
 	std::string entitiesDataPath;
 

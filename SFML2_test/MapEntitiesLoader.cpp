@@ -11,6 +11,9 @@
 #include "LightEntity.hpp"
 #include "NPC.h"
 #include "TilePlane.hpp"
+#include "utils/StringUtils.h"
+
+using namespace utils;
 
 struct entity_type_descriptions_builder {
 	entity_type_descriptions_builder();
@@ -30,40 +33,53 @@ entity_type_from_name_builder entity_type_from_name_builder_at_init;
 
 entity_type_descriptions_builder::entity_type_descriptions_builder() {
 	{
-	std::vector<EntityFieldDescription> NPC;
+		std::vector<EntityFieldDescription> NPC;
 
-	EntityFieldDescription NPC_f1 = { "pos", OptionalFlag::MANDATORY, FieldValue(sf::Vector2f()) };
-	NPC.push_back(NPC_f1);
-	
-	entity_type_descriptions[LoadableEntityType::NPC] = NPC;
+		EntityFieldDescription NPC_f1 = { "pos", OptionalFlag::MANDATORY, FieldValue(sf::Vector2f()) };
+		NPC.push_back(NPC_f1);
+
+		entity_type_descriptions[LoadableEntityType::NPC] = NPC;
 	}
 	//----------------------------------------------------
 	{
-	std::vector<EntityFieldDescription> LIGHT;
+		std::vector<EntityFieldDescription> LIGHT;
 
-	EntityFieldDescription LIGHT_f1 = { "pos", OptionalFlag::MANDATORY, FieldValue(sf::Vector2f()) };
-	LIGHT.push_back(LIGHT_f1);
-	EntityFieldDescription LIGHT_f2 = { "radius", OptionalFlag::MANDATORY, FieldValue(1000.f)  };
-	LIGHT.push_back(LIGHT_f2);
-	EntityFieldDescription LIGHT_f3 = { "color", OptionalFlag::OPTIONAL, FieldValue(sf::Color(10,10,10,255))  };
-	LIGHT.push_back(LIGHT_f3);
-	EntityFieldDescription LIGHT_f4 = { "sides", OptionalFlag::OPTIONAL, FieldValue(20)  };
-	LIGHT.push_back(LIGHT_f4);
+		EntityFieldDescription LIGHT_f1 = { "pos", OptionalFlag::MANDATORY, FieldValue(sf::Vector2f()) };
+		LIGHT.push_back(LIGHT_f1);
+		EntityFieldDescription LIGHT_f2 = { "radius", OptionalFlag::MANDATORY, FieldValue(1000.f)  };
+		LIGHT.push_back(LIGHT_f2);
+		EntityFieldDescription LIGHT_f3 = { "color", OptionalFlag::OPTIONAL, FieldValue(sf::Color(10,10,10,255))  };
+		LIGHT.push_back(LIGHT_f3);
+		EntityFieldDescription LIGHT_f4 = { "sides", OptionalFlag::OPTIONAL, FieldValue(20)  };
+		LIGHT.push_back(LIGHT_f4);
 
-	entity_type_descriptions[LoadableEntityType::LIGHT] = LIGHT;
+		entity_type_descriptions[LoadableEntityType::LIGHT] = LIGHT;
 	}
 	//----------------------------------------------------
 	{
-	std::vector<EntityFieldDescription> RANDOM_NPC_ZONE;
+		std::vector<EntityFieldDescription> RANDOM_NPC_ZONE;
 
-	EntityFieldDescription RANDOM_NPC_ZONE_f1 = { "origin", OptionalFlag::MANDATORY, FieldValue(sf::Vector2f()) };
-	RANDOM_NPC_ZONE.push_back(RANDOM_NPC_ZONE_f1);
-	EntityFieldDescription RANDOM_NPC_ZONE_f2 = { "size", OptionalFlag::MANDATORY, FieldValue(sf::Vector2f()) };
-	RANDOM_NPC_ZONE.push_back(RANDOM_NPC_ZONE_f2);
-	EntityFieldDescription RANDOM_NPC_ZONE_f3 = { "density", OptionalFlag::OPTIONAL, FieldValue(0.01f)  };
-	RANDOM_NPC_ZONE.push_back(RANDOM_NPC_ZONE_f3);
+		EntityFieldDescription RANDOM_NPC_ZONE_f1 = { "origin", OptionalFlag::MANDATORY, FieldValue(sf::Vector2f()) };
+		RANDOM_NPC_ZONE.push_back(RANDOM_NPC_ZONE_f1);
+		EntityFieldDescription RANDOM_NPC_ZONE_f2 = { "size", OptionalFlag::MANDATORY, FieldValue(sf::Vector2f()) };
+		RANDOM_NPC_ZONE.push_back(RANDOM_NPC_ZONE_f2);
+		EntityFieldDescription RANDOM_NPC_ZONE_f3 = { "density", OptionalFlag::OPTIONAL, FieldValue(0.01f)  };
+		RANDOM_NPC_ZONE.push_back(RANDOM_NPC_ZONE_f3);
 
-	entity_type_descriptions[LoadableEntityType::RANDOM_NPC_ZONE] = RANDOM_NPC_ZONE;
+		entity_type_descriptions[LoadableEntityType::RANDOM_NPC_ZONE] = RANDOM_NPC_ZONE;
+	}
+	//----------------------------------------------------
+	{
+		std::vector<EntityFieldDescription> TELEPORT;
+
+		EntityFieldDescription TELEPORT_f1 = { "pos", OptionalFlag::MANDATORY, FieldValue(sf::Vector2f()) };
+		TELEPORT.push_back(TELEPORT_f1);
+		EntityFieldDescription TELEPORT_f2 = { "destination", OptionalFlag::MANDATORY, FieldValue(sf::Vector2f()) };
+		TELEPORT.push_back(TELEPORT_f2);
+		EntityFieldDescription TELEPORT_f3 = { "destinationZone", OptionalFlag::OPTIONAL, FieldValue(std::string()) };
+		TELEPORT.push_back(TELEPORT_f3);
+
+		entity_type_descriptions[LoadableEntityType::TELEPORTER] = TELEPORT;
 	}
 }
 
@@ -71,45 +87,43 @@ entity_type_from_name_builder::entity_type_from_name_builder() {
 	entity_type_from_name["NPC"] = LoadableEntityType::NPC;
 	entity_type_from_name["LIGHT"] = LoadableEntityType::LIGHT;
 	entity_type_from_name["RANDOM_NPC_ZONE"] = LoadableEntityType::RANDOM_NPC_ZONE;
+	entity_type_from_name["TELEPORTER"] = LoadableEntityType::TELEPORTER;
 }
-
-std::vector<std::string> split(const std::string& s, const std::string& delim, const bool keep_empty);
 
 
 FieldValue::FieldValue():
-value_type(EntityFieldType::NONE) {
+	value_type(EntityFieldType::NONE) {
 }
 FieldValue::FieldValue(const std::string& value):
-value_type(EntityFieldType::STRING),
-string_value(value),
-int_value(0) {
+	value_type(EntityFieldType::STRING),
+	string_value(value) {
 }
 FieldValue::FieldValue(int value):
-value_type(EntityFieldType::INTEGER),
-int_value(value) {
+	value_type(EntityFieldType::INTEGER),
+	int_value(value) {
 }
 FieldValue::FieldValue(float value):
-value_type(EntityFieldType::FLOAT),
-float_value(value) {
+	value_type(EntityFieldType::FLOAT),
+	float_value(value) {
 }
 FieldValue::FieldValue(bool value):
-value_type(EntityFieldType::BOOLEAN),
-int_value(value ? 1 : 0) {
+	value_type(EntityFieldType::BOOLEAN),
+	int_value(value ? 1 : 0) {
 }
 FieldValue::FieldValue(const sf::Vector2i& value):
-value_type(EntityFieldType::VECT2I),
-vect2i_value(value) {
+	value_type(EntityFieldType::VECT2I),
+	vect2i_value(value) {
 }
 FieldValue::FieldValue(const sf::Vector2f& value):
-value_type(EntityFieldType::VECT2F),
-vect2f_value(value) {
+	value_type(EntityFieldType::VECT2F),
+	vect2f_value(value) {
 }
 FieldValue::FieldValue(const sf::Color& value):
-value_type(EntityFieldType::COLOR),
-color_value(value) {
+	value_type(EntityFieldType::COLOR),
+	color_value(value) {
 }
 FieldValue::FieldValue(const std::string& str, EntityFieldType value_type):
-value_type(value_type)
+	value_type(value_type)
 {
 	if(value_type == EntityFieldType::INTEGER) {
 		std::istringstream ( str ) >> int_value;
@@ -159,7 +173,7 @@ value_type(value_type)
 		color_value.a = static_cast<sf::Uint8>(temp);
 	}
 	else {
-		assert(false); //TODO
+		assert(false); //TODO : other types
 	}
 }
 
@@ -206,18 +220,18 @@ std::map<std::string, FieldValue> processString(const std::string& str) {
 	auto it = entity_type_from_name.find(res[0]);
 
 	if(it == entity_type_from_name.end()) {
-		assert(false);
+		assert(false);		//unknown type
 	}
 
 	map["type"] = FieldValue(res[0]);
 
-	
+
 	auto& desc = entity_type_descriptions[it->second];
 
 	auto res2 = split(res[1], ";", false);
 
 	unsigned int desc_index = 0;
-	
+
 	for(unsigned int content_index = 0; content_index < res2.size(); ++content_index) {
 		auto res3 = split(res2[content_index], "=", false);
 
@@ -227,7 +241,7 @@ std::map<std::string, FieldValue> processString(const std::string& str) {
 		while(key != desc[desc_index].key && desc_index < desc.size()) {
 
 			if( desc[desc_index].optional == OptionalFlag::MANDATORY ) {
-				assert(false);
+				assert(false); //mandatory key not found
 			}
 			else {
 				map[desc[desc_index].key] = desc[desc_index].default_value;
@@ -244,13 +258,13 @@ std::map<std::string, FieldValue> processString(const std::string& str) {
 
 	for( ; desc_index < desc.size(); ++desc_index) {
 		if( desc[desc_index].optional == OptionalFlag::MANDATORY ) {
-			assert(false);
+			assert(false); //mandatory key not found
 		}
 		else {
 			map[desc[desc_index].key] = desc[desc_index].default_value;
 		}
 	}
-	
+
 	return map;
 }
 
@@ -294,7 +308,6 @@ void entityFactory(const std::string& desc, ZoneContainer& ZC, OverWorldResource
 		auto density = map["density"].float_();
 
 
-
 		int x_min = int(origin.x);
 		int y_min = int(origin.y);
 
@@ -336,7 +349,7 @@ void entityFactory(const std::string& desc, ZoneContainer& ZC, OverWorldResource
 
 	}
 	else {
-		assert(false);
+		assert(false); //unknown entity type
 	}
 
 

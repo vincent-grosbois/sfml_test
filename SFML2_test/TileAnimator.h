@@ -17,18 +17,20 @@ public:
 	TICKS::e base_tick;
 
 	Tile& tile_to_animate;
+	Tileset& tileset;
 
 	bool tile_changed_on_this_frame;
 
-	TileAnimator(Tile& tile, const std::vector<std::pair<int,int>>& in) :
+	TileAnimator(Tile& tile, const std::vector<sf::Vector2i>& in, Tileset& tileset) :
+		tileset(tileset),
 		tile_to_animate(tile) {
 			tile_to_animate.myAnimator = this;
 
-			for(auto pair : in) {
+			for(auto vect : in) {
 				frames.push_back(
 					sf::IntRect(
-					pair.first*TILE_SIZE_X,
-					pair.second*TILE_SIZE_Y,
+					vect.x*TILE_SIZE_X,
+					vect.y*TILE_SIZE_Y,
 					TILE_SIZE_X,TILE_SIZE_Y)
 					);
 
@@ -61,6 +63,7 @@ public:
 
 		if( tile_changed_on_this_frame ) {
 			tile_to_animate.myRect = frames[current_index];
+			tileset.setNeedUpdating(true);
 		}
 	}
 

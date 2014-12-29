@@ -1,73 +1,41 @@
 #pragma once
 
-#include <unordered_set>
+#include <map>
 
-template<class T>
-struct Equal: ::std::binary_function<T, T, bool> {
-    bool operator()(T const& left, T const& right) const {
-        ::std::equal_to<T> equal;
+#include "Tileset.hpp"
 
-        return equal(left, right);
-    }
-};
+class Tileset;
 
-template<class T>
-struct Equal<T*> : ::std::binary_function<T*, T*, bool> {
-    bool operator()(T* const & left, T* const & right) const {
-        Equal<T> equal;
+template<class R>
+class ResourceCache {
+	std::map<std::string, R*> cache;
 
-        return equal(*left, *right);
-    }
-};
-
-template<class T>
-struct Hash: ::std::unary_function<T, ::std::size_t> {
-    ::std::size_t operator()(T const & value) const {
-        ::std::hash<T> hash;
-
-        return hash(value);
-    }
-};
-
-template<class T>
-struct Hash<T*> : ::std::unary_function<T*, ::std::size_t> {
-    ::std::size_t operator()(T* const & value) const {
-        Hash<T> hash;
-
-        return hash(*value);
-    }
-};
-
-template<class T>
-class ResourceContainer {
 public:
+	R& get(const std::string& key) {
+		auto it = cache.find(key);
 
-
-
-    bool contains(T* element) const {
-        return s_.find(element) != s_.end();
-    }
-
-    bool insert(T* element) {
-        return s_.insert(element).second;
-    }
-
-	void unloadAll() {
-
-		for(auto obj : s_) {		
-			delete obj;
+		if(it != cache.end()) {
+			return *(it->second);
 		}
-		s_.clear();
+		R* r = new R(key);
+		cache[key] = r;
+		return *r;
+	}
+};
 
+class GameResource {
+	ResourceCache<Tileset> tilesetCache;
+
+public:
+	GameResource()  {
 	}
 
-	~ResourceContainer() {
-		for(auto obj : s_) {		
-			delete obj;
-		}
+	Tileset& getTileset(const std::string& key) {
+		return tilesetCache.get(key);
 	}
-
 
 private:
-    std::unordered_set<T*, Hash<T*>, Equal<T*>> s_;
+	GameResource(GameResource&);
+	GameResource& operator=(GameResource&);
+
 };

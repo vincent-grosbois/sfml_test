@@ -144,6 +144,9 @@
     <ClInclude Include="CallBackSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="utils\StringUtils.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ZoneContainer.cpp">
@@ -223,6 +226,9 @@
     </ClCompile>
     <ClCompile Include="CallBackSystem.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\StringUtils.cpp">
+      <Filter>Source Files\utils</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

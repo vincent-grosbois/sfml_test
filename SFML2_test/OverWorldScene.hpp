@@ -58,13 +58,15 @@ struct OverWorldResources {
 		std::vector<MoveAnimation> walking_animations;
 };
 
+class GameResource;
+
 class OverWorldScene : public GameScene
 {
 public:
 	
 	virtual ~OverWorldScene() override;
 
-	OverWorldScene(const MetaGameData& metaGameData) :
+	OverWorldScene(const MetaGameData& metaGameData, GameResource& gr) :
 		metaGameData(metaGameData),
 		zone(metaGameData.firstZonePath),
 		camera(
@@ -73,7 +75,9 @@ public:
 		),
 		gameClock(
 		metaGameData.start_time_hours*3600 + metaGameData.start_time_minutes*60, 
-		metaGameData.clock_speed_factor)
+		metaGameData.clock_speed_factor),
+		myTotalTime(0),
+		gameResource(gr)
 	{ };
 
 	virtual void draw() override;
@@ -111,5 +115,9 @@ private:
 
 	void initGlobalContent();
 	void loadEntities();
+
+	int myTotalTime;
+
+	GameResource& gameResource;
 };
 

@@ -33,7 +33,7 @@ public:
 
 	static Tone getToneAt(float f);
 	static std::vector<Tone> hourly_tones;
-	static void init(void);
+	static void init();
 
 	static void applySunnyChanges(Tone* t);
 	static void applyRainyChanges(Tone* t);

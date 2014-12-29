@@ -7,18 +7,25 @@
 #include "TitleMenuScene.hpp"
 #include "ZoneContainerData.h"
 
+#include "GameResource.h"
+
+
+
+
 int main()
 {
 	srand(87611);
 
-	MetaGameData metaGame("../ressources/Game.txt");
+	MetaGameData metaGame("../../ressources/Game.txt");
+
+	GameResource gameResource;
 
 	sf::RenderWindow app(sf::VideoMode(metaGame.resolution.x, metaGame.resolution.y), metaGame.title);
 	app.setFramerateLimit(60);
 
 	SceneManager sceneManager(app);
 
-	GameScene* scene = new OverWorldScene(metaGame);
+	GameScene* scene = new OverWorldScene(metaGame, gameResource);
 	sceneManager.pushState(*scene);
 	
 	GameScene* currentScene;

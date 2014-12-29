@@ -3,20 +3,14 @@
 #include "Entity.hpp"
 #include "TilePlane.hpp"
 #include "Tileset.hpp"
+#include "GameResource.h"
 
+Array2D<Map*> gameMapGenerator(const std::string& theFile, Tileset* theTileSet, ZoneContainer& ZC);
 
-std::vector<LightEntity*> ZoneContainer::light_list = std::vector<LightEntity*>();
-
-Array2D<Map*> GameMapGenerator(const std::string& theFile, Tileset* theTileSet, ZoneContainer& ZC);
-
-ZoneContainer::ZoneContainer(const std::string& dataFile):
+ZoneContainer::ZoneContainer(const std::string& dataFile, GameResource& gr):
 	data(dataFile),
-	tileset(*new Tileset(data.tilesetSheetPath, data.tilesetDataPath)),
-	maps(std::move(GameMapGenerator(data.mapDataPath, &tileset, *this))),
-	name(name),
-	isOutside(data.isOutside),
-	isDark(data.isDark),
-	startingPos(data.startingPos)
+	tileset(gr.getTileset(data.tilesetDataPath)),
+	maps(std::move(gameMapGenerator(data.mapDataPath, &tileset, *this)))
 { }
 
 
@@ -52,7 +46,7 @@ std::set<Map*> ZoneContainer::getCollidingMaps(const sf::FloatRect& rect)  {
 	return list;
 }
 
-Array2D<Map*> GameMapGenerator(const std::string& theFile, Tileset* theTileSet, ZoneContainer& ZC)
+Array2D<Map*> gameMapGenerator(const std::string& theFile, Tileset* theTileSet, ZoneContainer& ZC)
 {
 
 	Array2D<Map*> mapList(0,0);

@@ -11,27 +11,25 @@
 
 class LightEntity;
 class Tileset;
+class GameResource;
 
 class ZoneContainer
 {
 public:
-	ZoneContainer(const std::string& dataFile);
+	ZoneContainer(const std::string& dataFile, GameResource& gr);
 	~ZoneContainer();
 
 	void dumpLoadedTiles() const;
 
 private:
 	ZoneContainerData data;
-
-	std::string name;
 	Tileset& tileset;
 	Array2D<Map*> maps;
 	std::set<std::unique_ptr<Entity>> to_delete;
 
 public:
-
-	std::string getEntitiesDataPath() const {
-		return data.entitiesDataPath;
+	const ZoneContainerData& getData() const {
+		return data;
 	}
 
 	Tileset& getTileset() {
@@ -47,13 +45,5 @@ public:
 	}
 
 	std::set<Map*> getCollidingMaps(const sf::FloatRect& rect) ;
-
-	bool isOutside;
-	bool isDark;
-
-	static std::vector<LightEntity*> light_list;
-
-	sf::Vector2f startingPos;
-
 };
 

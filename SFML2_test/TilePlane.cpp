@@ -10,161 +10,95 @@
 #include "TileAnimator.h"
 
 
-
-const int map_elements_sprite_start = 60*60;
-const int map_elements_sprite_max_before_delete = map_elements_sprite_start*2;
-const int map_elements_sprite_additional_batches_size = 200;
-
-StorageProvider<sf::Sprite, CorrectSpriteSizePredicate> MapElement::spriteStorage = 
-	StorageProvider<sf::Sprite, CorrectSpriteSizePredicate>(map_elements_sprite_start, 
-	map_elements_sprite_max_before_delete,
-	map_elements_sprite_additional_batches_size,
-	CorrectSpriteSizePredicate());
-
-
-AUTOTILE_TYPE::e getType(Array2D<int>&table, int i, int j) {
-
-	
-
-if( i == 0 ||i/3>=(table.size().x-1) ||j==0 || j/3>=(table.size().y-1)) {
-	return AUTOTILE_TYPE::FLAT;
-}
-
-	int current = table((int)(i/3) , (int)(j/3));
-	int block_x = i/3;
-	int block_y = j/3;
-	int pos_x = i%3;
-	int pos_y = j%3;
-
-	if(pos_x == 1 && pos_y == 1)
-		return AUTOTILE_TYPE::FLAT;
-
-	if(pos_x == 1 && pos_y == 0) {
-		if(table(block_x , block_y-1 ) < current)
-			return AUTOTILE_TYPE::UP;
-		else return AUTOTILE_TYPE::FLAT;
-	}
-
-	if(pos_x == 2 && pos_y == 1) {
-		if(table(block_x+1 , block_y) < current)
-			return AUTOTILE_TYPE::RIGHT;
-		else return AUTOTILE_TYPE::FLAT;
-	}
-
-	if(pos_x == 0 && pos_y == 1) {
-		if(table( block_x-1, block_y )< current)
-			return AUTOTILE_TYPE::LEFT;
-		else return AUTOTILE_TYPE::FLAT;
-	}
-
-	if(pos_x == 1 && pos_y == 2) {
-		if(table(block_x,block_y+1 ) < current)
-			return AUTOTILE_TYPE::DOWN;
-		else return AUTOTILE_TYPE::FLAT;
-	}
-
-	if(pos_x == 0 && pos_y == 0) {
-		if(table(block_x , block_y-1) < current && table(block_x-1 , block_y) < current)
-			return AUTOTILE_TYPE::UL;
-		else if(table(block_x , block_y-1) < current)
-			return AUTOTILE_TYPE::UP;
-		else if(table(block_x-1 , block_y) < current)
-			return AUTOTILE_TYPE::LEFT;
-		else if (table(block_x-1 , block_y-1) < current) 
-			return AUTOTILE_TYPE::OUT_UL;
-		else return AUTOTILE_TYPE::FLAT;
-	}
-
-	if(pos_x == 2 && pos_y == 0) {
-		if(table(block_x , block_y-1) < current && table(block_x+1 , block_y) < current)
-			return AUTOTILE_TYPE::UR;
-		else if(table(block_x , block_y-1) < current)
-			return AUTOTILE_TYPE::UP;
-		else if(table(block_x+1 , block_y) < current)
-			return AUTOTILE_TYPE::RIGHT;
-		else if (table(block_x+1 , block_y-1) < current) 
-			return AUTOTILE_TYPE::OUT_UR;
-		else return AUTOTILE_TYPE::FLAT;
-	}
-
-	if(pos_x == 2 && pos_y == 2) {
-		if(table(block_x , block_y+1) < current && table(block_x+1 , block_y) < current)
-			return AUTOTILE_TYPE::DR;
-		else if(table(block_x , block_y+1) < current)
-			return AUTOTILE_TYPE::DOWN;
-		else if(table(block_x+1 , block_y) < current)
-			return AUTOTILE_TYPE::RIGHT;
-		else if (table(block_x+1 , block_y+1) < current) 
-			return AUTOTILE_TYPE::OUT_DR;
-		else return AUTOTILE_TYPE::FLAT;
-	}
-
-	if(pos_x == 0 && pos_y == 2) {
-		if(table(block_x , block_y+1) < current && table(block_x-1 , block_y) < current)
-			return AUTOTILE_TYPE::DL;
-		else if(table(block_x , block_y+1) < current)
-			return AUTOTILE_TYPE::DOWN;
-		else if(table(block_x-1 , block_y) < current)
-			return AUTOTILE_TYPE::LEFT;
-		else if (table(block_x-1 , block_y+1) < current) 
-			return AUTOTILE_TYPE::OUT_DL;
-		else return AUTOTILE_TYPE::FLAT;
-	}
-
-
-	return AUTOTILE_TYPE::FLAT;
-};
-
-
 TilePlane::TilePlane(Tileset& tileset, sf::Vector2<tile_units> size, sf::Vector2<tile_units> offset, Array2D<int>& table):
 elements(size.x, size.y),
 	size(size),
 	offset(offset),
 	tileset(tileset),
 	graphicsTotallyUnloaded(true),
-	myMap(NULL)
+	myMap(NULL),
+	tileBlocks(TILE_BLOCK_PER_MAP_X,TILE_BLOCK_PER_MAP_Y)
 {
+
+	for(int i = 0; i < TILE_BLOCK_PER_MAP_X; ++i) {
+		for(int j = 0; j < TILE_BLOCK_PER_MAP_Y; ++j) {
+			tileBlocks(i,j).setPrimitiveType(sf::PrimitiveType::Quads);
+			tileBlocks(i,j).resize(size.x*size.y*4 / (TILE_BLOCK_PER_MAP_X*TILE_BLOCK_PER_MAP_Y));
+		}
+	}
+
 	int id;
 	for(int i=0; i < size.x; ++i) {
 		for(int j=0; j < size.y; ++j) {
 
 			id = table((i+offset.x)/3 , (j+offset.y)/3);
 
-			elements(i,j).init(tileset.getTile(id));
+			sf::Vertex* quad = getQuadVertexFromTileIndex(i,j);
+
+			int offset_x = offset.x*TILE_SIZE_X;
+			int offset_y = offset.y*TILE_SIZE_Y;
+
+			quad[0].position = sf::Vector2f(i * TILE_SIZE_X + offset_x, j * TILE_SIZE_Y + offset_y);
+			quad[1].position = sf::Vector2f((i + 1) * TILE_SIZE_X + offset_x, j * TILE_SIZE_Y + offset_y);
+			quad[2].position = sf::Vector2f((i + 1) * TILE_SIZE_X + offset_x, (j + 1) * TILE_SIZE_Y + offset_y);
+			quad[3].position = sf::Vector2f(i * TILE_SIZE_X + offset_x, (j + 1) * TILE_SIZE_Y + offset_y);
+
+			Tile& tile = tileset.getTile(id);
+
+			setQuadTextureToFrame(quad, tile.myRect);
+
+			elements(i,j).init(tile);
 		}
 	}
 
 }
 
+void TilePlane::setQuadTextureToFrame(sf::Vertex* quad, const sf::IntRect& rect) {
+	quad[0].texCoords = sf::Vector2f(rect.left, rect.top);
+	quad[1].texCoords = sf::Vector2f(rect.left + rect.width, rect.top);
+	quad[2].texCoords = sf::Vector2f(rect.left + rect.width, rect.top + rect.height);
+	quad[3].texCoords = sf::Vector2f(rect.left, rect.top + rect.height);
+}
 
+sf::Vertex* TilePlane::getQuadVertexFromTileIndex(int i, int j) {
 
-void TilePlane::updateGraphics(const OverWorldCamera& camera) {
+	int array_num_x = i/TILES_PER_TILE_BLOCK_X;
+	int array_num_y = j/TILES_PER_TILE_BLOCK_Y;
+
+	int array_index_x = i - array_num_x*TILES_PER_TILE_BLOCK_X;
+	int array_index_y = j - array_num_y*TILES_PER_TILE_BLOCK_Y;
+
+	return
+		&tileBlocks(array_num_x,array_num_y)
+		[(array_index_x + array_index_y * size.x / TILE_BLOCK_PER_MAP_X) * 4];
+
+}
+
+void TilePlane::updateGraphics(const OverWorldCamera& camera, bool checkAnimatedTilesUpdate) {
 
 	auto rect = camera.getViewRect();
 
-	tile_units left = static_cast<tile_units>(floor( rect.left / TILE_SIZE_X )) - offset.x;
-	tile_units right = static_cast<tile_units>(ceil( (rect.left + rect.width) / TILE_SIZE_X ))  - offset.x;
+	if(checkAnimatedTilesUpdate) {
+		tile_units left = static_cast<tile_units>(floor( rect.left / TILE_SIZE_X )) - offset.x;
+		tile_units right = static_cast<tile_units>(ceil( (rect.left + rect.width) / TILE_SIZE_X ))  - offset.x;
 
-	tile_units top = static_cast<tile_units>(floor( rect.top / TILE_SIZE_Y ))  - offset.y;
-	tile_units bottom = static_cast<tile_units>(ceil( (rect.top + rect.height) / TILE_SIZE_Y )) - offset.y;
+		tile_units top = static_cast<tile_units>(floor( rect.top / TILE_SIZE_Y ))  - offset.y;
+		tile_units bottom = static_cast<tile_units>(ceil( (rect.top + rect.height) / TILE_SIZE_Y )) - offset.y;
 
-	if(top<0)
-		top = 0;
-	if(left<0)
-		left = 0;
-	if(bottom > size.y)
-		bottom = size.y;
-	if(right > size.x)
-		right = size.x;
+		if(top<0)
+			top = 0;
+		if(left<0)
+			left = 0;
+		if(bottom > size.y)
+			bottom = size.y;
+		if(right > size.x)
+			right = size.x;
 
-	for(int i=left; i < right; ++i) {
-		for(int j=top; j < bottom; ++j) {
-
-			if(camera.movedSinceLastFrame() && !elements(i,j).hasSprite()) {
-				elements(i,j).createSprite(tileset, sf::Vector2i(i + offset.x, j + offset.y));	
-			}
-			if (elements(i,j).tile().isAnimated() && elements(i,j).tile().myAnimator->tile_changed_on_this_frame){
-				elements(i,j).sprite().setTextureRect(elements(i,j).tile().myRect);
+		for(int i=left; i < right; ++i) {
+			for(int j=top; j < bottom; ++j) {
+				if (elements(i,j).tile().isAnimated() && elements(i,j).tile().myAnimator->tile_changed_on_this_frame){
+					setQuadTextureToFrame(getQuadVertexFromTileIndex(i,j), elements(i,j).tile().myRect);
+				}
 			}
 		}
 	}
@@ -175,112 +109,48 @@ void TilePlane::updateGraphics(const OverWorldCamera& camera) {
 }
 
 void TilePlane::unloadAllGraphics() {
-
-	for(int j=0; j < size.x; ++j) {
-		for(int i=0; i < size.y; ++i) {
-			elements(j,i).deleteSprite();
-		}
-	}
-
 	graphicsTotallyUnloaded = true;
 }
 
 void TilePlane::loadAndWakeUp(const OverWorldCamera& camera) {
-	updateGraphics(camera);
+	updateGraphics(camera, true);
 	graphicsTotallyUnloaded = false;
 }
 
 
 void TilePlane::unloadGraphics(const sf::FloatRect& rect) {
-
-	tile_units left = static_cast<tile_units>(floor( rect.left / TILE_SIZE_X )) - offset.x;
-	tile_units right = static_cast<tile_units>(ceil( (rect.left + rect.width) / TILE_SIZE_X ))  - offset.x;
-
-	tile_units top = static_cast<tile_units>(floor( rect.top / TILE_SIZE_Y ))  - offset.y;
-	tile_units bottom = static_cast<tile_units>(ceil( (rect.top + rect.height)  / TILE_SIZE_Y )) - offset.y;
-
-	if(top<0) 
-		top = 0;
-	else if(top > size.y) 
-		top = size.y;
-
-	if(left<0) 
-		left = 0;
-	else if(left > size.x) 
-		left = size.x;
-
-	if(bottom > size.y) 
-		bottom = size.y;
-	else if (bottom < 0) 
-		bottom = 0;
-
-	if(right > size.x) 
-		right = size.x;
-	else if(right < 0) 
-		right = 0;
-
-	int j=0;
-	int i=0;
-
-	for(; j < size.y; ++j) {	
-		for(i = 0; i < left; ++i)
-			elements(i,j).deleteSprite();
-
-		for(i=right; i < size.x; ++i)
-			elements(i,j).deleteSprite();
-	}
-
-	for(i=left; i < right; ++i) {
-		for(j=0; j < top; ++j)
-			elements(i,j).deleteSprite();
-
-		for(j=bottom; j < size.y; ++j)
-			elements(i,j).deleteSprite();
-	}
 }
-
 
 
 void TilePlane::draw(const sf::View& view, OverWorldDisplay& owDisplay) {
 
 	sf::Rect<float> viewrec(view.getCenter() -sf::Vector2f(view.getSize().x/2, view.getSize().y/2) ,view.getSize());
 
-	tile_units left = static_cast<tile_units>(floor( viewrec.left / TILE_SIZE_X )) ;
-	tile_units right = static_cast<tile_units>(ceil( (viewrec.left +viewrec.width) / TILE_SIZE_X )) ;
+	int left = static_cast<int>(floor( viewrec.left / TILE_BLOCK_SIZE_X )) ;
+	int right = static_cast<int>(floor( (viewrec.left +viewrec.width) / TILE_BLOCK_SIZE_X )) ;
 
-	tile_units top = static_cast<tile_units>(floor( viewrec.top / TILE_SIZE_Y ));
-	tile_units bottom = static_cast<tile_units>(ceil( (viewrec.top + viewrec.height) / TILE_SIZE_Y ));
+	int top = static_cast<int>(floor( viewrec.top / TILE_BLOCK_SIZE_Y ));
+	int bottom = static_cast<int>(floor( (viewrec.top + viewrec.height) / TILE_BLOCK_SIZE_Y ));
 
-	left -= offset.x;
-	right -= offset.x;
-	top -= offset.y;
-	bottom -= offset.y;
+	left -= offset.x / TILES_PER_TILE_BLOCK_X;
+	right -= offset.x / TILES_PER_TILE_BLOCK_X;
+	top -= offset.y / TILES_PER_TILE_BLOCK_Y;
+	bottom -= offset.y / TILES_PER_TILE_BLOCK_Y;
 
 	top = top < 0 ? 0 : top;
 	left = left < 0 ? 0 : left;
-	bottom = bottom > size.y ? size.y : bottom;
-	right = right > size.x ? size.x : right;
+	bottom = bottom > tileBlocks.size().y-1 ? tileBlocks.size().y-1 : bottom;
+	right = right > tileBlocks.size().x-1 ? tileBlocks.size().x-1 : right;
 
-	for(int i=left; i < right; i++) {
-		for(int j=top; j < bottom; j++) {
-			
-#ifdef _DEBUG
-			if(myMap->entities_grid(i,j).has_entities()) {
-					elements(i,j).draw(owDisplay) ;
-					elements(i,j).sprite().setColor(sf::Color(0, 255, 255, 255));
-				}
-				else {
-					elements(i,j).sprite().setColor(sf::Color(255, 255, 255, 255));
-					elements(i,j).draw(owDisplay) ;
+	sf::RenderStates state;
+	state.texture = &tileset.getAtlas();
 
-				}
-#else
-			
-				elements(i,j).draw(owDisplay) ;
-#endif
-
+	for(int i = left; i <= right; ++i) {
+		for(int j = top; j <= bottom; ++j) {
+			owDisplay.overWorld_texture.draw(tileBlocks(i,j), state);
 		}
 	}
+
 }
 
 
@@ -336,7 +206,7 @@ void TilePlane::getCollidingTiles(const sf::FloatRect& rect, std::set<MapElement
 
 void TilePlane::dumpLoadedTiles() const {
 
-	bool nosprite = true;
+	/*bool nosprite = true;
 	for(int i=0; i < size.x; i++) {
 		for(int j=0; j < size.y; j++) {
 			if(elements(i,j).hasSprite()) {
@@ -362,7 +232,7 @@ void TilePlane::dumpLoadedTiles() const {
 				std::cout << "("<<i<<","<<j<<") ";
 			}
 		}
-	}
+	}*/
 
 }
 

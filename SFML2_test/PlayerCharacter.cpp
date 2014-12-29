@@ -46,10 +46,11 @@ void PlayerCharacter::teleportTo(sf::Vector2f pos, ZoneContainer* destinationZC)
 
 	unregister();
 
-	if (destinationZC)
+	if (destinationZC) {
 		ZC = destinationZC;
+		updateEntityPositionInfo();
+	}
 
-	updateEntityPositionInfo();
 }
 
 void PlayerCharacter::drawCollisionBox(OverWorldDisplay& owDisplay) { 

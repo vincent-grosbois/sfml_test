@@ -45,6 +45,7 @@
     <ClInclude Include="Tileset.hpp" />
     <ClInclude Include="TitleMenuScene.hpp" />
     <ClInclude Include="utils\SetUnionIterator.h" />
+    <ClInclude Include="utils\StringUtils.h" />
     <ClInclude Include="ZoneContainer.hpp" />
     <ClInclude Include="ZoneContainerData.h" />
   </ItemGroup>
@@ -73,6 +74,7 @@
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="TilePlane.cpp" />
     <ClCompile Include="Tileset.cpp" />
+    <ClCompile Include="utils\StringUtils.cpp" />
     <ClCompile Include="ZoneContainer.cpp" />
     <ClCompile Include="ZoneContainerData.cpp" />
   </ItemGroup>
@@ -123,7 +125,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_ITERATOR_DEBUG_LEVEL=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_ITERATOR_DEBUG_LEVEL=1;_VARIADIC_MAX=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -138,6 +140,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>C:\Users\Vincent\Documents\Visual Studio 2010\Projects\pokemon_battle\pokemon_battle;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_VARIADIC_MAX=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

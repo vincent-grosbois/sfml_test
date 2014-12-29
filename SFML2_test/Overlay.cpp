@@ -8,7 +8,7 @@ MapInfosText(),
 overlayScene(NULL)
 {
 
-	myFont.loadFromFile("../ressources/FuturaExtended.ttf");
+	myFont.loadFromFile("../../ressources/FuturaExtended.ttf");
 
 	FPStext.setFont(myFont);
 	FPStext.setPosition(0, 0);
@@ -22,12 +22,12 @@ overlayScene(NULL)
 	MapInfosText.setCharacterSize(15);
 
 	//
-	map.loadFromFile("../ressources/map.png");
+	map.loadFromFile("../../ressources/map.png");
 	mapSprite = sf::Sprite(map);
 	mapSprite.setScale(2.f/3,2.f/3);
 	
 	
-	cursor.loadFromFile("../ressources/here.png");
+	cursor.loadFromFile("../../ressources/here.png");
 	cursorSprite = sf::Sprite(cursor);
 }
 
