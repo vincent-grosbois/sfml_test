@@ -1,6 +1,8 @@
 #include <iostream>
 #include <sstream>
 
+
+
 #include "OverWorldScene.h"
 #include "Tileset.h"
 #include "NPC.h"
@@ -98,7 +100,7 @@ void OverWorldScene::loadEntities() {
 void OverWorldScene::onInit() {
 
 	owDisplay.init(metaGameData);
-	owCommands.init();
+	owCommandsState.init();
 	OverWorldTone::init();
 
 	drawMap = false;
@@ -156,84 +158,77 @@ void OverWorldScene::update(int deltaTime) {
 
 	callbackSystem.callAllUpToTime(myTotalTime);
 
-	bool debug = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift);
+	bool debug = owCommands.isActive(OVERWORLD_COMMANDS::DEBUG);
 
-	// Process events
-	sf::Event Event_;
-	while (App->pollEvent(Event_))
-	{
-		if (Event_.type == sf::Event::Closed)
-			close();
+	owCommands.update(*App);
 
-		if (Event_.type == sf::Event::KeyPressed)  {
+	if (owCommands.isActive(OVERWORLD_COMMANDS::EXIT) ) {
+		close();
+	}
 
-			if(Event_.key.code == sf::Keyboard::Escape)
-				close();
+	if(owCommands.isActive(OVERWORLD_COMMANDS::FLASHLIGHT)) {
+		owCommandsState.flashlight_on = !owCommandsState.flashlight_on;
+	}
 
-			if (Event_.key.code ==  sf::Keyboard::E)  {  
-				PC->activateThings();
-			}
+	if(owCommands.isActive(OVERWORLD_COMMANDS::ACTIVATE)) {
+		PC->activateThings();
+	}
 
-			if (Event_.key.code == sf::Keyboard::F)  {  
-				owCommands.flashlight_on = !owCommands.flashlight_on;
-			}
-
-			if (Event_.key.code == sf::Keyboard::V) 
-				camera.resetSize();
-		}
+	if(owCommands.isActive(OVERWORLD_COMMANDS::ZOOM_RESET)) {
+		camera.resetSize();
 	}
 
 	PC_moved = false;
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) ) {  
-		PC->draw(deltaTime, DIRECTION::UP, 0, !owCommands.already_pressed_u, debug);
+	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_UP) ) {  
+		PC->draw(deltaTime, DIRECTION::UP, 0, !owCommandsState.already_pressed_u, debug);
 		PC_moved = true;
-		owCommands.already_pressed_u = true;
+		owCommandsState.already_pressed_u = true;
 	} else {
-		owCommands.already_pressed_u = false;
+		owCommandsState.already_pressed_u = false;
 	}
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))  {
-		PC->draw(deltaTime, DIRECTION::DOWN, 0, !owCommands.already_pressed_d, debug);
+	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_DOWN) )  {
+		PC->draw(deltaTime, DIRECTION::DOWN, 0, !owCommandsState.already_pressed_d, debug);
 		PC_moved = true;
-		owCommands.already_pressed_d= true;
+		owCommandsState.already_pressed_d= true;
 	}else {
-		owCommands.already_pressed_d = false;
+		owCommandsState.already_pressed_d = false;
 	}
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))  {
-		PC->draw(deltaTime, DIRECTION::LEFT, 0, !owCommands.already_pressed_l, debug);
-		owCommands.already_pressed_l= true;
+	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_LEFT) )  {
+		PC->draw(deltaTime, DIRECTION::LEFT, 0, !owCommandsState.already_pressed_l, debug);
+		owCommandsState.already_pressed_l= true;
 		PC_moved = true;
 	}else {
-		owCommands.already_pressed_l = false;
+		owCommandsState.already_pressed_l = false;
 	}
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))  { 
-		PC->draw(deltaTime, DIRECTION::RIGHT, 0, !owCommands.already_pressed_r, debug);
+	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_RIGHT) )  { 
+		PC->draw(deltaTime, DIRECTION::RIGHT, 0, !owCommandsState.already_pressed_r, debug);
 		PC_moved = true;
-		owCommands.already_pressed_r= true;
+		owCommandsState.already_pressed_r= true;
 	}else {
-		owCommands.already_pressed_r = false;
+		owCommandsState.already_pressed_r = false;
 	}
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))  {  
-		PC->draw(deltaTime*10, DIRECTION::UP, 0, owCommands.already_pressed_u, debug);
+	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_UP_FAST) )  {  
+		PC->draw(deltaTime*10, DIRECTION::UP, 0, owCommandsState.already_pressed_u, debug);
 	}
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))  {
-		PC->draw(deltaTime*10, DIRECTION::DOWN, 0, owCommands.already_pressed_u, debug);
+	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_DOWN_FAST))  {
+		PC->draw(deltaTime*10, DIRECTION::DOWN, 0, owCommandsState.already_pressed_u, debug);
 	}
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))  {
-		PC->draw(deltaTime*10, DIRECTION::LEFT, 0, owCommands.already_pressed_u, debug);
+	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_LEFT_FAST))  {
+		PC->draw(deltaTime*10, DIRECTION::LEFT, 0, owCommandsState.already_pressed_u, debug);
 	}
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))  { 
-		PC->draw(deltaTime*10, DIRECTION::RIGHT, 0,owCommands.already_pressed_u, debug);
+	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_RIGHT_FAST))  { 
+		PC->draw(deltaTime*10, DIRECTION::RIGHT, 0,owCommandsState.already_pressed_u, debug);
 	}
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::P))  { 
+	/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::P))  { 
 		ZC->dumpLoadedTiles();
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))  { 
@@ -241,23 +236,23 @@ void OverWorldScene::update(int deltaTime) {
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))  { 
 		changeZoneContainer("../../ressources/cave.txt");
-	}
+	}*/
 
 	if(!PC_moved)
 		PC->isMoving = false;
 
 	camera.setCenter(PC->getSpriteCenter());
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))      
+	if (owCommands.isActive(OVERWORLD_COMMANDS::ZOOM_IN))      
 		camera.zoom(1.002f);
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) 
+	else if (owCommands.isActive(OVERWORLD_COMMANDS::ZOOM_OUT)) 
 		camera.zoom(0.998f);
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::C)) 
+	else if (owCommands.isActive(OVERWORLD_COMMANDS::ZOOM_IN_FAST)) 
 		camera.zoom(0.9f);
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::X)) 
+	else if (owCommands.isActive(OVERWORLD_COMMANDS::ZOOM_OUT_FAST)) 
 		camera.zoom(1.1f);
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab))
+	if(owCommands.isActive(OVERWORLD_COMMANDS::DISPLAY_MAP)) 
 		drawMap = true;
 
 
@@ -269,7 +264,6 @@ void OverWorldScene::update(int deltaTime) {
 	UpdateMapGraphics updater(camera, ZC->getTileset().getNeedUpdating());
 	iterate_over_union(newVisibleMaps, loadedMaps, updater);
 	loadedMaps = std::move(newVisibleMaps);
-
 }
 
 
@@ -388,7 +382,7 @@ void OverWorldScene::draw() {
 	float radius = 300.f;
 	float deuxpi = 2*3.14159265f;
 	float angle = 0.f;
-	if(owCommands.flashlight_on) {
+	if(owCommandsState.flashlight_on) {
 		int sides = 20;
 		sf::VertexArray lightZone(sf::TrianglesFan, sides+2);
 		lightZone[0].position = PC->getSpriteCenter();
@@ -400,7 +394,7 @@ void OverWorldScene::draw() {
 
 			angle += deuxpi/sides;
 		}
-		owDisplay.light_texture.draw(lightZone, sf::RenderStates(sf::BlendMode::BlendAdd));
+		owDisplay.light_texture.draw(lightZone, sf::RenderStates(sf::BlendMode(sf::BlendMode::SrcColor, sf::BlendMode::DstColor)));
 	}
 
 	//

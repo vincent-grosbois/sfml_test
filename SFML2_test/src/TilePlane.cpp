@@ -11,8 +11,7 @@
 
 
 TilePlane::TilePlane(Tileset& tileset, sf::Vector2<tile_units> size, sf::Vector2<tile_units> offset, Array2D<int>& table):
-elements(size.x, size.y),
-	size(size),
+elements(size),
 	offset(offset),
 	tileset(tileset),
 	graphicsTotallyUnloaded(true),
@@ -57,6 +56,10 @@ elements(size.x, size.y),
 
 }
 
+sf::Vector2i TilePlane::size() const {
+	return elements.size();
+}
+
 void TilePlane::setQuadTextureToFrame(sf::Vertex* quad, const sf::IntRect& rect) {
 	quad[0].texCoords = sf::Vector2f(static_cast<float>(rect.left),					static_cast<float>(rect.top));
 	quad[1].texCoords = sf::Vector2f(static_cast<float>(rect.left + rect.width),	static_cast<float>(rect.top));
@@ -74,7 +77,7 @@ sf::Vertex* TilePlane::getQuadVertexFromTileIndex(int i, int j) {
 
 	return
 		&tileBlocks(array_num_x,array_num_y)
-		[(array_index_x + array_index_y * size.x / TILE_BLOCK_PER_MAP_X) * 4];
+		[(array_index_x + array_index_y * size().x / TILE_BLOCK_PER_MAP_X) * 4];
 
 }
 
@@ -93,10 +96,10 @@ void TilePlane::updateGraphics(const OverWorldCamera& camera, bool checkAnimated
 			top = 0;
 		if(left<0)
 			left = 0;
-		if(bottom > size.y)
-			bottom = size.y;
-		if(right > size.x)
-			right = size.x;
+		if(bottom > size().y)
+			bottom = size().y;
+		if(right > size().x)
+			right = size().x;
 
 		for(int i=left; i < right; ++i) {
 			for(int j=top; j < bottom; ++j) {
@@ -168,8 +171,8 @@ bool TilePlane::collideWith(const sf::FloatRect& rect, sf::Vector2f* collidingPo
 
 	if(top<0) top = 0;
 	if(left<0) left = 0;
-	if(bottom > size.y) bottom = size.y;
-	if(right > size.x) right = size.x;
+	if(bottom > size().y) bottom = size().y;
+	if(right > size().x) right = size().x;
 
 	for(int i=left; i < right; i++) {
 		for(int j=top; j < bottom; j++) {
@@ -196,8 +199,8 @@ void TilePlane::getCollidingTiles(const sf::FloatRect& rect, std::set<MapElement
 
 	if(top<0) top = 0;
 	if(left<0) left = 0;
-	if(bottom > size.y) bottom = size.y;
-	if(right > size.x) right = size.x;
+	if(bottom > size().y) bottom = size().y;
+	if(right > size().x) right = size().x;
 
 
 	for(int i=left; i < right; i++) {

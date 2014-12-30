@@ -9,14 +9,12 @@
 #include "utils/Array2D.h"
 #include "Constants.h"
 
-
 class Map;
 class Tileset;
 class Entity;
 class OverWorldCamera;
 struct OverWorldDisplay;
 struct Tile;
-
 
 struct MapElement {
 
@@ -39,7 +37,6 @@ private:
 
 class TilePlane {
 
-
 public:
 	TilePlane(Tileset& tileset, sf::Vector2<tile_units> size, sf::Vector2<tile_units> offset, Array2D<int>& table);
 
@@ -51,6 +48,7 @@ public:
 	void updateGraphics(const OverWorldCamera& camera,  bool checkAnimatedTilesUpdate);
 	void loadAndWakeUp(const OverWorldCamera& camera);
 	bool isGraphicsTotallyUnloaded() const { return graphicsTotallyUnloaded; };
+	sf::Vector2i size() const; // <* map size, in tile units
 
 	void dumpLoadedTiles() const ;
 
@@ -58,7 +56,6 @@ public:
 
 public:
 	Array2D<MapElement> elements;
-	sf::Vector2<tile_units> size;   // <* map size, in tile units
 	sf::Vector2<tile_units> offset; // <* map offset, in tile units
 	Array2D<sf::VertexArray> tileBlocks;
 

@@ -20,7 +20,7 @@ Map::Map(ZoneContainer& ZC, TilePlane* layer0, TilePlane* layer1, TilePlane* lay
 	layer2(layer2),
 	position(position),
 	id(id),
-	size(layer0->size),
+	size(layer0->size()),
 	entities_grid(size),
 	offset(layer0->offset),
 	myZC(&ZC)
