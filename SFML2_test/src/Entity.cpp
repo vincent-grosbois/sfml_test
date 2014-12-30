@@ -2,7 +2,6 @@
 
 #include "Entity.h"
 #include "ZoneContainer.h"
-#include "MapTile.h"
 #include "TilePlane.h"
 #include "Map.h"
 #include "utils/SetUnionIterator.h"

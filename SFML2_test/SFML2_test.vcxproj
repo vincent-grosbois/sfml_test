@@ -24,11 +24,9 @@
     <ClInclude Include="include\GameScene.h" />
     <ClInclude Include="include\GameTicks.h" />
     <ClInclude Include="include\GatewayZC.h" />
-    <ClInclude Include="include\HeightAutoTileset.h" />
     <ClInclude Include="include\LightEntity.h" />
     <ClInclude Include="include\Map.h" />
     <ClInclude Include="include\MapEntitiesLoader.h" />
-    <ClInclude Include="include\MapTile.h" />
     <ClInclude Include="include\MoveAnimation.h" />
     <ClInclude Include="include\NPC.h" />
     <ClInclude Include="include\Overlay.h" />
@@ -119,7 +117,7 @@
     <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\SFML-master\include;$(IncludePath)</IncludePath>
+    <IncludePath>include\;C:\SFML-master\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LibraryPath>C:\SFML-master\lib;C:\Users\Vincent\Documents\Visual Studio 2010\Projects\SFML2_test\SFML2_test\Debug;$(LibraryPath)</LibraryPath>

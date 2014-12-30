@@ -60,8 +60,7 @@ public:
 
 
 private:
-	float speed_factor; //1 = real-time, 2 = twice as fast, etc
-
+	float speed_factor; 
 	gameTime currentGameTime;
 	gameTime totalGameTime;
 	int offset;

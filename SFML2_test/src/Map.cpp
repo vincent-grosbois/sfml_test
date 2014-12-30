@@ -147,3 +147,11 @@ bool Map::collideWithLayer(int layer_id, const sf::FloatRect& rect, sf::Vector2f
 		return false;
 	}
 }
+
+sf::Vector2i Map::getMapCoords() const { 
+	return sf::Vector2i(position.x/size.x, position.y/size.y);
+}
+
+int Map::getId() const { 
+	return id;
+}

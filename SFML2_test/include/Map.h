@@ -91,13 +91,9 @@ public:
 	void updateGraphics(const OverWorldCamera& camera, bool checkAnimatedTilesUpdate);
 	void loadTilesFromNothing(const OverWorldCamera& camera);
 
-	sf::Vector2i getMapCoords() const { 
-		return sf::Vector2i(position.x/size.x, position.y/size.y);
-	}
+	sf::Vector2i getMapCoords() const;
 
-	int getId() const { 
-		return id;
-	}
+	int getId() const;
 
 	void getCollidingTiles(const sf::FloatRect& rect, std::set<EntitySet*>& result);
 
@@ -114,22 +110,20 @@ public:
 	bool collideWithLayer(int layer_id, const sf::FloatRect& rect, sf::Vector2f* collidingPos) const;
 
 private:
-	TilePlane* layer0;
-	TilePlane* layer1;
-	TilePlane* layer2;
-
+	ZoneContainer* myZC;
+	int id;
 	sf::Vector2<tile_units> position;
 	sf::Vector2<tile_units> size;
 	sf::Vector2<tile_units> offset;
 
-	std::set<Entity*> entities_on_map;
-	std::set<LightEntity*> lights_on_map;
+	TilePlane* layer0;
+	TilePlane* layer1;
+	TilePlane* layer2;
 
 	Array2D<EntitySet> entities_grid;
 
-
-	int id;
-	ZoneContainer* myZC;
+	std::set<Entity*> entities_on_map;
+	std::set<LightEntity*> lights_on_map;
 
 private:
 	Map(const Map&);
