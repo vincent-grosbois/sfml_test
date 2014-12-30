@@ -1,34 +1,53 @@
-#include <map>
+#include "entities/LightEntity.h"
 
-#include "Entity.h"
+#include "ZoneContainer.h"
+#include "OverWorldScene.h"
 #include "ZoneContainer.h"
 #include "TilePlane.h"
 #include "Map.h"
 #include "utils/SetUnionIterator.h"
 
+#include <cassert>
 
-Entity::Entity(const sf::Vector2f& position,  ZoneContainer& ZC): 
-	position(position),
-	ZC(&ZC),
-	markedForDeletion(false)
+
+LightEntity::LightEntity(sf::Vector2f const& position,  ZoneContainer& ZC, float radius, int sides, sf::Color color):
+	Entity(position, ZC),
+	sides(sides), color(color),
+	radius(radius),
+	lightZone(sf::TrianglesFan, sides+2),
+	isOn(true)
 {
-	//updateEntityPositionInfo();
-}
-
-
-void Entity::unregister() {
-
-	for(auto it = locationList.begin(); it != locationList.end(); ++it) {
-		it->first->entities_list().erase(this);
-
-		for(auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
-					(**it2).remove_entity(this);
-		}
+	type = EntityType::LIGHT;
+	registerInMaps();
+	assert(!this->locationList.empty());
+	float deuxpi = float(2*3.14159265);
+	float angle = 0.f;
+	lightZone[0].position = getPosition();
+	lightZone[0].color = color;
+	for(int i = 1; i<sides+2; ++i) {
+		lightZone[i].position = getPosition() + sf::Vector2f(radius*cos(angle),radius*sin(angle));
+		lightZone[i].color = sf::Color(0, 0, 0, 0);
+		angle += deuxpi/sides;
 	}
-
-	locationList.clear();
 }
 
+
+void LightEntity::update(int delta_ms) {
+	//color.a += 0.1*delta_ms;
+	//color.g += 0.1*delta_ms;
+	//color.b += 0.03*delta_ms;
+	//lightZone[0].color = color;
+}
+
+void LightEntity::draw(int tick, OverWorldDisplay& owDisplay) {
+	if(isOn){
+		owDisplay.light_texture.draw(lightZone, sf::RenderStates(sf::BlendAdd));
+	}
+}
+
+sf::FloatRect LightEntity::getVisibilityRectangle() const { 
+	return sf::FloatRect(position.x - radius, position.y - radius,  2*radius,  2*radius);
+}
 
 struct UpdateElementSetOldNew {
 
@@ -51,8 +70,8 @@ struct UpdateElementSetOldNew {
 	Entity* e;
 };
 
-void Entity::registerInMaps() { 
 
+void LightEntity::registerInMaps() {
 	//maps that the entity is visible in:
 	std::set<Map*> colliding_maps = ZC->getCollidingMaps(getVisibilityRectangle());
 
@@ -67,7 +86,7 @@ void Entity::registerInMaps() {
 			}
 
 			//remove from the map's global list of characters:
-			it->first->entities_list().erase(this);
+			it->first->lights_list().erase(this);
 
 			//remove from own list of tiles:
 			locationList.erase(it++);
@@ -88,7 +107,7 @@ void Entity::registerInMaps() {
 
 		if(old_set.empty())  { 
 			//insert ourself in the global list of characters from the map:
-			(*map)->entities_list().insert(this);
+			(*map)->lights_list().insert(this);
 		} 
 
 		iterate_over_union(old_set, new_set, UpdateElementSetOldNew(this));
@@ -97,30 +116,22 @@ void Entity::registerInMaps() {
 		old_set = std::move(new_set); 
 
 	}
+
 }
 
-void Entity::debug_dump_positions() {
-	/*
-	std::cout << "----Dumping position start\n";
-	for (auto it= locationList.begin() ; it != locationList.end(); ++it ) {
+void LightEntity::unregister() {
 
+	for(auto it = locationList.begin(); it != locationList.end(); ++it) {
+		it->first->lights_list().erase(this);
 
-		std::cout << "Dumping map "<< (*it).first <<" \n";
-
-		for(int i =0; i<60; ++i) {
-			for(int j =0; j<60; ++j) {
-				if ((*it).first->entities_grid(i,j).has_entities()) {
-						std::cout << "tile <"<<i<<","<<j<<"> has entities<n";
-				}
-			}
+		for(auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
+					(**it2).remove_entity(this);
 		}
-
 	}
-	std::cout << "----Dumping end\n";*/
 
+	locationList.clear();
 }
 
-void Entity::markForDeletion() { 
-	markedForDeletion = true;
-	ZC->addForDeletion(this);
+LightEntity::~LightEntity() {
+	unregister();
 }

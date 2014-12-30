@@ -10,8 +10,6 @@
 #include "GameResource.h"
 
 
-
-
 int main()
 {
 	srand(87611);

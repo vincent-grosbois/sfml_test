@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include "TilePlane.h"
-#include "Entity.h"
+#include "entities/Entity.h"
 #include "Tileset.h"
 #include "Map.h"
 #include "TileAnimator.h"

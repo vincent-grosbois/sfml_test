@@ -1,5 +1,5 @@
-#include "NPC.h"
-#include "PlayerCharacter.h"
+#include "entities/NPC.h"
+#include "entities/PlayerCharacter.h"
 #include "GameTicks.h"
 
 DIRECTION::e getOppositeDir(DIRECTION::e dir) {

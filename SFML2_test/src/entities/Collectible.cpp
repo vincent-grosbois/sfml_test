@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "Collectible.h"
-#include "PlayerCharacter.h"
+#include "entities/Collectible.h"
+#include "entities/PlayerCharacter.h"
 
 
 Collectible::Collectible(sf::Vector2f const& position,  ZoneContainer& ZC, const sf::Sprite& sprite):

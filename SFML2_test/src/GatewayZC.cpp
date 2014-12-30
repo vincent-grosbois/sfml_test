@@ -1,5 +1,5 @@
-#include "GatewayZC.h"
-#include "PlayerCharacter.h"
+#include "entities/GatewayZC.h"
+#include "entities/PlayerCharacter.h"
 
 
 

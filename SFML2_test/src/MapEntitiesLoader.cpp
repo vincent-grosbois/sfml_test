@@ -8,8 +8,8 @@
 
 #include "OverWorldScene.h"
 
-#include "LightEntity.h"
-#include "NPC.h"
+#include "entities/LightEntity.h"
+#include "entities/NPC.h"
 #include "TilePlane.h"
 #include "utils/StringUtils.h"
 #include "GameResource.h"

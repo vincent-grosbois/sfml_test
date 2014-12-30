@@ -20,7 +20,7 @@
       <PdhCountersRate>500</PdhCountersRate>
       <PdhCounters>
         <PdhCounter>\Disque physique(_Total)\Longueur moyenne de file d’attente du disque</PdhCounter>
-        <PdhCounter>\M&amp;amp;amp;amp;amp;#233;moire\Pages/s</PdhCounter>
+        <PdhCounter>\M&amp;amp;amp;amp;amp;amp;amp;#233;moire\Pages/s</PdhCounter>
         <PdhCounter>\Processeur(_Total)\% temps processeur</PdhCounter>
       </PdhCounters>
     </PdhSettings>
@@ -76,6 +76,9 @@
     </Report>
     <Report>
       <Path>OverWorld141229.vspx</Path>
+    </Report>
+    <Report>
+      <Path>OverWorld141230.vspx</Path>
     </Report>
   </Reports>
   <Launches>

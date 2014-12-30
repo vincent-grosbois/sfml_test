@@ -1,6 +1,6 @@
 #include "ZoneContainer.h"
 #include "Constants.h"
-#include "Entity.h"
+#include "entities/Entity.h"
 #include "TilePlane.h"
 #include "Tileset.h"
 #include "GameResource.h"
@@ -14,15 +14,12 @@ ZoneContainer::ZoneContainer(const std::string& dataFile, GameResource& gr):
 	maps(std::move(gameMapGenerator(data.mapDataPath, &tileset, *this)))
 { }
 
-
 ZoneContainer::~ZoneContainer()
 {
 	for(int i =0; i < maps.size().x; ++i) 
 		for(int j =0; j < maps.size().y; ++j)
 			delete maps(i,j);
 }
-
-
 
 std::set<Map*> ZoneContainer::getCollidingMaps(const sf::FloatRect& rect)  {
 
@@ -73,7 +70,6 @@ Array2D<Map*> gameMapGenerator(const std::string& theFile, Tileset* theTileSet, 
 	if(Y > 15) Y  = 8;
 	
 
-	
 	mapList = std::move(Array2D<Map*>(X,Y));
 
 	Array2D<int> tableau2D(MAP.getSize().x, MAP.getSize().y);

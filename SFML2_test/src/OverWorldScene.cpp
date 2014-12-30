@@ -5,15 +5,15 @@
 
 #include "OverWorldScene.h"
 #include "Tileset.h"
-#include "NPC.h"
-#include "Collectible.h"
-#include "GatewayZC.h"
-#include "LightEntity.h"
+#include "entities/NPC.h"
+#include "entities/Collectible.h"
+#include "entities/GatewayZC.h"
+#include "entities/LightEntity.h"
 #include "OverWorldTone.h"
 #include "TilePlane.h"
 #include "TileAnimator.h"
 #include "Overlay.h"
-#include "PlayerCharacter.h"
+#include "entities/PlayerCharacter.h"
 
 #include "utils/SetUnionIterator.h"
 

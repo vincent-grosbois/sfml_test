@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BoxedTextScrollable.h"
-#include "NPC.h"
+#include "entities/NPC.h"
 #include "OverlayScreen.h"
 
 class Overlay

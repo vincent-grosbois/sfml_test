@@ -1,6 +1,6 @@
 #include <algorithm>
 
-#include "EntityPhysical.h"
+#include "entities/EntityPhysical.h"
 #include "ZoneContainer.h"
 #include "OverWorldScene.h"
 

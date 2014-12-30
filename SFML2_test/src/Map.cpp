@@ -1,7 +1,7 @@
 #include "Map.h"
 #include "TilePlane.h"
-#include "Entity.h"
-#include "LightEntity.h"
+#include "entities/Entity.h"
+#include "entities/LightEntity.h"
 
 const int map_elements_cell_start = 1000;
 const int map_elements_cell_max_before_delete = 1500;

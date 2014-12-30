@@ -1,8 +1,8 @@
 #include <algorithm>
 
-#include "Character.h"
+#include "entities/Character.h"
 #include "ZoneContainer.h"
-#include "Collectible.h"
+#include "entities/Collectible.h"
 #include "TilePlane.h"
 #include "Map.h"
 #include "OverWorldScene.h"
