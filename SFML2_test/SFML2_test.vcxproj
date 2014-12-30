@@ -11,72 +11,76 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BoxedText.hpp" />
-    <ClInclude Include="BoxedTextScrollable.hpp" />
-    <ClInclude Include="CallBackSystem.h" />
-    <ClInclude Include="Character.hpp" />
-    <ClInclude Include="Collectible.hpp" />
-    <ClInclude Include="Constants.hpp" />
-    <ClInclude Include="Entity.hpp" />
-    <ClInclude Include="EntityPhysical.hpp" />
-    <ClInclude Include="GameClock.hpp" />
-    <ClInclude Include="GameResource.h" />
-    <ClInclude Include="GameScene.hpp" />
-    <ClInclude Include="GameTicks.hpp" />
-    <ClInclude Include="GatewayZC.hpp" />
-    <ClInclude Include="LightEntity.hpp" />
-    <ClInclude Include="Map.hpp" />
-    <ClInclude Include="MapEntitiesLoader.h" />
-    <ClInclude Include="MapTile.hpp" />
-    <ClInclude Include="MoveAnimation.h" />
-    <ClInclude Include="NPC.h" />
-    <ClInclude Include="Overlay.hpp" />
-    <ClInclude Include="OverlayScreen.hpp" />
-    <ClInclude Include="OverWorldCamera.h" />
-    <ClInclude Include="OverWorldScene.hpp" />
-    <ClInclude Include="OverWorldTone.hpp" />
-    <ClInclude Include="PlayerCharacter.hpp" />
-    <ClInclude Include="SceneManager.hpp" />
-    <ClInclude Include="Tile.hpp" />
-    <ClInclude Include="TileAnimator.h" />
-    <ClInclude Include="TilePlane.hpp" />
-    <ClInclude Include="Tileset.hpp" />
-    <ClInclude Include="TitleMenuScene.hpp" />
-    <ClInclude Include="utils\Array2D.h" />
-    <ClInclude Include="utils\SetUnionIterator.h" />
-    <ClInclude Include="utils\StorageProvider.h" />
-    <ClInclude Include="utils\StringUtils.h" />
-    <ClInclude Include="ZoneContainer.hpp" />
-    <ClInclude Include="ZoneContainerData.h" />
+    <ClInclude Include="include\BoxedText.h" />
+    <ClInclude Include="include\BoxedTextScrollable.h" />
+    <ClInclude Include="include\CallBackSystem.h" />
+    <ClInclude Include="include\Character.h" />
+    <ClInclude Include="include\Collectible.h" />
+    <ClInclude Include="include\Constants.h" />
+    <ClInclude Include="include\Entity.h" />
+    <ClInclude Include="include\EntityPhysical.h" />
+    <ClInclude Include="include\GameClock.h" />
+    <ClInclude Include="include\GameResource.h" />
+    <ClInclude Include="include\GameScene.h" />
+    <ClInclude Include="include\GameTicks.h" />
+    <ClInclude Include="include\GatewayZC.h" />
+    <ClInclude Include="include\HeightAutoTileset.h" />
+    <ClInclude Include="include\LightEntity.h" />
+    <ClInclude Include="include\Map.h" />
+    <ClInclude Include="include\MapEntitiesLoader.h" />
+    <ClInclude Include="include\MapTile.h" />
+    <ClInclude Include="include\MoveAnimation.h" />
+    <ClInclude Include="include\NPC.h" />
+    <ClInclude Include="include\Overlay.h" />
+    <ClInclude Include="include\OverlayScreen.h" />
+    <ClInclude Include="include\OverWorldCamera.h" />
+    <ClInclude Include="include\OverWorldScene.h" />
+    <ClInclude Include="include\OverWorldTone.h" />
+    <ClInclude Include="include\PlayerCharacter.h" />
+    <ClInclude Include="include\SceneManager.h" />
+    <ClInclude Include="include\Tile.h" />
+    <ClInclude Include="include\TileAnimator.h" />
+    <ClInclude Include="include\TilePlane.h" />
+    <ClInclude Include="include\Tileset.h" />
+    <ClInclude Include="include\TitleMenuScene.h" />
+    <ClInclude Include="include\utils\Array2D.h" />
+    <ClInclude Include="include\utils\SetUnionIterator.h" />
+    <ClInclude Include="include\utils\StorageProvider.h" />
+    <ClInclude Include="include\utils\StringUtils.h" />
+    <ClInclude Include="include\ZoneContainer.h" />
+    <ClInclude Include="include\ZoneContainerData.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BoxedText.cpp" />
-    <ClCompile Include="BoxedTextScrollable.cpp" />
-    <ClCompile Include="CallBackSystem.cpp" />
-    <ClCompile Include="Character.cpp" />
-    <ClCompile Include="Collectible.cpp" />
-    <ClCompile Include="Entity.cpp" />
-    <ClCompile Include="EntityPhysical.cpp" />
-    <ClCompile Include="GameResource.cpp" />
-    <ClCompile Include="GameTicks.cpp" />
-    <ClCompile Include="GatewayZC.cpp" />
-    <ClCompile Include="LightEntity.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Map.cpp" />
-    <ClCompile Include="MapEntitiesLoader.cpp" />
-    <ClCompile Include="MoveAnimation.cpp" />
-    <ClCompile Include="NPC.cpp" />
-    <ClCompile Include="Overlay.cpp" />
-    <ClCompile Include="OverWorldCamera.cpp" />
-    <ClCompile Include="OverWorldScene.cpp" />
-    <ClCompile Include="OverWorldTone.cpp" />
-    <ClCompile Include="PlayerCharacter.cpp" />
-    <ClCompile Include="SceneManager.cpp" />
-    <ClCompile Include="TilePlane.cpp" />
-    <ClCompile Include="Tileset.cpp" />
-    <ClCompile Include="utils\StringUtils.cpp" />
-    <ClCompile Include="ZoneContainer.cpp" />
-    <ClCompile Include="ZoneContainerData.cpp" />
+    <ClCompile Include="src\BoxedText.cpp" />
+    <ClCompile Include="src\BoxedTextScrollable.cpp" />
+    <ClCompile Include="src\CallBackSystem.cpp" />
+    <ClCompile Include="src\Character.cpp" />
+    <ClCompile Include="src\Collectible.cpp" />
+    <ClCompile Include="src\Entity.cpp" />
+    <ClCompile Include="src\EntityPhysical.cpp" />
+    <ClCompile Include="src\GameResource.cpp" />
+    <ClCompile Include="src\GameScene.cpp" />
+    <ClCompile Include="src\GameTicks.cpp" />
+    <ClCompile Include="src\GatewayZC.cpp" />
+    <ClCompile Include="src\LightEntity.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Map.cpp" />
+    <ClCompile Include="src\MapEntitiesLoader.cpp" />
+    <ClCompile Include="src\MoveAnimation.cpp" />
+    <ClCompile Include="src\NPC.cpp" />
+    <ClCompile Include="src\Overlay.cpp" />
+    <ClCompile Include="src\OverlayScreen.cpp" />
+    <ClCompile Include="src\OverWorldCamera.cpp" />
+    <ClCompile Include="src\OverWorldScene.cpp" />
+    <ClCompile Include="src\OverWorldTone.cpp" />
+    <ClCompile Include="src\PlayerCharacter.cpp" />
+    <ClCompile Include="src\SceneManager.cpp" />
+    <ClCompile Include="src\TilePlane.cpp" />
+    <ClCompile Include="src\Tileset.cpp" />
+    <ClCompile Include="src\TitleMenuScene.cpp" />
+    <ClCompile Include="src\utils\StringUtils.cpp" />
+    <ClCompile Include="src\ZoneContainer.cpp" />
+    <ClCompile Include="src\ZoneContainerData.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{8783287E-A837-4D33-8511-B105B3AF1083}</ProjectGuid>
@@ -108,7 +112,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\SFML-master\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\SFML-master\include;include\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LibraryPath>C:\SFML-master\lib;C:\Users\Vincent\Documents\Visual Studio 2010\Projects\SFML2_test\SFML2_test\Debug;$(LibraryPath)</LibraryPath>
