@@ -7,10 +7,6 @@
 namespace EDGES_PASSABILITY { enum e { PASSABLE, NOTPASSABLE, OUTPASSABLE, INPASSABLE } ;};
 namespace TILE_PASSABILITY { enum e { PASSABLE, NOTPASSABLE } ;};
 
-namespace DIRECTION { 
-	enum e { DOWN, LEFT, RIGHT, UP}; 
-};
-
 
 class TileAnimator;
 

@@ -42,7 +42,9 @@
     <ClInclude Include="TilePlane.hpp" />
     <ClInclude Include="Tileset.hpp" />
     <ClInclude Include="TitleMenuScene.hpp" />
+    <ClInclude Include="utils\Array2D.h" />
     <ClInclude Include="utils\SetUnionIterator.h" />
+    <ClInclude Include="utils\StorageProvider.h" />
     <ClInclude Include="utils\StringUtils.h" />
     <ClInclude Include="ZoneContainer.hpp" />
     <ClInclude Include="ZoneContainerData.h" />

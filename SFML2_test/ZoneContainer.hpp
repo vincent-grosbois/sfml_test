@@ -20,23 +20,18 @@ public:
 	ZoneContainer(const std::string& dataFile, GameResource& gr);
 	~ZoneContainer();
 
+	const ZoneContainerData& getData() const;
+	Tileset& getTileset();
+	std::set<Map*> getCollidingMaps(const sf::FloatRect& rect) ;
+
 	void dumpLoadedTiles() const;
+	void deleteElements();
+	void addForDeletion(Entity* e);
 
 private:
 	ZoneContainerData data;
 	Tileset& tileset;
 	Array2D<Map*> maps;
 	std::set<std::unique_ptr<Entity>> to_delete;
-
-public:
-	const ZoneContainerData& getData() const;
-
-	Tileset& getTileset();
-
-	void deleteElements();
-
-	void addForDeletion(Entity* e);
-
-	std::set<Map*> getCollidingMaps(const sf::FloatRect& rect) ;
 };
 

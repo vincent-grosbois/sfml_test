@@ -5,6 +5,7 @@
 #include <fstream> 
 #include <cassert>
 
+#include "Tile.hpp"
 #include "Tileset.hpp"
 #include "TileAnimator.h"
 #include "utils/StringUtils.h"

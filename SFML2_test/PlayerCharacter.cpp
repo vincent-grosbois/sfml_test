@@ -4,6 +4,7 @@
 PlayerCharacter::PlayerCharacter(sf::Vector2f const& position,  ZoneContainer& ZC, MoveAnimation& move_anim, Overlay& overlay):
 Character(position, ZC, move_anim), overlay(overlay), _first_moving(false)
 {
+	type = EntityType::PLAYER_CHARACTER;
 }
 
 
@@ -47,7 +48,7 @@ void PlayerCharacter::teleportTo(sf::Vector2f pos, ZoneContainer* destinationZC)
 
 	if (destinationZC) {
 		ZC = destinationZC;
-		updateEntityPositionInfo();
+		registerInMaps();
 	}
 }
 

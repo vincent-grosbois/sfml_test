@@ -22,7 +22,7 @@ public:
 	bool isOutside;
 	bool isDark;
 
-	sf::Vector2i startingPos;
+	sf::Vector2f startingPos;
 };
 
 class MetaGameData

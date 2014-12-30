@@ -13,7 +13,7 @@ Entity::Entity(const sf::Vector2f& position,  ZoneContainer& ZC):
 	ZC(&ZC),
 	markedForDeletion(false)
 {
-	updateEntityPositionInfo();
+	//updateEntityPositionInfo();
 }
 
 
@@ -52,19 +52,19 @@ struct UpdateElementSetOldNew {
 	Entity* e;
 };
 
-void Entity::updateEntityPositionInfo() { 
+void Entity::registerInMaps() { 
 
-	//maps that the entity is in:
+	//maps that the entity is visible in:
 	std::set<Map*> colliding_maps = ZC->getCollidingMaps(getVisibilityRectangle());
 
-	//delete the maps we are not in anymore, and unregister from their global list of characters:
+	//delete the maps we are not in anymore, and unregister from their global list of entities:
 	for (auto it = locationList.begin() ; it != locationList.end(); ) {
 		if( colliding_maps.count ( it->first ) == 0 ) {
 
 			//std::cout << "leaving map\n";
 			//OnLeavingMap();
-			for(auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
-				(**it2).remove_entity(this);
+			for(auto entity_set = it->second.begin(); entity_set != it->second.end(); ++entity_set) {
+				(**entity_set).remove_entity(this);
 			}
 
 			//remove from the map's global list of characters:
@@ -78,18 +78,18 @@ void Entity::updateEntityPositionInfo() {
 	}
 
 
-	for(std::set<Map*>::const_iterator it2 = colliding_maps.begin(); it2 != colliding_maps.end(); ++it2) {
+	for(std::set<Map*>::const_iterator map = colliding_maps.begin(); map != colliding_maps.end(); ++map) {
 
 		std::set<EntitySet*> new_set;
 
 		//get the set of tiles that collide with the character in the given map
-		(*it2)->getCollidingTiles(getPresenceRectangle(), new_set);
+		(*map)->getCollidingTiles(getPresenceRectangle(), new_set);
 
-		std::set<EntitySet*>& old_set = locationList[*it2];
+		std::set<EntitySet*>& old_set = locationList[*map];
 
 		if(old_set.empty())  { 
 			//insert ourself in the global list of characters from the map:
-			(*it2)->entities_list().insert(this);
+			(*map)->entities_list().insert(this);
 		} 
 
 		iterate_over_union(old_set, new_set, UpdateElementSetOldNew(this));

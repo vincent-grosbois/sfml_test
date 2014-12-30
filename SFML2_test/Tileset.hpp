@@ -1,9 +1,6 @@
 #pragma once
 
-
 #include "Tile.hpp"
-
-namespace AUTOTILE_TYPE { enum e { FLAT, UL, UP, UR, RIGHT, DR, DOWN, DL, LEFT, OUT_UL, OUT_UR, OUT_DR, OUT_DL, total_size }; };
 
 class TileAnimator;
 

@@ -10,6 +10,7 @@ class PlayerCharacter : public Character
 {
 public:
 	PlayerCharacter(sf::Vector2f const& position,  ZoneContainer& ZC, MoveAnimation& move_anim,  Overlay& overlay);
+
 	virtual void drawCollisionBox(OverWorldDisplay& owDisplay) override;
 
 	void DialogWindow(const std::string& str, bool forceFocus = false, NPC* originator = NULL);
@@ -95,7 +96,7 @@ public:
 			positionSprite();
 			isMoving = true;
 
-			updateEntityPositionInfo();
+			registerInMaps();
 
 			return true;
 		}

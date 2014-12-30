@@ -18,6 +18,25 @@ class ZoneContainer;
 class Tileset;
 class MetaGameData;
 
+enum class OVERWORLD_COMMANDS {
+	DEBUG,
+	MOVE_UP,
+	MOVE_DOWN,
+	MOVE_LEFT,
+	MOVE_RIGHT,
+	ZOOM_IN,
+	ZOOM_OUT,
+	ZOOM_RESET,
+	FLASHLIGHT,
+	DISPLAY_MAP,
+	MOVE_UP_FAST,
+	MOVE_DOWN_FAST,
+	MOVE_LEFT_FAST,
+	MOVE_RIGHT_FAST,
+	ZOOM_IN_FAST,
+	ZOOM_OUT_FAST
+};
+
 struct OverWorldDisplay 
 {
 	sf::Shader colorizeShader;
@@ -85,7 +104,7 @@ private:
 	GameClock gameClock;
 	GameTicks ticks;
 
-	bool DrawMap;
+	bool drawMap;
 	bool PC_moved;
 
 	Overlay* overlay;

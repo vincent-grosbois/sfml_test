@@ -12,7 +12,7 @@ EntityPhysical::EntityPhysical(const sf::Vector2f& position,  ZoneContainer& ZC)
 	BoundingBoxRectReal(position.x, position.y, boundingBoxSize.x, boundingBoxSize.y)
 {
 	positionSprite();
-	updateEntityPositionInfo();
+	registerInMaps();
 }
 
 

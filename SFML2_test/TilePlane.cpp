@@ -1,7 +1,6 @@
 #include <set>
 #include <algorithm>
 #include <iostream>
-#include <math.h>
 
 #include "TilePlane.hpp"
 #include "Entity.hpp"
@@ -39,10 +38,14 @@ elements(size.x, size.y),
 			int offset_x = offset.x*TILE_SIZE_X;
 			int offset_y = offset.y*TILE_SIZE_Y;
 
-			quad[0].position = sf::Vector2f(i * TILE_SIZE_X + offset_x, j * TILE_SIZE_Y + offset_y);
-			quad[1].position = sf::Vector2f((i + 1) * TILE_SIZE_X + offset_x, j * TILE_SIZE_Y + offset_y);
-			quad[2].position = sf::Vector2f((i + 1) * TILE_SIZE_X + offset_x, (j + 1) * TILE_SIZE_Y + offset_y);
-			quad[3].position = sf::Vector2f(i * TILE_SIZE_X + offset_x, (j + 1) * TILE_SIZE_Y + offset_y);
+			quad[0].position = 
+				sf::Vector2f(static_cast<float>(i*TILE_SIZE_X + offset_x),		static_cast<float>(j*TILE_SIZE_Y + offset_y));
+			quad[1].position = 
+				sf::Vector2f(static_cast<float>((i+1)*TILE_SIZE_X + offset_x),	static_cast<float>(j*TILE_SIZE_Y + offset_y));
+			quad[2].position = 
+				sf::Vector2f(static_cast<float>((i+1)*TILE_SIZE_X + offset_x),	static_cast<float>((j+1)*TILE_SIZE_Y + offset_y));
+			quad[3].position = 
+				sf::Vector2f(static_cast<float>(i*TILE_SIZE_X + offset_x),		static_cast<float>((j+1)*TILE_SIZE_Y + offset_y));
 
 			Tile& tile = tileset.getTile(id);
 
@@ -55,10 +58,10 @@ elements(size.x, size.y),
 }
 
 void TilePlane::setQuadTextureToFrame(sf::Vertex* quad, const sf::IntRect& rect) {
-	quad[0].texCoords = sf::Vector2f(rect.left, rect.top);
-	quad[1].texCoords = sf::Vector2f(rect.left + rect.width, rect.top);
-	quad[2].texCoords = sf::Vector2f(rect.left + rect.width, rect.top + rect.height);
-	quad[3].texCoords = sf::Vector2f(rect.left, rect.top + rect.height);
+	quad[0].texCoords = sf::Vector2f(static_cast<float>(rect.left),					static_cast<float>(rect.top));
+	quad[1].texCoords = sf::Vector2f(static_cast<float>(rect.left + rect.width),	static_cast<float>(rect.top));
+	quad[2].texCoords = sf::Vector2f(static_cast<float>(rect.left + rect.width),	static_cast<float>(rect.top + rect.height));
+	quad[3].texCoords = sf::Vector2f(static_cast<float>(rect.left),					static_cast<float>(rect.top + rect.height));
 }
 
 sf::Vertex* TilePlane::getQuadVertexFromTileIndex(int i, int j) {

@@ -18,6 +18,8 @@ class OverWorldCamera {
 	float min_zoom;
 	float max_zoom;
 
+	sf::Vector2f defaultSize;
+
 public:
 
 	bool movedSinceLastFrame() const {
@@ -54,12 +56,6 @@ public:
 		return previous_view;
 	}
 
-	void setSize(float x, float y) {
-		current_view.setSize(x,y);
-		same_as_last_view = false;
-		current_zoom = 1.f;
-	}
-
 	void setCenter(const sf::Vector2f& center) {
 		if(current_view.getCenter() == center) 
 			return;
@@ -78,13 +74,20 @@ public:
 		}
 	}
 
-	OverWorldCamera(const sf::View& view):
-		current_view(view),
+	void resetSize() {
+		current_view.setSize(defaultSize);
+		same_as_last_view = false;
+		current_zoom = 1.f;
+	}
+
+	OverWorldCamera(const sf::Vector2f& defaultSize):
+		current_view(sf::Vector2f(0,0), defaultSize),
 		same_as_last_view(false),
 		camera_set_for_frame(false),
 		current_zoom(1.f),
 		min_zoom(0.3f),
-		max_zoom(6.f)
+		max_zoom(7.f),
+		defaultSize(defaultSize)
 	{ }
 
 };

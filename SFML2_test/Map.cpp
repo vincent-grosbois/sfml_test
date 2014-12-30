@@ -1,6 +1,7 @@
 #include "Map.hpp"
 #include "TilePlane.hpp"
 #include "Entity.hpp"
+#include "LightEntity.hpp"
 
 const int map_elements_cell_start = 1000;
 const int map_elements_cell_max_before_delete = 1500;
@@ -48,6 +49,9 @@ void Map::drawLayer(const sf::View& view, OverWorldDisplay& owDisplay, int layer
 Map::~Map()
 {
 	for(std::set<Entity*>::iterator it = entities_on_map.begin(); it != entities_on_map.end(); ) 
+		delete (*it++);
+
+	for(std::set<LightEntity*>::iterator it = lights_on_map.begin(); it != lights_on_map.end(); ) 
 		delete (*it++);
 
 	delete layer0;

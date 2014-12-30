@@ -20,9 +20,6 @@ struct Tile;
 
 struct MapElement {
 
-	MapElement() 
-	{ }
-
 	void init(Tile& tile)
 	{
 		theTile = &tile;

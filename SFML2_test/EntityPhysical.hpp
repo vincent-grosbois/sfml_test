@@ -1,6 +1,8 @@
 #pragma once
 #include "Entity.hpp"
 
+#include <SFML/Graphics/Sprite.hpp>
+
 class EntityPhysical : public Entity
 {
 
@@ -10,6 +12,10 @@ public:
 
 public:
 	sf::Vector2f boundingBoxSize;
+
+	virtual ~EntityPhysical() override {
+		unregister();
+	}
 
 protected:
 	sf::FloatRect BoundingBoxRectReal;

@@ -59,10 +59,7 @@ void OverWorldDisplay::clearAndSetView(const sf::View& view) {
 
 OverWorldScene::OverWorldScene(const MetaGameData& metaGameData, GameResource& gr) :
 	metaGameData(metaGameData),
-	camera(
-	sf::View(sf::Vector2f(0,0), 
-	sf::Vector2f(float(metaGameData.resolution.x),float(metaGameData.resolution.y))) 
-	),
+	camera(sf::Vector2f(float(metaGameData.resolution.x),float(metaGameData.resolution.y))),
 	gameClock(
 	metaGameData.start_time_hours*3600 + metaGameData.start_time_minutes*60, 
 	metaGameData.clock_speed_factor),
@@ -79,7 +76,11 @@ void OverWorldScene::bindContentToClock() {
 	for(auto anim : ZC->getTileset().get_tile_animators()) {
 		using namespace std::placeholders;
 		auto changeAnimatedTileFrame = std::bind(&TileAnimator::process_frame, anim, _1, _2);
-		anim->createPeriodicCallback(0, 400, callbackSystem, changeAnimatedTileFrame);
+
+		//next value of myTotalTime multiple of 400 :
+		int next = 400*(myTotalTime/400 + 1);
+
+		anim->createPeriodicCallback(next, 400, callbackSystem, changeAnimatedTileFrame);
 	}
 }
 
@@ -100,7 +101,7 @@ void OverWorldScene::onInit() {
 	owCommands.init();
 	OverWorldTone::init();
 
-	DrawMap = false;
+	drawMap = false;
 	PC_moved = false;
 
 	overlay = new Overlay(*App);
@@ -111,12 +112,8 @@ void OverWorldScene::onInit() {
 
 	loadEntities();
 
-	sf::Vector2f startingPos;
-	startingPos.x = ZC->getData().startingPos.x;
-	startingPos.y = ZC->getData().startingPos.y;
-
 	auto& anim = gameResources.getMoveAnimation("../../ressources/male_walkcycle.png");
-	PC = new PlayerCharacter(startingPos, *ZC, anim, *overlay);
+	PC = new PlayerCharacter(ZC->getData().startingPos, *ZC, anim, *overlay);
 }
 
 
@@ -182,7 +179,7 @@ void OverWorldScene::update(int deltaTime) {
 			}
 
 			if (Event_.key.code == sf::Keyboard::V) 
-				camera.setSize(float(metaGameData.resolution.x),float(metaGameData.resolution.y)) ;
+				camera.resetSize();
 		}
 	}
 
@@ -261,7 +258,7 @@ void OverWorldScene::update(int deltaTime) {
 		camera.zoom(1.1f);
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab))
-		DrawMap = true;
+		drawMap = true;
 
 
 	camera.cameraSetForFrame();
@@ -311,6 +308,7 @@ void OverWorldScene::draw() {
 	clock_t part1_start;
 	clock_t part2_start;
 	std::set<Entity*> entities_updated;
+	std::set<LightEntity*> lights_updated;
 	std::vector<Entity*> entities_v;
 
 	for (auto map = loadedMaps.begin() ; map != loadedMaps.end(); ++map ) {
@@ -318,8 +316,9 @@ void OverWorldScene::draw() {
 		for(std::set<Entity*>::iterator it_ent = (*map)->entities_list().begin(); it_ent != (*map)->entities_list().end(); ) {
 
 			if(entities_updated.count((*it_ent)) == 0) { 
-				Entity* entity_ptr;
-				entity_ptr = *it_ent;
+				Entity* entity_ptr = *it_ent;
+
+				assert(entity_ptr->getType() != EntityType::LIGHT);
 				part1_start = clock();
 				(*it_ent++)->update(myDeltaTime);
 				entities_updated.insert(entity_ptr);
@@ -335,6 +334,27 @@ void OverWorldScene::draw() {
 	}
 
 	std::sort(entities_v.begin(), entities_v.end(), z_orderer);
+
+	for (auto map = loadedMaps.begin() ; map != loadedMaps.end(); ++map ) {
+
+		for(std::set<LightEntity*>::iterator it_ent = (*map)->lights_list().begin(); it_ent != (*map)->lights_list().end(); ) {
+
+			if(lights_updated.count((*it_ent)) == 0) { 
+				LightEntity* entity_ptr = *it_ent;
+
+				assert(entity_ptr->getType() == EntityType::LIGHT);
+				part1_start = clock();
+				(*it_ent++)->update(myDeltaTime);
+
+				if( camera.getViewRect().intersects(entity_ptr->getVisibilityRectangle())) {
+					lights_updated.insert(entity_ptr);
+				}
+				part1_total += clock() - part1_start;
+			}
+			else   ++it_ent;
+		}
+	}
+
 	end = clock();
 	end1 = clock();
 
@@ -347,9 +367,14 @@ void OverWorldScene::draw() {
 
 	//draw the entities:
 	clock_t entities_draw = clock();
-	for(auto entities_v_it = entities_v.begin() ; entities_v_it != entities_v.end(); ++entities_v_it) {
-		(*entities_v_it)->draw(ticks.getTicks(TICKS::_250MS), owDisplay);
+	for(auto& ent : entities_v) {
+		ent->draw(ticks.getTicks(TICKS::_250MS), owDisplay);
 	}
+
+	for(auto& light : lights_updated) {
+		light->draw(ticks.getTicks(TICKS::_250MS), owDisplay);
+	}
+
 	entities_draw = clock() - entities_draw;
 
 #ifdef _DEBUG
@@ -399,8 +424,8 @@ void OverWorldScene::draw() {
 		oss << "\n" << ZC->getData().name;
 		overlay->FPStext.setString(oss.str());
 	}
-	overlay->draw(DrawMap);
-	DrawMap = false;
+	overlay->draw(drawMap);
+	drawMap = false;
 
 	//
 
@@ -410,14 +435,11 @@ void OverWorldScene::draw() {
 void OverWorldScene::changeZoneContainer(const std::string& newZC) {
 	
 	auto ZC2 = new ZoneContainer(newZC, gameResources);
-	sf::Vector2f startingPos;
-	startingPos.x = ZC2->getData().startingPos.x;
-	startingPos.y = ZC2->getData().startingPos.y;
-	PC->teleportTo(startingPos, ZC2);
+	PC->teleportTo(ZC2->getData().startingPos, ZC2);
 	unbindContentToClock();
 	delete ZC;
 	ZC = ZC2;
 	loadedMaps.clear();
 	loadEntities();
 	bindContentToClock();
-};
+}

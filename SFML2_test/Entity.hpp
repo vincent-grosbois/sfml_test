@@ -1,8 +1,10 @@
 #pragma once
 
 #include <set>
+#include <map>
 
-#include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/System/Vector2.hpp>
 
 class Map;
 class ZoneContainer;
@@ -11,28 +13,26 @@ class Tileset;
 struct EntitySet;
 struct OverWorldDisplay;
 
+enum class EntityType {
+	PLAYER_CHARACTER,
+	NPC,
+	LIGHT
+};
+
+
 class Entity {
 
-protected:
-	ZoneContainer* ZC;
-
-	std::map<Map*, std::set<EntitySet*>> locationList;
-
-	sf::Vector2f position;
-
-	bool markedForDeletion;
-
 public:
-	Entity(sf::Vector2f const& position,  ZoneContainer& ZC);
-	sf::Vector2f getPosition() const { return position; };
+	Entity(const sf::Vector2f& position,  ZoneContainer& ZC);
+	const sf::Vector2f& getPosition() const { return position; };
 	void debug_dump_positions();
 	bool isMarkedForDeletion() const { return markedForDeletion; } ;
 	void markForDeletion();
-
+	EntityType getType() const { return type; };
 	virtual void draw(int tick, OverWorldDisplay& owDisplay) { };
 	virtual void drawCollisionBox(OverWorldDisplay& owDisplay) { };
 	virtual bool onActivated(Entity& activator) { return false; };
-	virtual ~Entity() { unregister(); };
+	virtual ~Entity() {  };
 	virtual void update(int delta_ms) {  };
 
 	virtual sf::FloatRect getVisibilityRectangle() const { return sf::FloatRect(position, sf::Vector2f(1,1)); };
@@ -41,7 +41,15 @@ public:
 	virtual bool intersectsForCollision(const sf::FloatRect& rectangle, sf::FloatRect* result = NULL) { return false; };
 
 protected:
-	void updateEntityPositionInfo();
-	void unregister();
+	ZoneContainer* ZC;
+	sf::Vector2f position;
+	std::map<Map*, std::set<EntitySet*>> locationList;
+	bool markedForDeletion;
+	EntityType type;
+
+protected:
+	virtual void registerInMaps();
+	virtual void unregister();
 };
+
 

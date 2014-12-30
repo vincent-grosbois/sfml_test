@@ -28,3 +28,7 @@ static_assert(TILE_SIZE_X*TILES_PER_MAP_X % LIGHT_BLOCK_SIZE_X == 0, "");
 static_assert(TILE_SIZE_Y*TILES_PER_MAP_Y % LIGHT_BLOCK_SIZE_Y == 0, "");
 
 typedef int tile_units;
+
+namespace DIRECTION { 
+	enum e { DOWN, LEFT, RIGHT, UP}; 
+};

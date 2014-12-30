@@ -11,6 +11,7 @@
 
 class TilePlane;
 class Entity;
+class LightEntity;
 class ZoneContainer;
 struct OverWorldDisplay;
 class OverWorldCamera;
@@ -106,6 +107,10 @@ public:
 		return entities_on_map;
 	}
 
+	std::set<LightEntity*>& lights_list()  {
+		return lights_on_map;
+	}
+
 	bool collideWithLayer(int layer_id, const sf::FloatRect& rect, sf::Vector2f* collidingPos) const;
 
 private:
@@ -118,10 +123,10 @@ private:
 	sf::Vector2<tile_units> offset;
 
 	std::set<Entity*> entities_on_map;
+	std::set<LightEntity*> lights_on_map;
 
 	Array2D<EntitySet> entities_grid;
 
-	//Array2D<void*> light_grid; //TODO
 
 	int id;
 	ZoneContainer* myZC;

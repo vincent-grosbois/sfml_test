@@ -21,6 +21,7 @@ NPC::NPC(sf::Vector2f const& position,  ZoneContainer& ZC, MoveAnimation& move_a
 	Character(position,  ZC, move_anim),
 	_behavior(NPC_BEHAVIOR::WANDER)
 {
+	type = EntityType::NPC;
 }
 
 

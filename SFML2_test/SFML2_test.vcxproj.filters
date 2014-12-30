@@ -141,6 +141,12 @@
     <ClInclude Include="utils\StringUtils.h">
       <Filter>Header Files\utils</Filter>
     </ClInclude>
+    <ClInclude Include="utils\Array2D.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\StorageProvider.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ZoneContainer.cpp">
@@ -206,9 +212,6 @@
     <ClCompile Include="OverWorldCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameResource.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ZoneContainerData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -223,6 +226,9 @@
     </ClCompile>
     <ClCompile Include="utils\StringUtils.cpp">
       <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="GameResource.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

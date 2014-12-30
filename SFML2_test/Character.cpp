@@ -201,7 +201,7 @@ bool Character::draw(int value, DIRECTION::e dir, int ticks) {
 	positionSprite();
 	isMoving = true;
 
-	updateEntityPositionInfo();
+	registerInMaps();
 
 	return true;
 
