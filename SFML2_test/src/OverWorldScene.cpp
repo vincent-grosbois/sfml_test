@@ -394,7 +394,7 @@ void OverWorldScene::draw() {
 
 			angle += deuxpi/sides;
 		}
-		owDisplay.light_texture.draw(lightZone, sf::RenderStates(sf::BlendMode(sf::BlendMode::SrcColor, sf::BlendMode::DstColor)));
+		owDisplay.light_texture.draw(lightZone, sf::RenderStates(sf::BlendAdd));
 	}
 
 	//

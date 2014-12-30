@@ -42,7 +42,7 @@ void LightEntity::update(int delta_ms) {
 
 void LightEntity::draw(int tick, OverWorldDisplay& owDisplay) {
 	if(isOn){
-		owDisplay.light_texture.draw(lightZone, sf::RenderStates(sf::BlendMode(sf::BlendMode::SrcColor, sf::BlendMode::DstColor)));	
+		owDisplay.light_texture.draw(lightZone, sf::RenderStates(sf::BlendAdd));
 	}
 }
 
