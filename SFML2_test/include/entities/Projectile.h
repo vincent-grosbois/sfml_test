@@ -21,6 +21,7 @@ public:
 		if(activator.getType() == EntityType::NPC) {
 			//std::cout << "marked " << &activator << " for deletion due to collision\n";
 			activator.markForDeletion();
+			markForDeletion();
 			return true;
 		}
 		return false;
