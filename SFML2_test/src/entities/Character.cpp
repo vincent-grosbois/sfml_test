@@ -1,24 +1,24 @@
 #include <algorithm>
 
 #include "entities/Character.h"
-#include "ZoneContainer.h"
 #include "entities/Collectible.h"
+#include "ZoneContainer.h"
 #include "TilePlane.h"
 #include "Map.h"
 #include "OverWorldScene.h"
+#include "GameTicks.h"
 
-Character::Character(const sf::Vector2f& position,  ZoneContainer& ZC, MoveAnimation& move_anim):
+Character::Character(const sf::Vector2f& position, ZoneContainer& ZC, GameTicks& ticks, MoveAnimation& move_anim):
 	EntityPhysical(position, ZC),
 	move_anim(&move_anim),
 	facingDir(DIRECTION::DOWN),
 	current_frame(0),
 	isMoving(false),
-	speed(200.f/1000),
-	moveCount(0)
+	speed(185.f/1000),
+	ticks(ticks)
 {
 	spriteOffset.x = (boundingBoxSize.x - move_anim.getFrame(DIRECTION::DOWN,0).width )/2;
 	spriteOffset.y = (boundingBoxSize.y - move_anim.getFrame(DIRECTION::DOWN,0).height +2);
-
 
 	sprite.setTexture(move_anim.getTexture());
 	sprite.setTextureRect(move_anim.getFrame(facingDir, current_frame ) );
@@ -26,27 +26,27 @@ Character::Character(const sf::Vector2f& position,  ZoneContainer& ZC, MoveAnima
 	positionSprite();
 }
 
-void Character::draw(int ticks, OverWorldDisplay& owDisplay) {
+void Character::draw(OverWorldDisplay& owDisplay) {
 
+	int ticks = this->ticks.getTicks(TICKS::e::_250MS);
+	int old_frame = current_frame;
 	current_frame = isMoving ? (current_frame + ticks) %9 : 0;
 
-	sprite.setTexture(move_anim->getTexture() );
-	sprite.setTextureRect(move_anim->getFrame(facingDir, current_frame ) );
-
+	if(old_frame != current_frame) {
+		sprite.setTextureRect(move_anim->getFrame(facingDir, current_frame ) );
+	}
 	owDisplay.overWorld_texture.draw(sprite);
 }
 
 
-
-
-bool Character::draw(int value, DIRECTION::e dir, int ticks) {
+bool Character::tryMoving(int value, DIRECTION::e dir, int ticks) {
 
 	facingDir = dir;
 
 	if(locationList.empty())
 		return false;
 
-	float * coord_to_change;
+	float* coord_to_change;
 	int sign;
 
 	switch(dir) {
@@ -85,32 +85,31 @@ bool Character::draw(int value, DIRECTION::e dir, int ticks) {
 
 	sf::FloatRect BoundingBoxRect(position.x, position.y, boundingBoxWidth, boundingBoxHeight);
 
-
 	std::set<Map*>::const_iterator it_maps;
 	std::set<EntitySet*>::const_iterator it_set;
 	std::set<Entity*>::const_iterator it_element;
-	sf::Vector2f coll_coords;
+	sf::Vector2f collision_coords;
 
-	//get the maps we would be in if could move all 
+	//get the maps we would be in if we could move all the way
 	std::set<Map*> new_maps = ZC->getCollidingMaps(BoundingBoxRect);
 
 	for ( it_maps = new_maps.begin() ; it_maps != new_maps.end(); ++it_maps ) {
 
 		//check collision with the static world:
-		if ( (*it_maps)->collideWithLayer(0, BoundingBoxRect, &coll_coords) )  {
+		if ( (*it_maps)->collideWithLayer(0, BoundingBoxRect, &collision_coords) )  {
 
 			switch(dir) {
 			case DIRECTION::RIGHT:
-				*coord_to_change = coll_coords.x - boundingBoxWidth;
+				*coord_to_change = collision_coords.x - boundingBoxWidth;
 				break;
 			case DIRECTION::LEFT:
-				*coord_to_change = coll_coords.x + TILE_SIZE_X;
+				*coord_to_change = collision_coords.x + TILE_SIZE_X;
 				break;
 			case DIRECTION::DOWN:
-				*coord_to_change = coll_coords.y - boundingBoxHeight;
+				*coord_to_change = collision_coords.y - boundingBoxHeight;
 				break;
 			case DIRECTION::UP:
-				*coord_to_change = coll_coords.y + TILE_SIZE_Y;
+				*coord_to_change = collision_coords.y + TILE_SIZE_Y;
 				break;
 			}
 
@@ -124,7 +123,6 @@ bool Character::draw(int value, DIRECTION::e dir, int ticks) {
 			increment = *coord_to_change - oldvalue;
 			facingDir = dir;
 			BoundingBoxRect = sf::FloatRect(position.x, position.y, boundingBoxWidth, boundingBoxHeight);	
-
 		}
 
 
@@ -146,8 +144,6 @@ bool Character::draw(int value, DIRECTION::e dir, int ticks) {
 
 				if((*it_element)->intersectsForCollision(BoundingBoxRect, &temp_inter)) { 
 
-
-
 					switch(dir) {
 					case DIRECTION::RIGHT:
 						*coord_to_change = temp_inter.left - boundingBoxWidth;
@@ -163,8 +159,6 @@ bool Character::draw(int value, DIRECTION::e dir, int ticks) {
 						break;
 					}
 
-
-
 					if(*coord_to_change == oldvalue) //if not moved at all
 					{   
 						isMoving = false; 
@@ -172,14 +166,11 @@ bool Character::draw(int value, DIRECTION::e dir, int ticks) {
 					}
 
 
-
-
 					(*it_element)->onCollision(*this);
 
 					BoundingBoxRect = sf::FloatRect(position.x, position.y, boundingBoxWidth, boundingBoxHeight);	
 					break;
 				}
-
 
 
 			}
@@ -191,20 +182,12 @@ bool Character::draw(int value, DIRECTION::e dir, int ticks) {
 	facingDir = dir;
 	BoundingBoxRectReal = BoundingBoxRect;
 
-	moveCount += abs(increment);
-	if( moveCount > 32) {
-		moveCount -= 32;
-		//std::cout << "tile walked\n";
-		onNewTileWalked();
-	}
-
 	positionSprite();
 	isMoving = true;
 
 	registerInMaps();
 
 	return true;
-
 }
 
 const sf::FloatRect Character::getActivableZone() const {

@@ -240,7 +240,7 @@ std::map<std::string, FieldValue> processString(const std::string& str) {
 	return map;
 }
 
-void generateEntityFromFile(const std::string& fileName, ZoneContainer& ZC, GameResource& gr) {
+void generateEntityFromFile(const std::string& fileName, ZoneContainer& ZC, GameResource& gr, GameTicks& ticks) {
 
 	std::string line;
 	std::ifstream myfile (fileName);
@@ -248,14 +248,14 @@ void generateEntityFromFile(const std::string& fileName, ZoneContainer& ZC, Game
 	{
 		while ( std::getline (myfile,line) )
 		{
-			entityFactory(line, ZC, gr);
+			entityFactory(line, ZC, gr, ticks);
 		}
 		myfile.close();
 	}
 	else std::cout << "Unable to open file " << fileName; 
 }
 
-void entityFactory(const std::string& desc, ZoneContainer& ZC, GameResource& gr) {
+void entityFactory(const std::string& desc, ZoneContainer& ZC, GameResource& gr, GameTicks& ticks) {
 
 	auto map = processString(desc);
 
@@ -274,7 +274,7 @@ void entityFactory(const std::string& desc, ZoneContainer& ZC, GameResource& gr)
 		auto pos = map["pos"].vect2f();
 
 		auto& anim = gr.getMoveAnimation("../../ressources/sprites/001.png");
-		new NPC(pos, ZC, anim);
+		new NPC(pos, ZC, ticks, anim);
 	}
 	else if (type == LoadableEntityType::RANDOM_NPC_ZONE) {
 		auto origin = map["origin"].vect2f();
@@ -318,7 +318,7 @@ void entityFactory(const std::string& desc, ZoneContainer& ZC, GameResource& gr)
 				}
 			}
 			if (!failed)
-				new NPC(pos, ZC, anim) ;
+				new NPC(pos, ZC, ticks, anim) ;
 
 		}
 		std::cout << "done, deleted "<< deleted <<" out of "<< max_NPC << " NPCs\n";

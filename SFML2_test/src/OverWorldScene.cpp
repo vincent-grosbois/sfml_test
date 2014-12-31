@@ -14,6 +14,7 @@
 #include "TileAnimator.h"
 #include "Overlay.h"
 #include "entities/PlayerCharacter.h"
+#include "entities/Projectile.h"
 
 #include "utils/SetUnionIterator.h"
 
@@ -94,7 +95,7 @@ void OverWorldScene::unbindContentToClock() {
 }
 
 void OverWorldScene::loadEntities() {
-	generateEntityFromFile(ZC->getData().entitiesDataPath , *ZC, gameResources);
+	generateEntityFromFile(ZC->getData().entitiesDataPath , *ZC, gameResources, ticks);
 }
 
 void OverWorldScene::onInit() {
@@ -115,7 +116,7 @@ void OverWorldScene::onInit() {
 	loadEntities();
 
 	auto& anim = gameResources.getMoveAnimation("../../ressources/male_walkcycle.png");
-	PC = new PlayerCharacter(ZC->getData().startingPos, *ZC, anim, *overlay);
+	PC = new PlayerCharacter(ZC->getData().startingPos, *ZC, ticks, anim, *overlay);
 }
 
 
@@ -171,7 +172,13 @@ void OverWorldScene::update(int deltaTime) {
 	}
 
 	if(owCommands.isActive(OVERWORLD_COMMANDS::ACTIVATE)) {
-		PC->activateThings();
+		//PC->activateThings();
+		new Projectile(PC->getPosition(), *ZC);
+		new Projectile(PC->getPosition(), *ZC);
+		new Projectile(PC->getPosition(), *ZC);
+		new Projectile(PC->getPosition(), *ZC);
+		new Projectile(PC->getPosition(), *ZC);
+		new Projectile(PC->getPosition(), *ZC);
 	}
 
 	if(owCommands.isActive(OVERWORLD_COMMANDS::ZOOM_RESET)) {
@@ -181,7 +188,7 @@ void OverWorldScene::update(int deltaTime) {
 	PC_moved = false;
 
 	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_UP) ) {  
-		PC->draw(deltaTime, DIRECTION::UP, 0, !owCommandsState.already_pressed_u, debug);
+		PC->tryMoving(deltaTime, DIRECTION::UP, 0, !owCommandsState.already_pressed_u, debug);
 		PC_moved = true;
 		owCommandsState.already_pressed_u = true;
 	} else {
@@ -189,7 +196,7 @@ void OverWorldScene::update(int deltaTime) {
 	}
 
 	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_DOWN) )  {
-		PC->draw(deltaTime, DIRECTION::DOWN, 0, !owCommandsState.already_pressed_d, debug);
+		PC->tryMoving(deltaTime, DIRECTION::DOWN, 0, !owCommandsState.already_pressed_d, debug);
 		PC_moved = true;
 		owCommandsState.already_pressed_d= true;
 	}else {
@@ -197,7 +204,7 @@ void OverWorldScene::update(int deltaTime) {
 	}
 
 	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_LEFT) )  {
-		PC->draw(deltaTime, DIRECTION::LEFT, 0, !owCommandsState.already_pressed_l, debug);
+		PC->tryMoving(deltaTime, DIRECTION::LEFT, 0, !owCommandsState.already_pressed_l, debug);
 		owCommandsState.already_pressed_l= true;
 		PC_moved = true;
 	}else {
@@ -205,7 +212,7 @@ void OverWorldScene::update(int deltaTime) {
 	}
 
 	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_RIGHT) )  { 
-		PC->draw(deltaTime, DIRECTION::RIGHT, 0, !owCommandsState.already_pressed_r, debug);
+		PC->tryMoving(deltaTime, DIRECTION::RIGHT, 0, !owCommandsState.already_pressed_r, debug);
 		PC_moved = true;
 		owCommandsState.already_pressed_r= true;
 	}else {
@@ -213,25 +220,23 @@ void OverWorldScene::update(int deltaTime) {
 	}
 
 	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_UP_FAST) )  {  
-		PC->draw(deltaTime*10, DIRECTION::UP, 0, owCommandsState.already_pressed_u, debug);
+		PC->tryMoving(deltaTime*10, DIRECTION::UP, 0, owCommandsState.already_pressed_u, debug);
 	}
 
 	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_DOWN_FAST))  {
-		PC->draw(deltaTime*10, DIRECTION::DOWN, 0, owCommandsState.already_pressed_u, debug);
+		PC->tryMoving(deltaTime*10, DIRECTION::DOWN, 0, owCommandsState.already_pressed_u, debug);
 	}
 
 	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_LEFT_FAST))  {
-		PC->draw(deltaTime*10, DIRECTION::LEFT, 0, owCommandsState.already_pressed_u, debug);
+		PC->tryMoving(deltaTime*10, DIRECTION::LEFT, 0, owCommandsState.already_pressed_u, debug);
 	}
 
 	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_RIGHT_FAST))  { 
-		PC->draw(deltaTime*10, DIRECTION::RIGHT, 0,owCommandsState.already_pressed_u, debug);
+		PC->tryMoving(deltaTime*10, DIRECTION::RIGHT, 0,owCommandsState.already_pressed_u, debug);
 	}
 
-	/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::P))  { 
-		ZC->dumpLoadedTiles();
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))  { 
+
+	/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))  { 
 		changeZoneContainer("../../ressources/overworld.txt");
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))  { 
@@ -362,11 +367,11 @@ void OverWorldScene::draw() {
 	//draw the entities:
 	clock_t entities_draw = clock();
 	for(auto& ent : entities_v) {
-		ent->draw(ticks.getTicks(TICKS::_250MS), owDisplay);
+		ent->draw(owDisplay);
 	}
 
 	for(auto& light : lights_updated) {
-		light->draw(ticks.getTicks(TICKS::_250MS), owDisplay);
+		light->draw(owDisplay);
 	}
 
 	entities_draw = clock() - entities_draw;

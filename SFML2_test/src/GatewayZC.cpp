@@ -2,7 +2,6 @@
 #include "entities/PlayerCharacter.h"
 
 
-
 GatewayZC::GatewayZC(sf::Vector2f const& position,  ZoneContainer& ZC, ZoneContainer& destination, sf::Vector2f position_destination):
 Entity(position, ZC),
 teleport_ZC(&destination),

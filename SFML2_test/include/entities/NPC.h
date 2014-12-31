@@ -11,7 +11,7 @@ class NPC :
 	public Character
 {
 public:
-	NPC(sf::Vector2f const& position,  ZoneContainer& ZC, MoveAnimation& move_anim);
+	NPC(sf::Vector2f const& position,  ZoneContainer& ZC, GameTicks& ticks, MoveAnimation& move_anim);
 	~NPC();
 	virtual void update(int delta_ms) override;
 

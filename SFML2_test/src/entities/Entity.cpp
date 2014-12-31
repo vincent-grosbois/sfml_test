@@ -95,6 +95,11 @@ void Entity::registerInMaps() {
 		old_set = std::move(new_set); 
 
 	}
+
+	if(colliding_maps.empty()) {
+		markForDeletion();
+	}
+
 }
 
 void Entity::debug_dump_positions() {

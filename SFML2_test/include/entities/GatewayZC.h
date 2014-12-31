@@ -10,7 +10,6 @@ public:
 	
 	//virtual void drawCollisionBox(OverWorldDisplay& owDisplay) override {}// ZoneContainer::worldTexture->draw(sf::Shape::Rectangle(sf::FloatRect(position, sf::Vector2f(10,10)), sf::Color::White)); };
 
-
 	ZoneContainer* getDestination() const { return teleport_ZC; };
 	sf::Vector2f getDestinationPos() const { return teleport_position; };
 

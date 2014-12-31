@@ -21,7 +21,7 @@ void EntityPhysical::positionSprite() {
 }
 
 
-void EntityPhysical::draw(int ticks, OverWorldDisplay& owDisplay) {
+void EntityPhysical::draw(OverWorldDisplay& owDisplay) {
 	owDisplay.overWorld_texture.draw(sprite);
 }
 

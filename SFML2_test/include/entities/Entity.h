@@ -29,7 +29,7 @@ public:
 	bool isMarkedForDeletion() const { return markedForDeletion; } ;
 	void markForDeletion();
 	EntityType getType() const { return type; };
-	virtual void draw(int tick, OverWorldDisplay& owDisplay) { };
+	virtual void draw(OverWorldDisplay& owDisplay) { };
 	virtual void drawCollisionBox(OverWorldDisplay& owDisplay) { };
 	virtual bool onActivated(Entity& activator) { return false; };
 	virtual ~Entity() {  };

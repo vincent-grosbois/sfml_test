@@ -1,8 +1,8 @@
 #include "entities/PlayerCharacter.h"
 
 
-PlayerCharacter::PlayerCharacter(sf::Vector2f const& position,  ZoneContainer& ZC, MoveAnimation& move_anim, Overlay& overlay):
-Character(position, ZC, move_anim), overlay(overlay), _first_moving(false)
+PlayerCharacter::PlayerCharacter(sf::Vector2f const& position,  ZoneContainer& ZC, GameTicks& ticks, MoveAnimation& move_anim, Overlay& overlay):
+Character(position, ZC, ticks, move_anim), overlay(overlay), _first_moving(false)
 {
 	type = EntityType::PLAYER_CHARACTER;
 }
@@ -14,7 +14,9 @@ void PlayerCharacter::DialogWindow(const std::string& str, bool force_focus, NPC
 
 }
 
-void PlayerCharacter::draw(int ticks, OverWorldDisplay& owDisplay) {
+void PlayerCharacter::draw(OverWorldDisplay& owDisplay) {
+
+	int ticks = this->ticks.getTicks(TICKS::e::_250MS);
 
 	if(_first_moving)
 		current_frame = 1;
@@ -66,9 +68,4 @@ void PlayerCharacter::drawCollisionBox(OverWorldDisplay& owDisplay) {
 	rect2.setOutlineColor(sf::Color::Red);
 	rect2.setOutlineThickness(1);
 	owDisplay.overWorld_texture.draw(rect2); 
-}
-
-
-void PlayerCharacter::onNewTileWalked() {
-
 }

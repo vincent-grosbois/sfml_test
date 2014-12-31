@@ -23,6 +23,7 @@
     <ClInclude Include="include\entities\LightEntity.h" />
     <ClInclude Include="include\entities\NPC.h" />
     <ClInclude Include="include\entities\PlayerCharacter.h" />
+    <ClInclude Include="include\entities\Projectile.h" />
     <ClInclude Include="include\GameClock.h" />
     <ClInclude Include="include\GameResource.h" />
     <ClInclude Include="include\GameScene.h" />
@@ -62,6 +63,7 @@
     <ClCompile Include="src\entities\LightEntity.cpp" />
     <ClCompile Include="src\entities\NPC.cpp" />
     <ClCompile Include="src\entities\PlayerCharacter.cpp" />
+    <ClCompile Include="src\entities\Projectile.cpp" />
     <ClCompile Include="src\GameResource.cpp" />
     <ClCompile Include="src\GameScene.cpp" />
     <ClCompile Include="src\GameTicks.cpp" />
@@ -78,7 +80,6 @@
     <ClCompile Include="src\SceneManager.cpp" />
     <ClCompile Include="src\TilePlane.cpp" />
     <ClCompile Include="src\Tileset.cpp" />
-    <ClCompile Include="src\TitleMenuScene.cpp" />
     <ClCompile Include="src\utils\StringUtils.cpp" />
     <ClCompile Include="src\ZoneContainer.cpp" />
     <ClCompile Include="src\ZoneContainerData.cpp" />

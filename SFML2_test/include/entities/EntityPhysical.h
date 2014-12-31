@@ -7,8 +7,8 @@ class EntityPhysical : public Entity
 {
 
 public:
-	EntityPhysical(sf::Vector2f const& position,  ZoneContainer& ZC);
-	virtual void draw(int ticks, OverWorldDisplay& owDisplay) override;
+	EntityPhysical(const sf::Vector2f & position,  ZoneContainer& ZC);
+	virtual void draw(OverWorldDisplay& owDisplay) override;
 
 public:
 	sf::Vector2f boundingBoxSize;

@@ -4,22 +4,19 @@
 
 
 class Collectible;
-
+class GameTicks;
 
 class Character : public EntityPhysical
 {
 public:
-	Character(sf::Vector2f const& position,  ZoneContainer& ZC, MoveAnimation& move_anim);
-	bool draw(int value, DIRECTION::e, int ticks);
+	Character(const sf::Vector2f& position, ZoneContainer& ZC, GameTicks& ticks, MoveAnimation& move_anim);
+	bool tryMoving(int value, DIRECTION::e, int ticks);
 	virtual ~Character() override;
-	virtual void draw(int ticks, OverWorldDisplay& owDisplay) override;
+	virtual void draw(OverWorldDisplay& owDisplay) override;
 	const sf::FloatRect getActivableZone() const;
 	void activateThings();
 	void receiveItem(Collectible* collectible);
 	DIRECTION::e getFacingDir() const { return facingDir; };
-
-protected:
-	virtual void onNewTileWalked() { };
 
 public:
 	bool isMoving;
@@ -29,6 +26,6 @@ protected:
 	float speed;
 	MoveAnimation* move_anim;
 	int current_frame;
-	float moveCount;
+	GameTicks& ticks;
 };
 

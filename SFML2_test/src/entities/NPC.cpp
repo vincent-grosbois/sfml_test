@@ -17,8 +17,8 @@ DIRECTION::e getOppositeDir(DIRECTION::e dir) {
 	return DIRECTION::UP;
 }
 
-NPC::NPC(sf::Vector2f const& position,  ZoneContainer& ZC, MoveAnimation& move_anim):
-	Character(position,  ZC, move_anim),
+NPC::NPC(sf::Vector2f const& position,  ZoneContainer& ZC, GameTicks& ticks, MoveAnimation& move_anim):
+	Character(position,  ZC, ticks, move_anim),
 	_behavior(NPC_BEHAVIOR::WANDER)
 {
 	type = EntityType::NPC;
@@ -38,7 +38,7 @@ bool NPC::moveAtRandom(float value, int ticks) {
 	else
 	 dir = facingDir;
  
-	bool ret = Character::draw(value, dir, ticks);
+	bool ret = Character::tryMoving(value, dir, ticks);
 
 	if(!ret) { isMoving = false ; }
 

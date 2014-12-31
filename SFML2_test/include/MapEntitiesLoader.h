@@ -8,6 +8,7 @@
 #include <map>
 
 class ZoneContainer;
+class GameTicks;
 struct OverWorldResources;
 
 enum class EntityFieldType {
@@ -82,5 +83,5 @@ public:
 std::map<std::string, FieldValue> processString(const std::string& str);
 
 class GameResource;
-void entityFactory(const std::string& desc, ZoneContainer& ZC, GameResource& gr);
-void generateEntityFromFile(const std::string& fileName, ZoneContainer& ZC, GameResource& gr);
+void entityFactory(const std::string& desc, ZoneContainer& ZC, GameResource& gr,  GameTicks& ticks);
+void generateEntityFromFile(const std::string& fileName, ZoneContainer& ZC, GameResource& gr, GameTicks& ticks);

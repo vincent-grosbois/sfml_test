@@ -9,7 +9,7 @@ class LightEntity : public Entity
 public:
 	LightEntity(sf::Vector2f const& position,  ZoneContainer& ZC, float radius, int sides, sf::Color color);
 
-	virtual void draw(int tick, OverWorldDisplay& owDisplay) override;
+	virtual void draw(OverWorldDisplay& owDisplay) override;
 	virtual sf::FloatRect getVisibilityRectangle() const override;
 
 	virtual void registerInMaps() override;

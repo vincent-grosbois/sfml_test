@@ -9,17 +9,17 @@ class Collectible;
 class PlayerCharacter : public Character
 {
 public:
-	PlayerCharacter(sf::Vector2f const& position,  ZoneContainer& ZC, MoveAnimation& move_anim,  Overlay& overlay);
+	PlayerCharacter(sf::Vector2f const& position,  ZoneContainer& ZC,GameTicks& ticks,  MoveAnimation& move_anim, Overlay& overlay);
 
 	virtual void drawCollisionBox(OverWorldDisplay& owDisplay) override;
 
 	void DialogWindow(const std::string& str, bool forceFocus = false, NPC* originator = NULL);
 	void receiveItem(Collectible* collectible);
-	virtual void draw(int ticks, OverWorldDisplay& owDisplay) override;
+	virtual void draw(OverWorldDisplay& owDisplay) override;
 
-	bool draw(int value, DIRECTION::e d, int ticks, bool first_press, bool debug ) { 
+	bool tryMoving(int value, DIRECTION::e d, int ticks, bool first_press, bool debug ) { 
 
-		if( draw(value, d, ticks, debug) ) {
+		if( tryMoving(value, d, ticks, debug) ) {
 
 			_first_moving = first_press;
 
@@ -32,9 +32,9 @@ public:
 
 	}
 
-	bool draw(int value, DIRECTION::e dir, int ticks, bool debug) {
+	bool tryMoving(int value, DIRECTION::e dir, int ticks, bool debug) {
 		if(!debug)
-			return Character::draw(value, dir, ticks);
+			return Character::tryMoving(value, dir, ticks);
 		else {
 
 			facingDir = dir;
@@ -85,14 +85,6 @@ public:
 
 			BoundingBoxRectReal = BoundingBoxRect;
 
-			moveCount += abs(increment);
-
-			if( moveCount > 32) {
-				moveCount -= 32;
-				//std::cout << "tile walked\n";
-				onNewTileWalked();
-			}
-
 			positionSprite();
 			isMoving = true;
 
@@ -110,6 +102,5 @@ public:
 private:
 	Overlay& overlay;
 	bool _first_moving;
-	virtual void onNewTileWalked() override;
 };
 
