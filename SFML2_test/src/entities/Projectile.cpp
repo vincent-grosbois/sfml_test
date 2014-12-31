@@ -47,7 +47,7 @@ Projectile::Projectile(const sf::Vector2f & position,  ZoneContainer& ZC):
 
 Projectile::~Projectile(void)
 {
-	std::cout << "projectile removed\n";
+	//std::cout << "projectile removed\n";
 }
 
 void Projectile::update(int delta_ms) {

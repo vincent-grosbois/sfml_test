@@ -15,10 +15,10 @@ Entity::Entity(const sf::Vector2f& position,  ZoneContainer& ZC):
 
 
 void Entity::unregister() {
-
+	//std::cout << "unregistering " << this << '\n';
 	for(auto it = locationList.begin(); it != locationList.end(); ++it) {
 		it->first->entities_list().erase(this);
-
+		//std::cout << "erasing " << this << " from " << it->first->getId() << '\n';
 		for(auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
 					(**it2).remove_entity(this);
 		}
@@ -65,6 +65,7 @@ void Entity::registerInMaps() {
 			}
 
 			//remove from the map's global list of characters:
+			//std::cout << "unregister " << this << '\n';
 			it->first->entities_list().erase(this);
 
 			//remove from own list of tiles:
@@ -97,6 +98,7 @@ void Entity::registerInMaps() {
 	}
 
 	if(colliding_maps.empty()) {
+		//std::cout << "marking for deletion " << this << '\n';
 		markForDeletion();
 	}
 

@@ -16,7 +16,8 @@ struct OverWorldDisplay;
 enum class EntityType {
 	PLAYER_CHARACTER,
 	NPC,
-	LIGHT
+	LIGHT,
+	PROJECTILE
 };
 
 
@@ -24,21 +25,27 @@ class Entity {
 
 public:
 	Entity(const sf::Vector2f& position,  ZoneContainer& ZC);
-	const sf::Vector2f& getPosition() const { return position; };
-	void debug_dump_positions();
-	bool isMarkedForDeletion() const { return markedForDeletion; } ;
-	void markForDeletion();
-	EntityType getType() const { return type; };
-	virtual void draw(OverWorldDisplay& owDisplay) { };
-	virtual void drawCollisionBox(OverWorldDisplay& owDisplay) { };
-	virtual bool onActivated(Entity& activator) { return false; };
-	virtual ~Entity() {  };
-	virtual void update(int delta_ms) {  };
+	virtual ~Entity() {  }
+	
+	virtual void update(int delta_ms) {  }
 
-	virtual sf::FloatRect getVisibilityRectangle() const { return sf::FloatRect(position, sf::Vector2f(1,1)); };
-	virtual sf::FloatRect getPresenceRectangle() const { return sf::FloatRect(position, sf::Vector2f(1,1)); };
-	virtual bool onCollision(Entity& activator) { return false; };
-	virtual bool intersectsForCollision(const sf::FloatRect& rectangle, sf::FloatRect* result = NULL) { return false; };
+	virtual void draw(OverWorldDisplay& owDisplay) { }
+	virtual void drawCollisionBox(OverWorldDisplay& owDisplay) { }
+	
+	virtual sf::FloatRect getVisibilityRectangle() const { return sf::FloatRect(position, sf::Vector2f(1,1)); }
+	virtual sf::FloatRect getPresenceRectangle() const { return sf::FloatRect(position, sf::Vector2f(1,1)); }
+
+	virtual bool onActivated(Entity& activator) { return false; }
+
+	virtual bool onCollision(Entity& activator) { return false; }
+
+	virtual bool intersectsForCollision(const sf::FloatRect& rectangle, sf::FloatRect* result = NULL) { return false; }
+
+	EntityType getType() const { return type; }
+	void markForDeletion();
+	const sf::Vector2f& getPosition() const { return position; }
+	void debug_dump_positions();
+	bool isMarkedForDeletion() const { return markedForDeletion; }
 
 protected:
 	ZoneContainer* ZC;

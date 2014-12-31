@@ -19,15 +19,6 @@
     <Filter Include="Source Files\Entities">
       <UniqueIdentifier>{fa8a11d1-6224-4db7-b69d-a39c452b9a62}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Scenes">
-      <UniqueIdentifier>{079240d8-8271-4937-942d-d2f9ecdc7f96}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Scenes">
-      <UniqueIdentifier>{e9572d15-df59-4351-bf44-5507ee89f34b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Overlay Screens">
-      <UniqueIdentifier>{f273a9d8-8ec6-4968-be54-e70b480e2289}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\utils">
       <UniqueIdentifier>{532bdd05-b6b3-4055-84de-6f4ed2dc5518}</UniqueIdentifier>
     </Filter>

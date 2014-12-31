@@ -148,9 +148,13 @@ Tileset& ZoneContainer::getTileset() {
 }
 
 void ZoneContainer::deleteElements() {
+
+	for(auto& ent : to_delete) {
+		delete ent;
+	}
 	to_delete.clear();
 }
 
 void ZoneContainer::addForDeletion(Entity* e) {
-	to_delete.insert(std::unique_ptr<Entity>(e));
+	to_delete.insert(e);
 }

@@ -27,17 +27,18 @@ NPC::NPC(sf::Vector2f const& position,  ZoneContainer& ZC, GameTicks& ticks, Mov
 
 NPC::~NPC()
 {
+	//std::cout << "deleting NPC " << this << '\n';
 }
 
 bool NPC::moveAtRandom(float value, int ticks) {
-	
+
 	DIRECTION::e dir;
 
 	if(!isMoving || rand()%100 == 0) 
-	 dir = (DIRECTION::e)(rand()%4);
+		dir = (DIRECTION::e)(rand()%4);
 	else
-	 dir = facingDir;
- 
+		dir = facingDir;
+
 	bool ret = Character::tryMoving(value, dir, ticks);
 
 	if(!ret) { isMoving = false ; }
@@ -45,13 +46,13 @@ bool NPC::moveAtRandom(float value, int ticks) {
 	if(isMoving) {
 		facingDir = dir;
 	}
-	
+
 	return ret;
 
 }
 
 void NPC::update(int value)  { 
-	
+
 	int ticks = 1;
 
 	if(_behavior == NPC_BEHAVIOR::WANDER ){
@@ -81,18 +82,18 @@ void NPC::update(int value)  {
 
 bool NPC::onActivated(Entity& activator) { 
 
-		Character* activator_character = dynamic_cast<Character*>(&activator);
-		PlayerCharacter* activator_PC = dynamic_cast<PlayerCharacter*>(&activator);
-		
-		if(activator_character)
-			facingDir = getOppositeDir(activator_character->getFacingDir());
+	Character* activator_character = dynamic_cast<Character*>(&activator);
+	PlayerCharacter* activator_PC = dynamic_cast<PlayerCharacter*>(&activator);
 
-		if(activator_PC) {
-			activator_PC->DialogWindow("hurr\ndurr\ndd", true, this);
-		}
+	if(activator_character)
+		facingDir = getOppositeDir(activator_character->getFacingDir());
 
-		return true; 
+	if(activator_PC) {
+		activator_PC->DialogWindow("hurr\ndurr\ndd", true, this);
 	}
+
+	return true; 
+}
 
 sf::FloatRect NPC::getAwarenessZone() const {
 	float advance = 400;

@@ -1,6 +1,7 @@
 #pragma once
 #include "EntityPhysical.h"
 #include "MoveAnimation.h"
+#include "Projectile.h"
 
 
 class Collectible;

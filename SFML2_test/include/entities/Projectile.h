@@ -5,6 +5,8 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 
+#include <iostream>
+
 class Projectile : public EntityPhysical
 {
 public:
@@ -14,6 +16,15 @@ public:
 	virtual void draw(OverWorldDisplay& owDisplay) override;
 	virtual void drawCollisionBox(OverWorldDisplay& owDisplay) override;
 	virtual sf::FloatRect getVisibilityRectangle() const override { return this->BoundingBoxRectReal;}
+
+	virtual bool onCollision(Entity& activator) override {
+		if(activator.getType() == EntityType::NPC) {
+			//std::cout << "marked " << &activator << " for deletion due to collision\n";
+			activator.markForDeletion();
+			return true;
+		}
+		return false;
+	}
 
 protected:
 	float speed;

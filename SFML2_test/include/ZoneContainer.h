@@ -1,7 +1,6 @@
 #pragma once
 
 #include <set>
-#include <memory>
 
 #include <SFML/Graphics/Rect.hpp>
 
@@ -32,6 +31,6 @@ private:
 	ZoneContainerData data;
 	Tileset& tileset;
 	Array2D<Map*> maps;
-	std::set<std::unique_ptr<Entity>> to_delete;
+	std::set<Entity*> to_delete;
 };
 

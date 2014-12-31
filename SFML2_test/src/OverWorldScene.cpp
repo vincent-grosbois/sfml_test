@@ -308,31 +308,34 @@ void OverWorldScene::draw() {
 	clock_t part2_start;
 	std::set<Entity*> entities_updated;
 	std::set<LightEntity*> lights_updated;
-	std::vector<Entity*> entities_v;
-
+	std::vector<Entity*> entities_visible;
+	//std::cout <<  "\nstart entity loop\n";
 	for (auto map = loadedMaps.begin() ; map != loadedMaps.end(); ++map ) {
-
-		for(std::set<Entity*>::iterator it_ent = (*map)->entities_list().begin(); it_ent != (*map)->entities_list().end(); ) {
-
-			if(entities_updated.count((*it_ent)) == 0) { 
-				Entity* entity_ptr = *it_ent;
-
-				assert(entity_ptr->getType() != EntityType::LIGHT);
+		//std::cout <<  "\n\n";
+		for(auto ent = (*map)->entities_list().begin();  ent != (*map)->entities_list().end(); ) {
+			//std::cout << *ent << '\t';
+			if(entities_updated.count(*ent) == 0) { 
+				assert((*ent)->getType() != EntityType::LIGHT);
 				part1_start = clock();
-				(*it_ent++)->update(myDeltaTime);
-				entities_updated.insert(entity_ptr);
+				auto current_ent = *ent;
+				(*ent++)->update(myDeltaTime);
+				entities_updated.insert(current_ent);
 				part1_total += clock() - part1_start;
 				part2_start = clock();
-				if( camera.getViewRect().intersects(entity_ptr->getVisibilityRectangle())) {
-					entities_v.push_back(entity_ptr);
+				if( camera.getViewRect().intersects(current_ent->getVisibilityRectangle())) {
+					entities_visible.push_back(current_ent);
 				}
 				part2_total += clock() - part2_start;
 			}
-			else   ++it_ent;
+			else {
+				++ent;
+			}
 		}
 	}
-
-	std::sort(entities_v.begin(), entities_v.end(), z_orderer);
+	//std::cout <<  "\nend entity loop\n";
+	part2_start = clock();
+	std::sort(entities_visible.begin(), entities_visible.end(), z_orderer);
+	part2_total += clock() - part2_start;
 
 	for (auto map = loadedMaps.begin() ; map != loadedMaps.end(); ++map ) {
 
@@ -366,7 +369,7 @@ void OverWorldScene::draw() {
 
 	//draw the entities:
 	clock_t entities_draw = clock();
-	for(auto& ent : entities_v) {
+	for(auto& ent : entities_visible) {
 		ent->draw(owDisplay);
 	}
 
@@ -377,7 +380,7 @@ void OverWorldScene::draw() {
 	entities_draw = clock() - entities_draw;
 
 #ifdef _DEBUG
-	for(auto entities_v_it = entities_v.begin() ; entities_v_it != entities_v.end(); ++entities_v_it) {
+	for(auto entities_v_it = entities_visible.begin() ; entities_v_it != entities_visible.end(); ++entities_v_it) {
 		(*entities_v_it)->drawCollisionBox(owDisplay);
 	}
 #endif
