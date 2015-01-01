@@ -65,7 +65,7 @@ OverWorldCamera::OverWorldCamera(const sf::Vector2f& defaultSize):
 	same_as_last_view(false),
 	camera_set_for_frame(false),
 	current_zoom(1.f),
-	min_zoom(0.3f),
+	min_zoom(0.2f),
 	max_zoom(7.f),
 	defaultSize(defaultSize)
 { }

@@ -15,7 +15,7 @@ public:
 	virtual void update(int delta_ms) override;
 	virtual void draw(OverWorldDisplay& owDisplay) override;
 	virtual void drawCollisionBox(OverWorldDisplay& owDisplay) override;
-	virtual sf::FloatRect getVisibilityRectangle() const override { return this->BoundingBoxRectReal;}
+	virtual sf::FloatRect getVisibilityRectangle() const override;
 
 	virtual bool onCollision(Entity& activator) override {
 		if(activator.getType() == EntityType::NPC) {

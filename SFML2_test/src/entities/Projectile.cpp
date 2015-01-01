@@ -8,21 +8,19 @@ Projectile::Projectile(const sf::Vector2f & position,  ZoneContainer& ZC):
 	lightZone(sf::TrianglesFan, sides+2),
 	lightZone2(sf::TrianglesFan, 20+2)
 {
-
 	type = EntityType::PROJECTILE;
 
-	boundingBoxSize.x = 10;
-	boundingBoxSize.y = 10;
+	boundingBoxSize.x = 20;
+	boundingBoxSize.y = 20;
 
 	BoundingBoxRectReal = sf::FloatRect(position.x, position.y, boundingBoxSize.x, boundingBoxSize.y);
 
-	speed = 350.f/1000;
+	speed = 1.5f*350.f/1000;
 	angle = rand();
 		
 	color = sf::Color(10,10,200, 225);
 	radius = 10;
 
-	//type = EntityType::LIGHT;
 	registerInMaps();
 	float deuxpi = float(2*3.14159265);
 	float angle = 0.f;
@@ -46,6 +44,9 @@ Projectile::Projectile(const sf::Vector2f & position,  ZoneContainer& ZC):
 		angle += deuxpi/20;
 	}
 }
+
+sf::FloatRect Projectile::getVisibilityRectangle() const
+{ return sf::FloatRect(position.x-150, position.y-150, 300, 300); };
 
 
 Projectile::~Projectile(void)
