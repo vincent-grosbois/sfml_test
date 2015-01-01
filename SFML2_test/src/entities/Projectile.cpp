@@ -8,6 +8,9 @@ Projectile::Projectile(const sf::Vector2f & position,  ZoneContainer& ZC):
 	lightZone(sf::TrianglesFan, sides+2),
 	lightZone2(sf::TrianglesFan, 20+2)
 {
+
+	type = EntityType::PROJECTILE;
+
 	boundingBoxSize.x = 10;
 	boundingBoxSize.y = 10;
 

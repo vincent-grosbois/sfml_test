@@ -142,7 +142,10 @@ bool Character::tryMoving(int value, DIRECTION::e dir, int ticks) {
 				if(*it_element == this) 
 					continue;
 
-				if((*it_element)->intersectsForCollision(BoundingBoxRect, &temp_inter)) { 
+				if((*it_element)->intersectsForCollision(BoundingBoxRect, &temp_inter)
+					&& !(getType() == EntityType::PLAYER_CHARACTER && (*it_element)->getType() == EntityType::PROJECTILE)
+					
+					) { 
 
 					switch(dir) {
 					case DIRECTION::RIGHT:

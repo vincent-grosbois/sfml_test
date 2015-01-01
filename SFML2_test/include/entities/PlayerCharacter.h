@@ -9,7 +9,7 @@ class Collectible;
 class PlayerCharacter : public Character
 {
 public:
-	PlayerCharacter(sf::Vector2f const& position,  ZoneContainer& ZC,GameTicks& ticks,  MoveAnimation& move_anim, Overlay& overlay);
+	PlayerCharacter(const sf::Vector2f& position, ZoneContainer& ZC, GameTicks& ticks, MoveAnimation& move_anim, Overlay& overlay);
 
 	virtual void drawCollisionBox(OverWorldDisplay& owDisplay) override;
 
