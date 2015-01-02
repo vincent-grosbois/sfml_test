@@ -18,7 +18,7 @@ class Map;
 class ZoneContainer;
 class Tileset;
 class MetaGameData;
-
+class LightEntity;
 
 
 struct OverWorldDisplay 
@@ -152,8 +152,10 @@ private:
 
 	PauseDelayedStruct pause_state;
 
+	LightEntity* torchLight;
+
 private:
-	void changeZoneContainer(const std::string& newZC);
+	void changeZone(const std::string& newZC);
 	void bindContentToClock();
 	void unbindContentToClock();
 	void loadEntities();

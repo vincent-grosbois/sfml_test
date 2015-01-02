@@ -118,6 +118,8 @@ void OverWorldScene::onInit() {
 
 	auto& anim = gameResources.getMoveAnimation("../../ressources/male_walkcycle.png");
 	PC = new PlayerCharacter(ZC->getData().startingPos, *ZC, ticks, anim, *overlay);
+
+	torchLight = new LightEntity(PC->getSpriteCenter(), *ZC, 300, 20, sf::Color(10,10,10,250));
 }
 
 
@@ -195,6 +197,7 @@ void OverWorldScene::update(int deltaTime) {
 
 	if(owCommands.isActive(OVERWORLD_COMMANDS::FLASHLIGHT)) {
 		owCommandsState.flashlight_on = !owCommandsState.flashlight_on;
+		torchLight->setOn(owCommandsState.flashlight_on) ;
 	}
 
 	if(owCommands.isActive(OVERWORLD_COMMANDS::ACTIVATE)) {
@@ -263,11 +266,15 @@ void OverWorldScene::update(int deltaTime) {
 
 
 	/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))  { 
-		changeZoneContainer("../../ressources/overworld.txt");
+		changeZone("../../ressources/overworld.txt");
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))  { 
-		changeZoneContainer("../../ressources/cave.txt");
+		changeZone("../../ressources/cave.txt");
 	}*/
+
+	if(torchLight->isOn_()) {
+		torchLight->setPosition(PC->getPosition());
+	}
 
 	if(!PC_moved)
 		PC->isMoving = false;
@@ -413,25 +420,6 @@ void OverWorldScene::draw() {
 
 
 	//
-	float radius = 300.f;
-	float deuxpi = 2*3.14159265f;
-	float angle = 0.f;
-	if(owCommandsState.flashlight_on) {
-		int sides = 20;
-		sf::VertexArray lightZone(sf::TrianglesFan, sides+2);
-		lightZone[0].position = PC->getSpriteCenter();
-		lightZone[0].color = sf::Color(10, 0, 0, 250);
-		for(int i = 1; i<sides+2; ++i) {
-
-			lightZone[i].position = PC->getSpriteCenter() + sf::Vector2f(radius*cos(angle),radius*sin(angle));
-			lightZone[i].color = sf::Color(0, 0, 0, 0);
-
-			angle += deuxpi/sides;
-		}
-		owDisplay.light_texture.draw(lightZone, sf::RenderStates(sf::BlendAdd));
-	}
-
-	//
 	clock_t shader_draw = clock();
 	Tone t = ZC->getData().isOutside ? 
 		OverWorldTone::getToneAt( gameClock.getCurrentTimeOfDay()/3600.f) :
@@ -460,7 +448,7 @@ void OverWorldScene::draw() {
 	App->display();
 }
 
-void OverWorldScene::changeZoneContainer(const std::string& newZC) {
+void OverWorldScene::changeZone(const std::string& newZC) {
 	
 	auto ZC2 = new ZoneContainer(newZC, gameResources);
 	PC->teleportTo(ZC2->getData().startingPos, ZC2);

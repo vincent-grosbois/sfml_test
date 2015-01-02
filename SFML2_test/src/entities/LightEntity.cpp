@@ -135,3 +135,22 @@ void LightEntity::unregister() {
 LightEntity::~LightEntity() {
 	unregister();
 }
+
+void LightEntity::setPosition(const sf::Vector2f& pos) {
+
+	if(position == pos) {
+		return;
+	}
+
+	position = pos;
+	registerInMaps();
+	assert(!this->locationList.empty());
+	float deuxpi = float(2*3.14159265);
+	float angle = 0.f;
+	lightZone[0].position = getPosition();
+	for(int i = 1; i<sides+2; ++i) {
+		lightZone[i].position = getPosition() + sf::Vector2f(radius*cos(angle),radius*sin(angle));
+		angle += deuxpi/sides;
+	}
+
+}

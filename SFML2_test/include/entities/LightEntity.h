@@ -20,6 +20,16 @@ public:
 	virtual void update(int delta_ms) override;
 
 	//float getRadius() { return radius; };
+
+	void setOn(bool on) {
+		isOn = on;
+	}
+
+	bool isOn_() const {
+		return isOn;
+	}
+
+	void setPosition(const sf::Vector2f& pos);
 	
 protected:
 	sf::Color color;
