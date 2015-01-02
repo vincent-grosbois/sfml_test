@@ -1,2 +1,5 @@
 SFML - 2.2
+from official release
+
 Thor - 2.0
+from https://github.com/Bromeon/Thor
