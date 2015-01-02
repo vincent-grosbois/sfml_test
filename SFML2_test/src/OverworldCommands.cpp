@@ -6,7 +6,8 @@ OverworldCommands::OverworldCommands()
 	map[OVERWORLD_COMMANDS::EXIT] = 
 		thor::Action(sf::Keyboard::Escape, thor::Action::PressOnce) || thor::Action(sf::Event::Closed); 
 
-	map[OVERWORLD_COMMANDS::PAUSE] = thor::Action(sf::Keyboard::P, thor::Action::PressOnce);
+	map[OVERWORLD_COMMANDS::PAUSE] = 
+		thor::Action(sf::Keyboard::P, thor::Action::PressOnce) ||  thor::Action(sf::Keyboard::Pause, thor::Action::PressOnce);
 
 	map[OVERWORLD_COMMANDS::DEBUG] = thor::Action(sf::Keyboard::LShift, thor::Action::Hold); 
 

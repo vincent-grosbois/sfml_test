@@ -19,7 +19,7 @@ class ZoneContainer;
 class Tileset;
 class MetaGameData;
 class LightEntity;
-
+class Entity;
 
 struct OverWorldDisplay 
 {
@@ -159,5 +159,11 @@ private:
 	void bindContentToClock();
 	void unbindContentToClock();
 	void loadEntities();
+
+private:
+	std::set<LightEntity*> lights_updated;
+	std::vector<Entity*> entities_visible;
+	clock_t part1_total;
+	clock_t part2_total;
 };
 

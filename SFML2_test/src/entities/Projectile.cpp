@@ -8,6 +8,8 @@ Projectile::Projectile(const sf::Vector2f & position,  ZoneContainer& ZC):
 	lightZone(sf::TrianglesFan, sides+2),
 	lightZone2(sf::TrianglesFan, 20+2)
 {
+	lifetime_ms = 999*100*1000;
+
 	type = EntityType::PROJECTILE;
 
 	boundingBoxSize.x = 20;
@@ -75,6 +77,11 @@ void Projectile::update(int delta_ms) {
 	for(int i = 1; i<20+2; ++i) {
 		lightZone2[i].position = getPosition() + sf::Vector2f(radius2*cos(angle),radius2*sin(angle));
 		angle += deuxpi/20;
+	}
+
+	lifetime_ms -= delta_ms;
+	if(lifetime_ms < 0) {
+		markForDeletion();
 	}
 }
 

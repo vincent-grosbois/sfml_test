@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FramePagedMemory.h" />
     <ClInclude Include="include\BoxedText.h" />
     <ClInclude Include="include\BoxedTextScrollable.h" />
     <ClInclude Include="include\CallBackSystem.h" />
@@ -53,6 +54,7 @@
     <ClInclude Include="OverworldCommands.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FramePagedMemory.cpp" />
     <ClCompile Include="src\BoxedText.cpp" />
     <ClCompile Include="src\BoxedTextScrollable.cpp" />
     <ClCompile Include="src\CallBackSystem.cpp" />

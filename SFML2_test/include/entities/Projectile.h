@@ -35,6 +35,7 @@ protected:
 	int sides;
 	float radius;
 	bool isOn;
+	int lifetime_ms;
 	sf::VertexArray lightZone;
 	sf::VertexArray lightZone2;
 };

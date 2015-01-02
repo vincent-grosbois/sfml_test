@@ -302,46 +302,22 @@ void OverWorldScene::update(int deltaTime) {
 	UpdateMapGraphics updater(camera, ZC->getTileset().getNeedUpdating());
 	iterate_over_union(newVisibleMaps, loadedMaps, updater);
 	loadedMaps = std::move(newVisibleMaps);
-}
 
-
-void OverWorldScene::draw() {  
-
-	App->clear();
-
-	// --- overlay info 
-	if(ticks.getTicks(TICKS::_100MS) > 0) {
-		std::stringstream text;
-		text << EntitySet::entitySetStorage.size_in_use() << " entities set in use, "<< EntitySet::entitySetStorage.size_available()<< " extra available\n";
-	
-		text << loadedMaps.size() << " maps in view\n";
-		if (loadedMaps.size() < 20) {
-			for (auto map= loadedMaps.begin() ; map != loadedMaps.end(); ++map ) {
-				sf::Vector2i v = (*map)->getMapCoords();
-				text << "map <"<< v.x <<","<< v.y <<"> in view\n";
-			}
-		}
-
-		overlay->MapInfosText.setString(text.str()+'\n'+gameClock.getCurrentTimeOfDayStr());
-	}
-	// --- overlay info 
-
-
-	owDisplay.clearAndSetView(camera.getView());
-
+	//manage entities:
 	ZC->deleteElements();
+	entities_visible.clear();
+	lights_updated.clear();
 
-	clock_t start, end, end1;
+	clock_t start;
 
 	start = clock();
-	clock_t part1_total = 0;
-	clock_t part2_total = 0;
+	part1_total = 0;
+	part2_total = 0;
 
 	clock_t part1_start;
 	clock_t part2_start;
 	std::set<Entity*> entities_updated;
-	std::set<LightEntity*> lights_updated;
-	std::vector<Entity*> entities_visible;
+
 	//std::cout <<  "\nstart entity loop\n";
 	for (auto map = loadedMaps.begin() ; map != loadedMaps.end(); ++map ) {
 		//std::cout <<  "\n\n";
@@ -389,10 +365,32 @@ void OverWorldScene::draw() {
 			else   ++it_ent;
 		}
 	}
+}
 
-	end = clock();
-	end1 = clock();
 
+void OverWorldScene::draw() {  
+
+	App->clear();
+
+	// --- overlay info 
+	if(ticks.getTicks(TICKS::_100MS) > 0) {
+		std::stringstream text;
+		text << EntitySet::entitySetStorage.size_in_use() << " entities set in use, "<< EntitySet::entitySetStorage.size_available()<< " extra available\n";
+	
+		text << loadedMaps.size() << " maps in view\n";
+		if (loadedMaps.size() < 20) {
+			for (auto map= loadedMaps.begin() ; map != loadedMaps.end(); ++map ) {
+				sf::Vector2i v = (*map)->getMapCoords();
+				text << "map <"<< v.x <<","<< v.y <<"> in view\n";
+			}
+		}
+
+		overlay->MapInfosText.setString(text.str()+'\n'+gameClock.getCurrentTimeOfDayStr());
+	}
+	// --- overlay info 
+
+
+	owDisplay.clearAndSetView(camera.getView());
 	//draw the world:
 	clock_t world_draw = clock();
 	for (auto map = loadedMaps.begin() ; map != loadedMaps.end(); ++map ) {
