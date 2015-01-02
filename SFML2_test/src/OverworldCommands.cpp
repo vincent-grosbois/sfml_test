@@ -6,6 +6,8 @@ OverworldCommands::OverworldCommands()
 	map[OVERWORLD_COMMANDS::EXIT] = 
 		thor::Action(sf::Keyboard::Escape, thor::Action::PressOnce) || thor::Action(sf::Event::Closed); 
 
+	map[OVERWORLD_COMMANDS::PAUSE] = thor::Action(sf::Keyboard::P, thor::Action::PressOnce);
+
 	map[OVERWORLD_COMMANDS::DEBUG] = thor::Action(sf::Keyboard::LShift, thor::Action::Hold); 
 
 	map[OVERWORLD_COMMANDS::MOVE_UP] = thor::Action(sf::Keyboard::Up, thor::Action::Hold);
@@ -36,6 +38,6 @@ bool OverworldCommands::isActive(OVERWORLD_COMMANDS cmd) const {
 	return map.isActive(cmd);
 }
 
-void OverworldCommands::update(sf::Window& window) {
+void OverworldCommands::pollComands(sf::Window& window) {
 	map.update(window);
 }

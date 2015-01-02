@@ -60,6 +60,51 @@ struct OverWorldCommandsState {
 
 class GameResource;
 
+struct PauseDelayedStruct {
+private:
+	bool unpause_on_next_frame;
+	bool pause_on_next_frame;
+	bool paused;
+
+public:
+	operator bool() const {
+		return paused;
+	}
+
+	PauseDelayedStruct() :
+		paused(false),
+		unpause_on_next_frame(false),
+		pause_on_next_frame(false) {
+	}
+
+	bool isPaused() const {
+		return paused;
+	}
+
+	void pauseOnNextFrame() {
+		pause_on_next_frame = true;
+		unpause_on_next_frame = false;
+	}
+
+	void unpauseOnNextFrame() {
+		pause_on_next_frame = false;
+		unpause_on_next_frame = true;
+	}
+
+	void beginNewFrame() {
+		if(pause_on_next_frame)  {
+			unpause_on_next_frame = false;
+			pause_on_next_frame = false;
+			paused = true;
+		} else if (unpause_on_next_frame) {
+			unpause_on_next_frame = false;
+			pause_on_next_frame = false;
+			paused = false;
+		}
+	}
+
+};
+
 class OverWorldScene : public GameScene
 {
 public:
@@ -84,7 +129,8 @@ private:
 	OverworldCommands owCommands;
 	OverWorldCommandsState owCommandsState;
 
-	CallBackSystem callbackSystem;
+	CallBackSystem callbackSystem;		 // <* Callback system used only when the game is paused
+	CallBackSystem callbackSystemAlways; // <* Callback system used even when the game is paused
 
 	GameClock gameClock;
 	GameTicks ticks;
@@ -100,6 +146,11 @@ private:
 
 	int myDeltaTime;
 	int myTotalTime;
+	
+	int myDeltaTimeAlways;
+	int myTotalTimeAlways;
+
+	PauseDelayedStruct pause_state;
 
 private:
 	void changeZoneContainer(const std::string& newZC);

@@ -67,6 +67,7 @@ OverWorldScene::OverWorldScene(const MetaGameData& metaGameData, GameResource& g
 	metaGameData.start_time_hours*3600 + metaGameData.start_time_minutes*60, 
 	metaGameData.clock_speed_factor),
 	myTotalTime(0),
+	myTotalTimeAlways(0),
 	gameResources(gr)
 { }
 
@@ -83,7 +84,7 @@ void OverWorldScene::bindContentToClock() {
 		//next value of myTotalTime multiple of 400 :
 		int next = 400*(myTotalTime/400 + 1);
 
-		anim->createPeriodicCallback(next, 400, callbackSystem, changeAnimatedTileFrame);
+		anim->createPeriodicCallback(next, 400, callbackSystemAlways, changeAnimatedTileFrame);
 	}
 }
 
@@ -146,26 +147,51 @@ struct UpdateMapGraphics {
 	bool checkAnimatedTilesUpdate;
 };
 
+
+
 void OverWorldScene::update(int deltaTime) {
+
+	pause_state.beginNewFrame();
+
+	owCommands.pollComands(*App);
+	if (owCommands.isActive(OVERWORLD_COMMANDS::EXIT) ) {
+		close();
+	}
+	if (owCommands.isActive(OVERWORLD_COMMANDS::PAUSE) ) {
+		if(pause_state) {
+			pause_state.unpauseOnNextFrame();
+		} else {
+			pause_state.pauseOnNextFrame();
+		}
+	}
+	myDeltaTimeAlways = deltaTime;
+	myTotalTimeAlways += deltaTime;
+
+	ZC->getTileset().setNeedUpdating(false);
+	callbackSystemAlways.callAllUpToTime(myTotalTimeAlways);
+
+
+	if(pause_state) {
+		camera.cameraSetForFrame();
+		for(auto& map : loadedMaps) {
+			map->updateGraphics(camera, ZC->getTileset().getNeedUpdating());
+		}
+		myDeltaTime = 0;
+		return;
+	}
+	
+	camera.newFrame();
+	ticks.update(deltaTime);
 
 	myDeltaTime = deltaTime;
 	myTotalTime += deltaTime;
-
-	ZC->getTileset().setNeedUpdating(false);
-	camera.newFrame();
-
 	gameClock.update(deltaTime);
-	ticks.update(deltaTime);
+	
 
 	callbackSystem.callAllUpToTime(myTotalTime);
 
 	bool debug = owCommands.isActive(OVERWORLD_COMMANDS::DEBUG);
 
-	owCommands.update(*App);
-
-	if (owCommands.isActive(OVERWORLD_COMMANDS::EXIT) ) {
-		close();
-	}
 
 	if(owCommands.isActive(OVERWORLD_COMMANDS::FLASHLIGHT)) {
 		owCommandsState.flashlight_on = !owCommandsState.flashlight_on;
@@ -418,9 +444,9 @@ void OverWorldScene::draw() {
 
 
 	//infos : 
-	if(ticks.getTicks(TICKS::_100MS) > 0) {
+	if(true || ticks.getTicks(TICKS::_100MS) > 0) {
 		std::stringstream oss;
-		int FPS = int(1000/myDeltaTime);
+		int FPS = int(1000/myDeltaTimeAlways);
 		oss << "FPS: " << FPS<<  " ent update: " << 1000.f*(float)part1_total/CLOCKS_PER_SEC  << "ms, ent z sort: " << 1000.f*(float)part2_total/CLOCKS_PER_SEC <<"ms";
 		oss << "\nmap drawing time: " << 1000.f*(float)world_draw/CLOCKS_PER_SEC<< "ms\tent draw time:" << 1000.f*(float)entities_draw/CLOCKS_PER_SEC << "ms\tfinal shader drawing: "<<1000.f*(float)shader_draw/CLOCKS_PER_SEC;
 		oss << "\n" << ZC->getData().name;

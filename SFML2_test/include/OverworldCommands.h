@@ -4,6 +4,7 @@
 
 enum class OVERWORLD_COMMANDS {
 	EXIT,
+	PAUSE,
 	DEBUG,
 	MOVE_UP,
 	MOVE_DOWN,
@@ -32,6 +33,6 @@ public:
 
 	bool isActive(OVERWORLD_COMMANDS cmd) const;
 
-	void update(sf::Window& window);
+	void pollComands(sf::Window& window);
 };
 
