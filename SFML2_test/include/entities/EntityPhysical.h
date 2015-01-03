@@ -10,21 +10,21 @@ public:
 	EntityPhysical(const sf::Vector2f & position,  ZoneContainer& ZC);
 	virtual void draw(OverWorldDisplay& owDisplay) override;
 
-public:
-	sf::Vector2f boundingBoxSize;
-
 	virtual ~EntityPhysical() override {
 		unregister();
 	}
 
 protected:
+	sf::Vector2f boundingBoxSize;
 	sf::FloatRect BoundingBoxRectReal;
 	sf::Sprite sprite;
 	sf::Vector2f spriteOffset;
+	sf::Vector2f boundingBoxOffset;
 	void positionSprite();
+	void positionBoundingBox();
 
 public:
-	virtual void drawCollisionBox(OverWorldDisplay& owDisplay) override;
+	virtual void drawDebugInfo(OverWorldDisplay& owDisplay) override;
 
 	sf::Vector2f getSpriteCenter() const { 
 		return sprite.getPosition() + sf::Vector2f(sprite.getGlobalBounds().width/2, sprite.getGlobalBounds().height/2); 

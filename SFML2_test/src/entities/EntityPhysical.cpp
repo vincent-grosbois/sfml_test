@@ -9,15 +9,22 @@ EntityPhysical::EntityPhysical(const sf::Vector2f& position,  ZoneContainer& ZC)
 	Entity(position, ZC),
 	boundingBoxSize(16,15),
 	spriteOffset(0,0),
+	boundingBoxOffset(-boundingBoxSize.x/2, -boundingBoxSize.y/2),
 	BoundingBoxRectReal(position.x, position.y, boundingBoxSize.x, boundingBoxSize.y)
 {
 	positionSprite();
+	positionBoundingBox();
 	registerInMaps();
 }
 
 
 void EntityPhysical::positionSprite() {
 	sprite.setPosition(position + spriteOffset);
+}
+
+void EntityPhysical::positionBoundingBox() {
+	BoundingBoxRectReal.left = position.x + boundingBoxOffset.x;
+	BoundingBoxRectReal.top = position.y + boundingBoxOffset.y;
 }
 
 
@@ -49,7 +56,7 @@ bool EntityPhysical::intersectsForCollision(const sf::FloatRect& rectangle, sf::
 	}
 }
 
-void EntityPhysical::drawCollisionBox(OverWorldDisplay& owd) { 
+void EntityPhysical::drawDebugInfo(OverWorldDisplay& owd) { 
 	sf::RectangleShape rect(sf::Vector2f(BoundingBoxRectReal.width, BoundingBoxRectReal.height));
 	rect.setPosition(BoundingBoxRectReal.left,BoundingBoxRectReal.top);
 	rect.setFillColor(sf::Color(0,0,0,0));

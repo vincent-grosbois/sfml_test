@@ -3,7 +3,7 @@
 #include "ZoneContainer.h"
 #include "OverWorldScene.h"
 
-namespace NPC_BEHAVIOR { enum e  { STILL, WANDER, WANDER_NOSTOP } ; };
+enum class NPC_BEHAVIOR  { STILL, WANDER, WANDER_NOSTOP, USE_WAYPOINT } ;
 
 DIRECTION::e getOppositeDir(DIRECTION::e dir);
 
@@ -15,18 +15,20 @@ public:
 	~NPC();
 	virtual void update(int delta_ms) override;
 
-	bool moveAtRandom(float value, int ticks);
+	bool moveAtRandom(float value);
 
 	virtual bool onActivated(Entity& activator) override;
 
-	NPC_BEHAVIOR::e getBehavior() const { return _behavior; };
-	void setBehavior(NPC_BEHAVIOR::e s) {  _behavior = s; };
+	NPC_BEHAVIOR getBehavior() const { return behavior; };
 
-	virtual void drawCollisionBox(OverWorldDisplay& owDisplay) override ;
+	virtual void drawDebugInfo(OverWorldDisplay& owDisplay) override ;
+
+	
 
 protected:
-	NPC_BEHAVIOR::e _behavior;
+	NPC_BEHAVIOR behavior;
 
 	sf::FloatRect getAwarenessZone() const;
+	void moveToWaypoint(int delta_ms);
 };
 

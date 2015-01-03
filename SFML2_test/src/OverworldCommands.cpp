@@ -9,14 +9,16 @@ OverworldCommands::OverworldCommands()
 	map[OVERWORLD_COMMANDS::PAUSE] = 
 		thor::Action(sf::Keyboard::P, thor::Action::PressOnce) ||  thor::Action(sf::Keyboard::Pause, thor::Action::PressOnce);
 
-	map[OVERWORLD_COMMANDS::DEBUG] = thor::Action(sf::Keyboard::LShift, thor::Action::Hold); 
+	map[OVERWORLD_COMMANDS::DEBUG] = thor::Action(sf::Keyboard::A, thor::Action::PressOnce); 
+
+	map[OVERWORLD_COMMANDS::DEBUG_NO_COLLIDE] = thor::Action(sf::Keyboard::LShift, thor::Action::Hold); 
 
 	map[OVERWORLD_COMMANDS::MOVE_UP] = thor::Action(sf::Keyboard::Up, thor::Action::Hold);
 	map[OVERWORLD_COMMANDS::MOVE_DOWN] = thor::Action(sf::Keyboard::Down, thor::Action::Hold);
 	map[OVERWORLD_COMMANDS::MOVE_LEFT] = thor::Action(sf::Keyboard::Left, thor::Action::Hold);
 	map[OVERWORLD_COMMANDS::MOVE_RIGHT] = thor::Action(sf::Keyboard::Right, thor::Action::Hold);
 
-	map[OVERWORLD_COMMANDS::ZOOM_IN] = thor::Action(sf::Keyboard::LControl, thor::Action::Hold);
+	map[OVERWORLD_COMMANDS::ZOOM_IN] = thor::Action(sf::Keyboard::LAlt, thor::Action::Hold);
 	map[OVERWORLD_COMMANDS::ZOOM_OUT] = thor::Action(sf::Keyboard::Space, thor::Action::Hold);
 	map[OVERWORLD_COMMANDS::ZOOM_RESET] = thor::Action(sf::Keyboard::V, thor::Action::PressOnce);
 	map[OVERWORLD_COMMANDS::ZOOM_IN_FAST] = thor::Action(sf::Keyboard::C, thor::Action::Hold);

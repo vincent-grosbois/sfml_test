@@ -54,7 +54,7 @@ void PlayerCharacter::teleportTo(sf::Vector2f pos, ZoneContainer* destinationZC)
 	}
 }
 
-void PlayerCharacter::drawCollisionBox(OverWorldDisplay& owDisplay) { 
+void PlayerCharacter::drawDebugInfo(OverWorldDisplay& owDisplay) { 
 	sf::RectangleShape rect(sf::Vector2f(BoundingBoxRectReal.width, BoundingBoxRectReal.height));
 	rect.setPosition(BoundingBoxRectReal.left,BoundingBoxRectReal.top);
 	rect.setFillColor(sf::Color(0,0,0,0));
@@ -68,4 +68,18 @@ void PlayerCharacter::drawCollisionBox(OverWorldDisplay& owDisplay) {
 	rect2.setOutlineColor(sf::Color::Red);
 	rect2.setOutlineThickness(1);
 	owDisplay.overWorld_texture.draw(rect2); 
+
+	sf::RectangleShape rect3(sf::Vector2f(1,1));
+	rect3.setPosition(getPosition());
+	rect3.setFillColor(sf::Color(0,0,0,0));
+	rect3.setOutlineColor(sf::Color::Green);
+	rect3.setOutlineThickness(1);
+	owDisplay.overWorld_texture.draw(rect3); 
+
+	sf::RectangleShape rect4(sf::Vector2f(1,1));
+	rect4.setPosition(getSpriteCenter());
+	rect4.setFillColor(sf::Color(0,0,0,0));
+	rect4.setOutlineColor(sf::Color::Cyan);
+	rect4.setOutlineThickness(1);
+	owDisplay.overWorld_texture.draw(rect4); 
 }

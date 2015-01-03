@@ -120,7 +120,7 @@ void Map::getCollidingTiles(const sf::FloatRect& rect, std::set<EntitySet*>& res
 
 	for(int i=left; i < right; i++) {
 		for(int j=top; j < bottom; j++) {
-			result.insert(&entities_grid(i,j));
+				result.insert(&entities_grid(i,j));
 		}
 	}
 

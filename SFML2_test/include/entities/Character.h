@@ -6,12 +6,13 @@
 
 class Collectible;
 class GameTicks;
+struct WaypointModule;
 
 class Character : public EntityPhysical
 {
 public:
 	Character(const sf::Vector2f& position, ZoneContainer& ZC, GameTicks& ticks, MoveAnimation& move_anim);
-	bool tryMoving(int value, DIRECTION::e, int ticks);
+	bool tryMoving(int value, DIRECTION::e);
 	virtual ~Character() override;
 	virtual void draw(OverWorldDisplay& owDisplay) override;
 	const sf::FloatRect getActivableZone() const;
@@ -28,5 +29,6 @@ protected:
 	MoveAnimation* move_anim;
 	int current_frame;
 	GameTicks& ticks;
+	WaypointModule* waypointModule;
 };
 

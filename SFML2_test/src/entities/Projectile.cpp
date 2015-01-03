@@ -90,7 +90,7 @@ void Projectile::draw(OverWorldDisplay& owDisplay) {
 	owDisplay.light_texture.draw(lightZone2, sf::RenderStates(sf::BlendAdd));
 }
 
-void Projectile::drawCollisionBox(OverWorldDisplay& owDisplay) { 
+void Projectile::drawDebugInfo(OverWorldDisplay& owDisplay) { 
 	sf::RectangleShape rect(sf::Vector2f(BoundingBoxRectReal.width, BoundingBoxRectReal.height));
 	rect.setPosition(BoundingBoxRectReal.left,BoundingBoxRectReal.top);
 	rect.setFillColor(sf::Color(0,0,0,0));

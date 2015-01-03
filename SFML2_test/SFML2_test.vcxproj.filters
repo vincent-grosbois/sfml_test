@@ -25,6 +25,9 @@
     <Filter Include="Header Files\utils">
       <UniqueIdentifier>{d40dd2cc-a096-4c6b-bebd-19db9850da7d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\AI">
+      <UniqueIdentifier>{4b1c06f7-94f3-4cbd-8ab4-e2cfa72c80ad}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\utils\SetUnionIterator.h">
@@ -150,6 +153,12 @@
     <ClInclude Include="FramePagedMemory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\AI\WaypointModule.h">
+      <Filter>Header Files\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\FramePagedMemory.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SceneManager.cpp">
@@ -242,8 +251,8 @@
     <ClCompile Include="src\entities\Projectile.cpp">
       <Filter>Source Files\Entities</Filter>
     </ClCompile>
-    <ClCompile Include="FramePagedMemory.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\utils\FramePagedMemory.cpp">
+      <Filter>Source Files\utils</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

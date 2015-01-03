@@ -30,7 +30,7 @@ public:
 	virtual void update(int delta_ms) {  }
 
 	virtual void draw(OverWorldDisplay& owDisplay) { }
-	virtual void drawCollisionBox(OverWorldDisplay& owDisplay) { }
+	virtual void drawDebugInfo(OverWorldDisplay& owDisplay) { }
 	
 	virtual sf::FloatRect getVisibilityRectangle() const { return sf::FloatRect(position, sf::Vector2f(1,1)); }
 	virtual sf::FloatRect getPresenceRectangle() const { return sf::FloatRect(position, sf::Vector2f(1,1)); }

@@ -154,6 +154,8 @@ private:
 
 	LightEntity* torchLight;
 
+	bool debug_key_pressed;
+
 private:
 	void changeZone(const std::string& newZC);
 	void bindContentToClock();

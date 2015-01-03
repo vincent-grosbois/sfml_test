@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FramePagedMemory.h" />
+    <ClInclude Include="include\AI\WaypointModule.h" />
     <ClInclude Include="include\BoxedText.h" />
     <ClInclude Include="include\BoxedTextScrollable.h" />
     <ClInclude Include="include\CallBackSystem.h" />
@@ -46,6 +47,7 @@
     <ClInclude Include="include\Tileset.h" />
     <ClInclude Include="include\TitleMenuScene.h" />
     <ClInclude Include="include\utils\Array2D.h" />
+    <ClInclude Include="include\utils\FramePagedMemory.h" />
     <ClInclude Include="include\utils\SetUnionIterator.h" />
     <ClInclude Include="include\utils\StorageProvider.h" />
     <ClInclude Include="include\utils\StringUtils.h" />
@@ -54,7 +56,6 @@
     <ClInclude Include="OverworldCommands.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="FramePagedMemory.cpp" />
     <ClCompile Include="src\BoxedText.cpp" />
     <ClCompile Include="src\BoxedTextScrollable.cpp" />
     <ClCompile Include="src\CallBackSystem.cpp" />
@@ -82,6 +83,7 @@
     <ClCompile Include="src\SceneManager.cpp" />
     <ClCompile Include="src\TilePlane.cpp" />
     <ClCompile Include="src\Tileset.cpp" />
+    <ClCompile Include="src\utils\FramePagedMemory.cpp" />
     <ClCompile Include="src\utils\StringUtils.cpp" />
     <ClCompile Include="src\ZoneContainer.cpp" />
     <ClCompile Include="src\ZoneContainerData.cpp" />

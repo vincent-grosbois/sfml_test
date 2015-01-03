@@ -15,10 +15,11 @@ Character::Character(const sf::Vector2f& position, ZoneContainer& ZC, GameTicks&
 	current_frame(0),
 	isMoving(false),
 	speed(185.f/1000),
-	ticks(ticks)
+	ticks(ticks),
+	waypointModule(NULL)
 {
-	spriteOffset.x = (boundingBoxSize.x - move_anim.getFrame(DIRECTION::DOWN,0).width )/2;
-	spriteOffset.y = (boundingBoxSize.y - move_anim.getFrame(DIRECTION::DOWN,0).height +2);
+	spriteOffset.x = - move_anim.getFrame(DIRECTION::DOWN,0).width/2;
+	spriteOffset.y = - move_anim.getFrame(DIRECTION::DOWN,0).height + 10;
 
 	sprite.setTexture(move_anim.getTexture());
 	sprite.setTextureRect(move_anim.getFrame(facingDir, current_frame ) );
@@ -39,7 +40,7 @@ void Character::draw(OverWorldDisplay& owDisplay) {
 }
 
 
-bool Character::tryMoving(int value, DIRECTION::e dir, int ticks) {
+bool Character::tryMoving(int value, DIRECTION::e dir) {
 
 	facingDir = dir;
 
@@ -70,20 +71,12 @@ bool Character::tryMoving(int value, DIRECTION::e dir, int ticks) {
 
 	float increment  = sign*speed*value;
 
-	if (increment > 32)
-		increment = 32;
-	else if(increment < -32)
-		increment = -32;
-
 	float oldvalue = *coord_to_change;
 
 	*coord_to_change +=  increment;
 
 
-	float boundingBoxWidth = boundingBoxSize.x;
-	float boundingBoxHeight = boundingBoxSize.y;
-
-	sf::FloatRect BoundingBoxRect(position.x, position.y, boundingBoxWidth, boundingBoxHeight);
+	sf::FloatRect BoundingBoxRect(position.x + boundingBoxOffset.x, position.y + boundingBoxOffset.y, boundingBoxSize.x, boundingBoxSize.y);
 
 	std::set<Map*>::const_iterator it_maps;
 	std::set<EntitySet*>::const_iterator it_set;
@@ -100,16 +93,16 @@ bool Character::tryMoving(int value, DIRECTION::e dir, int ticks) {
 
 			switch(dir) {
 			case DIRECTION::RIGHT:
-				*coord_to_change = collision_coords.x - boundingBoxWidth;
+				*coord_to_change = collision_coords.x + boundingBoxOffset.x;
 				break;
 			case DIRECTION::LEFT:
-				*coord_to_change = collision_coords.x + TILE_SIZE_X;
+				*coord_to_change = collision_coords.x + TILE_SIZE_X - boundingBoxOffset.x;
 				break;
 			case DIRECTION::DOWN:
-				*coord_to_change = collision_coords.y - boundingBoxHeight;
+				*coord_to_change = collision_coords.y + boundingBoxOffset.y;
 				break;
 			case DIRECTION::UP:
-				*coord_to_change = collision_coords.y + TILE_SIZE_Y;
+				*coord_to_change = collision_coords.y + TILE_SIZE_Y - boundingBoxOffset.y;
 				break;
 			}
 
@@ -122,7 +115,7 @@ bool Character::tryMoving(int value, DIRECTION::e dir, int ticks) {
 
 			increment = *coord_to_change - oldvalue;
 			facingDir = dir;
-			BoundingBoxRect = sf::FloatRect(position.x, position.y, boundingBoxWidth, boundingBoxHeight);	
+			BoundingBoxRect = sf::FloatRect(position.x + boundingBoxOffset.x, position.y + boundingBoxOffset.y, boundingBoxSize.x, boundingBoxSize.y);	
 		}
 
 
@@ -142,23 +135,23 @@ bool Character::tryMoving(int value, DIRECTION::e dir, int ticks) {
 				if(*it_element == this) 
 					continue;
 
-				if((*it_element)->intersectsForCollision(BoundingBoxRect, &temp_inter)
-					&& !(getType() == EntityType::PLAYER_CHARACTER && (*it_element)->getType() == EntityType::PROJECTILE)
-					
-					) { 
+				if(getType() == EntityType::PLAYER_CHARACTER && (*it_element)->getType() == EntityType::PROJECTILE)
+					continue;
 
+				if((*it_element)->intersectsForCollision(BoundingBoxRect, &temp_inter))
+				{ 
 					switch(dir) {
 					case DIRECTION::RIGHT:
-						*coord_to_change = temp_inter.left - boundingBoxWidth;
+						*coord_to_change = temp_inter.left + boundingBoxOffset.x;
 						break;
 					case DIRECTION::LEFT:
-						*coord_to_change = temp_inter.left + temp_inter.width;
+						*coord_to_change = temp_inter.left + temp_inter.width - boundingBoxOffset.x;
 						break;
 					case DIRECTION::DOWN:
-						*coord_to_change = temp_inter.top - boundingBoxHeight;
+						*coord_to_change = temp_inter.top + boundingBoxOffset.y;
 						break;
 					case DIRECTION::UP:
-						*coord_to_change = temp_inter.top + temp_inter.height;
+						*coord_to_change = temp_inter.top + temp_inter.height - boundingBoxOffset.y;
 						break;
 					}
 
@@ -168,10 +161,9 @@ bool Character::tryMoving(int value, DIRECTION::e dir, int ticks) {
 						return false; 
 					}
 
-
 					(*it_element)->onCollision(*this);
 
-					BoundingBoxRect = sf::FloatRect(position.x, position.y, boundingBoxWidth, boundingBoxHeight);	
+					BoundingBoxRect = sf::FloatRect(position.x+ boundingBoxOffset.x, position.y+ boundingBoxOffset.y, boundingBoxSize.x, boundingBoxSize.y);	
 					break;
 				}
 
@@ -194,7 +186,7 @@ bool Character::tryMoving(int value, DIRECTION::e dir, int ticks) {
 }
 
 const sf::FloatRect Character::getActivableZone() const {
-	float advance = 22;
+	const float advance = 22;
 	switch(facingDir) {
 	case DIRECTION::RIGHT:
 		return sf::FloatRect(BoundingBoxRectReal.left + BoundingBoxRectReal.width, BoundingBoxRectReal.top - boundingBoxSize.y/2, advance, 2*BoundingBoxRectReal.height);
@@ -228,11 +220,7 @@ void Character::activateThings() {
 
 		for (it_set = colliding_tiles.begin() ; it_set != colliding_tiles.end(); ++it_set) {
 
-			if(!(*it_set)->has_entities()) 
-				continue;
-
 			for( it_element = (*it_set)->entities().begin(); it_element != (*it_set)->entities().end(); ++it_element) {
-
 
 				if(*it_element != this) {
 

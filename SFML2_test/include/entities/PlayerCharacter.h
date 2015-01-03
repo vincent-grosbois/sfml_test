@@ -11,7 +11,7 @@ class PlayerCharacter : public Character
 public:
 	PlayerCharacter(const sf::Vector2f& position, ZoneContainer& ZC, GameTicks& ticks, MoveAnimation& move_anim, Overlay& overlay);
 
-	virtual void drawCollisionBox(OverWorldDisplay& owDisplay) override;
+	virtual void drawDebugInfo(OverWorldDisplay& owDisplay) override;
 
 	void DialogWindow(const std::string& str, bool forceFocus = false, NPC* originator = NULL);
 	void receiveItem(Collectible* collectible);
@@ -34,7 +34,7 @@ public:
 
 	bool tryMoving(int value, DIRECTION::e dir, int ticks, bool debug) {
 		if(!debug)
-			return Character::tryMoving(value, dir, ticks);
+			return Character::tryMoving(value, dir);
 		else {
 
 			facingDir = dir;
@@ -74,16 +74,10 @@ public:
 
 			*coord_to_change +=  increment;
 
-
 			float boundingBoxWidth = boundingBoxSize.x;
 			float boundingBoxHeight = boundingBoxSize.y;
 
-			sf::FloatRect BoundingBoxRect(position.x, position.y, boundingBoxWidth, boundingBoxHeight);
-
-
-			sf::Vector2f coll_coords;
-
-			BoundingBoxRectReal = BoundingBoxRect;
+			BoundingBoxRectReal = sf::FloatRect(position.x + boundingBoxOffset.x, position.y + boundingBoxOffset.y, boundingBoxWidth, boundingBoxHeight);
 
 			positionSprite();
 			isMoving = true;

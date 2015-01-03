@@ -1,8 +1,6 @@
 #include <iostream>
 #include <sstream>
 
-
-
 #include "OverWorldScene.h"
 #include "Tileset.h"
 #include "entities/NPC.h"
@@ -68,7 +66,8 @@ OverWorldScene::OverWorldScene(const MetaGameData& metaGameData, GameResource& g
 	metaGameData.clock_speed_factor),
 	myTotalTime(0),
 	myTotalTimeAlways(0),
-	gameResources(gr)
+	gameResources(gr),
+	debug_key_pressed(false)
 { }
 
 OverWorldScene::~OverWorldScene() {
@@ -156,6 +155,9 @@ void OverWorldScene::update(int deltaTime) {
 	pause_state.beginNewFrame();
 
 	owCommands.pollComands(*App);
+
+	debug_key_pressed = owCommands.isActive(OVERWORLD_COMMANDS::DEBUG) ? !debug_key_pressed : debug_key_pressed;
+
 	if (owCommands.isActive(OVERWORLD_COMMANDS::EXIT) ) {
 		close();
 	}
@@ -192,8 +194,6 @@ void OverWorldScene::update(int deltaTime) {
 
 	callbackSystem.callAllUpToTime(myTotalTime);
 
-	bool debug = owCommands.isActive(OVERWORLD_COMMANDS::DEBUG);
-
 
 	if(owCommands.isActive(OVERWORLD_COMMANDS::FLASHLIGHT)) {
 		owCommandsState.flashlight_on = !owCommandsState.flashlight_on;
@@ -201,7 +201,6 @@ void OverWorldScene::update(int deltaTime) {
 	}
 
 	if(owCommands.isActive(OVERWORLD_COMMANDS::ACTIVATE)) {
-		//PC->activateThings();
 		new Projectile(PC->getPosition(), *ZC);
 		new Projectile(PC->getPosition(), *ZC);
 		new Projectile(PC->getPosition(), *ZC);
@@ -216,8 +215,10 @@ void OverWorldScene::update(int deltaTime) {
 
 	PC_moved = false;
 
+	bool debug_move_through = owCommands.isActive(OVERWORLD_COMMANDS::DEBUG_NO_COLLIDE);
+
 	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_UP) ) {  
-		PC->tryMoving(deltaTime, DIRECTION::UP, 0, !owCommandsState.already_pressed_u, debug);
+		PC->tryMoving(deltaTime, DIRECTION::UP, 0, !owCommandsState.already_pressed_u, debug_move_through);
 		PC_moved = true;
 		owCommandsState.already_pressed_u = true;
 	} else {
@@ -225,7 +226,7 @@ void OverWorldScene::update(int deltaTime) {
 	}
 
 	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_DOWN) )  {
-		PC->tryMoving(deltaTime, DIRECTION::DOWN, 0, !owCommandsState.already_pressed_d, debug);
+		PC->tryMoving(deltaTime, DIRECTION::DOWN, 0, !owCommandsState.already_pressed_d, debug_move_through);
 		PC_moved = true;
 		owCommandsState.already_pressed_d= true;
 	}else {
@@ -233,7 +234,7 @@ void OverWorldScene::update(int deltaTime) {
 	}
 
 	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_LEFT) )  {
-		PC->tryMoving(deltaTime, DIRECTION::LEFT, 0, !owCommandsState.already_pressed_l, debug);
+		PC->tryMoving(deltaTime, DIRECTION::LEFT, 0, !owCommandsState.already_pressed_l, debug_move_through);
 		owCommandsState.already_pressed_l= true;
 		PC_moved = true;
 	}else {
@@ -241,7 +242,7 @@ void OverWorldScene::update(int deltaTime) {
 	}
 
 	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_RIGHT) )  { 
-		PC->tryMoving(deltaTime, DIRECTION::RIGHT, 0, !owCommandsState.already_pressed_r, debug);
+		PC->tryMoving(deltaTime, DIRECTION::RIGHT, 0, !owCommandsState.already_pressed_r, debug_move_through);
 		PC_moved = true;
 		owCommandsState.already_pressed_r= true;
 	}else {
@@ -249,31 +250,23 @@ void OverWorldScene::update(int deltaTime) {
 	}
 
 	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_UP_FAST) )  {  
-		PC->tryMoving(deltaTime*10, DIRECTION::UP, 0, owCommandsState.already_pressed_u, debug);
+		PC->tryMoving(deltaTime*10, DIRECTION::UP, 0, owCommandsState.already_pressed_u, debug_move_through);
 	}
 
 	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_DOWN_FAST))  {
-		PC->tryMoving(deltaTime*10, DIRECTION::DOWN, 0, owCommandsState.already_pressed_u, debug);
+		PC->tryMoving(deltaTime*10, DIRECTION::DOWN, 0, owCommandsState.already_pressed_u, debug_move_through);
 	}
 
 	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_LEFT_FAST))  {
-		PC->tryMoving(deltaTime*10, DIRECTION::LEFT, 0, owCommandsState.already_pressed_u, debug);
+		PC->tryMoving(deltaTime*10, DIRECTION::LEFT, 0, owCommandsState.already_pressed_u, debug_move_through);
 	}
 
 	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_RIGHT_FAST))  { 
-		PC->tryMoving(deltaTime*10, DIRECTION::RIGHT, 0,owCommandsState.already_pressed_u, debug);
+		PC->tryMoving(deltaTime*10, DIRECTION::RIGHT, 0,owCommandsState.already_pressed_u, debug_move_through);
 	}
-
-
-	/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))  { 
-		changeZone("../../ressources/overworld.txt");
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))  { 
-		changeZone("../../ressources/cave.txt");
-	}*/
 
 	if(torchLight->isOn_()) {
-		torchLight->setPosition(PC->getPosition());
+		torchLight->setPosition(PC->getSpriteCenter());
 	}
 
 	if(!PC_moved)
@@ -297,7 +290,6 @@ void OverWorldScene::update(int deltaTime) {
 	camera.cameraSetForFrame();
 
 	//update list of visible maps :
-
 	std::set<Map*> newVisibleMaps = ZC->getCollidingMaps(camera.getViewRect());
 	UpdateMapGraphics updater(camera, ZC->getTileset().getNeedUpdating());
 	iterate_over_union(newVisibleMaps, loadedMaps, updater);
@@ -411,8 +403,10 @@ void OverWorldScene::draw() {
 	entities_draw = clock() - entities_draw;
 
 #ifdef _DEBUG
-	for(auto entities_v_it = entities_visible.begin() ; entities_v_it != entities_visible.end(); ++entities_v_it) {
-		(*entities_v_it)->drawCollisionBox(owDisplay);
+	if(debug_key_pressed) {
+		for(auto entities_v_it = entities_visible.begin() ; entities_v_it != entities_visible.end(); ++entities_v_it) {
+			(*entities_v_it)->drawDebugInfo(owDisplay);
+		}
 	}
 #endif
 
