@@ -11,6 +11,8 @@
 #include "CallBackSystem.h"
 #include "OverworldCommands.h"
 
+#include "utils/FramePagedMemory.h"
+
 struct Tone;
 class PlayerCharacter;
 class Overlay;
@@ -163,8 +165,12 @@ private:
 	void loadEntities();
 
 private:
-	std::set<LightEntity*> lights_updated;
-	std::vector<Entity*> entities_visible;
+
+	//these containers have to be build / rebuild at each frame as they rely on FramePagedMemory allocator
+	std::set<LightEntity*,  std::less<LightEntity*>,  FramePagedMemory<LightEntity*>>* lights_updated;
+	std::vector<Entity* ,  FramePagedMemory<Entity*>>* entities_visible;
+
+
 	clock_t part1_total;
 	clock_t part2_total;
 };

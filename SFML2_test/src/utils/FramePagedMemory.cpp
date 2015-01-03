@@ -1,6 +1,6 @@
 #include "utils/FramePagedMemory.h"
 
-std::vector<int, FramePagedMemory<int>> vec;
+PagedVector pagedVectorStatic;
 
 PagedVector::PagedVector():
 	pageSize(5*1024*1024),

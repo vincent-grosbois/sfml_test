@@ -58,7 +58,7 @@ private :
 	PagedVector& operator=(PagedVector&);
 };
 
-PagedVector pagedVectorStatic;
+extern PagedVector pagedVectorStatic;
 
 template<typename T>
 class FramePagedMemory {

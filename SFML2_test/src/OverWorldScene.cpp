@@ -15,6 +15,7 @@
 #include "entities/Projectile.h"
 
 #include "utils/SetUnionIterator.h"
+#include "utils/FramePagedMemory.h"
 
 #include "MapEntitiesLoader.h"
 #include "GameResource.h"
@@ -99,6 +100,7 @@ void OverWorldScene::loadEntities() {
 }
 
 void OverWorldScene::onInit() {
+	pagedVectorStatic.resetForNewFrame();
 
 	owDisplay.init(metaGameData);
 	owCommandsState.init();
@@ -116,9 +118,12 @@ void OverWorldScene::onInit() {
 	loadEntities();
 
 	auto& anim = gameResources.getMoveAnimation("../../ressources/male_walkcycle.png");
+	
 	PC = new PlayerCharacter(ZC->getData().startingPos, *ZC, ticks, anim, *overlay);
-
 	torchLight = new LightEntity(PC->getSpriteCenter(), *ZC, 300, 20, sf::Color(10,10,10,250));
+
+	lights_updated = 0;
+	entities_visible = 0;
 }
 
 
@@ -152,6 +157,8 @@ struct UpdateMapGraphics {
 
 void OverWorldScene::update(int deltaTime) {
 
+	pagedVectorStatic.resetForNewFrame();
+
 	pause_state.beginNewFrame();
 
 	owCommands.pollComands(*App);
@@ -174,7 +181,7 @@ void OverWorldScene::update(int deltaTime) {
 	ZC->getTileset().setNeedUpdating(false);
 	callbackSystemAlways.callAllUpToTime(myTotalTimeAlways);
 
-
+	//end the update loop here if gameplay is paused :
 	if(pause_state) {
 		camera.cameraSetForFrame();
 		for(auto& map : loadedMaps) {
@@ -184,6 +191,8 @@ void OverWorldScene::update(int deltaTime) {
 		return;
 	}
 	
+	//this part will be updated only if the gameplay isn't paused:
+
 	camera.newFrame();
 	ticks.update(deltaTime);
 
@@ -297,8 +306,10 @@ void OverWorldScene::update(int deltaTime) {
 
 	//manage entities:
 	ZC->deleteElements();
-	entities_visible.clear();
-	lights_updated.clear();
+	delete lights_updated;
+	lights_updated = new std::set<LightEntity*,  std::less<LightEntity*>,  FramePagedMemory<LightEntity*>>();
+	delete entities_visible;
+	entities_visible = new std::vector<Entity* ,  FramePagedMemory<Entity*>>();
 
 	clock_t start;
 
@@ -308,7 +319,8 @@ void OverWorldScene::update(int deltaTime) {
 
 	clock_t part1_start;
 	clock_t part2_start;
-	std::set<Entity*> entities_updated;
+
+	std::set<Entity* , std::less<Entity*>,  FramePagedMemory<Entity*>> entities_updated;
 
 	//std::cout <<  "\nstart entity loop\n";
 	for (auto map = loadedMaps.begin() ; map != loadedMaps.end(); ++map ) {
@@ -324,7 +336,7 @@ void OverWorldScene::update(int deltaTime) {
 				part1_total += clock() - part1_start;
 				part2_start = clock();
 				if( camera.getViewRect().intersects(current_ent->getVisibilityRectangle())) {
-					entities_visible.push_back(current_ent);
+					entities_visible->push_back(current_ent);
 				}
 				part2_total += clock() - part2_start;
 			}
@@ -335,14 +347,14 @@ void OverWorldScene::update(int deltaTime) {
 	}
 	//std::cout <<  "\nend entity loop\n";
 	part2_start = clock();
-	std::sort(entities_visible.begin(), entities_visible.end(), z_orderer);
+	std::sort(entities_visible->begin(), entities_visible->end(), z_orderer);
 	part2_total += clock() - part2_start;
 
 	for (auto map = loadedMaps.begin() ; map != loadedMaps.end(); ++map ) {
 
 		for(std::set<LightEntity*>::iterator it_ent = (*map)->lights_list().begin(); it_ent != (*map)->lights_list().end(); ) {
 
-			if(lights_updated.count((*it_ent)) == 0) { 
+			if(lights_updated->count((*it_ent)) == 0) { 
 				LightEntity* entity_ptr = *it_ent;
 
 				assert(entity_ptr->getType() == EntityType::LIGHT);
@@ -350,7 +362,7 @@ void OverWorldScene::update(int deltaTime) {
 				(*it_ent++)->update(myDeltaTime);
 
 				if( camera.getViewRect().intersects(entity_ptr->getVisibilityRectangle())) {
-					lights_updated.insert(entity_ptr);
+					lights_updated->insert(entity_ptr);
 				}
 				part1_total += clock() - part1_start;
 			}
@@ -392,11 +404,11 @@ void OverWorldScene::draw() {
 
 	//draw the entities:
 	clock_t entities_draw = clock();
-	for(auto& ent : entities_visible) {
+	for(auto& ent : *entities_visible) {
 		ent->draw(owDisplay);
 	}
 
-	for(auto& light : lights_updated) {
+	for(auto& light : *lights_updated) {
 		light->draw(owDisplay);
 	}
 
@@ -404,8 +416,8 @@ void OverWorldScene::draw() {
 
 #ifdef _DEBUG
 	if(debug_key_pressed) {
-		for(auto entities_v_it = entities_visible.begin() ; entities_v_it != entities_visible.end(); ++entities_v_it) {
-			(*entities_v_it)->drawDebugInfo(owDisplay);
+		for(auto& ent : *entities_visible) {
+			ent->drawDebugInfo(owDisplay);
 		}
 	}
 #endif
