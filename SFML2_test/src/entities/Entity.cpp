@@ -87,7 +87,8 @@ void Entity::registerInMaps() {
 		std::set<EntitySet*> new_set_vibility;
 		//get the set of tiles that collide with the character in the given map
 		(*map)->getCollidingEntitySets(getPresenceRectangle(), new_set_presence);
-		(*map)->getCollidingVisibilitySets(getVisibilityRectangle(), new_set_vibility);
+		auto visRect = getVisibilityRectangle();
+		(*map)->getCollidingVisibilitySets(visRect, new_set_vibility);
 
 		std::set<EntitySet*>& old_set_presence = locationList[*map].first;
 		std::set<EntitySet*>& old_set_visibility = locationList[*map].second;

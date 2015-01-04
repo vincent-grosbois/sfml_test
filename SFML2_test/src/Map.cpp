@@ -125,10 +125,10 @@ void Map::getCollidingEntitySets(const sf::FloatRect& rect, std::set<EntitySet*>
 void Map::getCollidingVisibilitySets(const sf::FloatRect& rect, std::set<EntitySet*>& result)  {
 
 	tile_units left = static_cast<tile_units>(floor( rect.left / VISIBILITY_BLOCK_SIZE_X )) - offset.x*VISIBILITY_BLOCK_PER_MAP_X/TILES_PER_MAP_X;
-	tile_units right = static_cast<tile_units>(ceil( (rect.left + rect.width) / TILE_SIZE_X ))  - offset.x*VISIBILITY_BLOCK_PER_MAP_X/TILES_PER_MAP_X;
+	tile_units right = static_cast<tile_units>(ceil( (rect.left + rect.width) / VISIBILITY_BLOCK_SIZE_X ))  - offset.x*VISIBILITY_BLOCK_PER_MAP_X/TILES_PER_MAP_X;
 
 	tile_units top = static_cast<tile_units>(floor( rect.top / VISIBILITY_BLOCK_SIZE_Y ))  - offset.y*VISIBILITY_BLOCK_PER_MAP_Y/TILES_PER_MAP_Y;
-	tile_units bottom = static_cast<tile_units>(ceil(  (rect.top + rect.height) / TILE_SIZE_Y )) - offset.y*VISIBILITY_BLOCK_PER_MAP_Y/TILES_PER_MAP_Y;
+	tile_units bottom = static_cast<tile_units>(ceil(  (rect.top + rect.height) / VISIBILITY_BLOCK_SIZE_Y )) - offset.y*VISIBILITY_BLOCK_PER_MAP_Y/TILES_PER_MAP_Y;
 
 	if(top<0)
 		top = 0;
