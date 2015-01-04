@@ -137,7 +137,6 @@ private:
 	GameClock gameClock;
 	GameTicks ticks;
 
-	bool drawMap;
 	bool PC_moved;
 
 	Overlay* overlay;

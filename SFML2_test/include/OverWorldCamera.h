@@ -5,6 +5,7 @@
 class OverWorldCamera {
 public:
 	OverWorldCamera(const sf::Vector2f& defaultSize);
+	OverWorldCamera(const sf::Vector2i& defaultSize);
 
 	bool movedSinceLastFrame() const;
 	void newFrame();

@@ -6,11 +6,12 @@
 #include <SFML/Graphics/VertexArray.hpp>
 
 #include <iostream>
+#include "../Constants.h"
 
 class Projectile : public EntityPhysical
 {
 public:
-	Projectile(const sf::Vector2f & position,  ZoneContainer& ZC);
+	Projectile(const sf::Vector2f & position,  ZoneContainer& ZC, DIRECTION::e dir);
 	virtual ~Projectile(void);
 	virtual void update(int delta_ms) override;
 	virtual void draw(OverWorldDisplay& owDisplay) override;

@@ -46,6 +46,7 @@
     <ClInclude Include="include\TilePlane.h" />
     <ClInclude Include="include\Tileset.h" />
     <ClInclude Include="include\TitleMenuScene.h" />
+    <ClInclude Include="include\utils\AngleUtils.h" />
     <ClInclude Include="include\utils\Array2D.h" />
     <ClInclude Include="include\utils\FramePagedMemory.h" />
     <ClInclude Include="include\utils\SetUnionIterator.h" />
@@ -83,6 +84,7 @@
     <ClCompile Include="src\SceneManager.cpp" />
     <ClCompile Include="src\TilePlane.cpp" />
     <ClCompile Include="src\Tileset.cpp" />
+    <ClCompile Include="src\utils\AngleUtils.cpp" />
     <ClCompile Include="src\utils\FramePagedMemory.cpp" />
     <ClCompile Include="src\utils\StringUtils.cpp" />
     <ClCompile Include="src\ZoneContainer.cpp" />

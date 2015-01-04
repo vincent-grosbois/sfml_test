@@ -81,5 +81,12 @@ void PlayerCharacter::drawDebugInfo(OverWorldDisplay& owDisplay) {
 	rect4.setFillColor(sf::Color(0,0,0,0));
 	rect4.setOutlineColor(sf::Color::Cyan);
 	rect4.setOutlineThickness(1);
-	owDisplay.overWorld_texture.draw(rect4); 
+	owDisplay.overWorld_texture.draw(rect4);
+
+	sf::RectangleShape rect5(sf::Vector2f(getVisibilityRectangle().width, getVisibilityRectangle().height));
+	rect5.setPosition(getVisibilityRectangle().left,getVisibilityRectangle().top);
+	rect5.setFillColor(sf::Color(0,0,0,0));
+	rect5.setOutlineColor(sf::Color::Yellow);
+	rect5.setOutlineThickness(1);
+	owDisplay.overWorld_texture.draw(rect5); 
 }

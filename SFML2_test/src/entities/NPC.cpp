@@ -199,4 +199,11 @@ void  NPC::drawDebugInfo(OverWorldDisplay& owDisplay)  {
 
 		owDisplay.overWorld_texture.draw(waypoint.data(), waypointModule->waypoints.size() + 1, sf::LinesStrip);
 	}
+
+	sf::RectangleShape rect5(sf::Vector2f(getVisibilityRectangle().width, getVisibilityRectangle().height));
+	rect5.setPosition(getVisibilityRectangle().left,getVisibilityRectangle().top);
+	rect5.setFillColor(sf::Color(0,0,0,0));
+	rect5.setOutlineColor(sf::Color::Yellow);
+	rect5.setOutlineThickness(1);
+	owDisplay.overWorld_texture.draw(rect5); 
 }

@@ -61,7 +61,7 @@ void OverWorldDisplay::clearAndSetView(const sf::View& view) {
 
 OverWorldScene::OverWorldScene(const MetaGameData& metaGameData, GameResource& gr) :
 	metaGameData(metaGameData),
-	camera(sf::Vector2f(float(metaGameData.resolution.x),float(metaGameData.resolution.y))),
+	camera(metaGameData.resolution),
 	gameClock(
 	metaGameData.start_time_hours*3600 + metaGameData.start_time_minutes*60, 
 	metaGameData.clock_speed_factor),
@@ -106,7 +106,6 @@ void OverWorldScene::onInit() {
 	owCommandsState.init();
 	OverWorldTone::init();
 
-	drawMap = false;
 	PC_moved = false;
 
 	overlay = new Overlay(*App);
@@ -210,12 +209,7 @@ void OverWorldScene::update(int deltaTime) {
 	}
 
 	if(owCommands.isActive(OVERWORLD_COMMANDS::ACTIVATE)) {
-		new Projectile(PC->getPosition(), *ZC);
-		new Projectile(PC->getPosition(), *ZC);
-		new Projectile(PC->getPosition(), *ZC);
-		new Projectile(PC->getPosition(), *ZC);
-		new Projectile(PC->getPosition(), *ZC);
-		new Projectile(PC->getPosition(), *ZC);
+		new Projectile(PC->getPosition(), *ZC, PC->getFacingDir());
 	}
 
 	if(owCommands.isActive(OVERWORLD_COMMANDS::ZOOM_RESET)) {
@@ -292,9 +286,9 @@ void OverWorldScene::update(int deltaTime) {
 	else if (owCommands.isActive(OVERWORLD_COMMANDS::ZOOM_OUT_FAST)) 
 		camera.zoom(1.1f);
 
-	if(owCommands.isActive(OVERWORLD_COMMANDS::DISPLAY_MAP)) 
+	/*if(owCommands.isActive(OVERWORLD_COMMANDS::DISPLAY_MAP)) 
 		drawMap = true;
-
+	*/
 
 	camera.cameraSetForFrame();
 
@@ -423,8 +417,7 @@ void OverWorldScene::draw() {
 		oss << "\n" << ZC->getData().name;
 		overlay->FPStext.setString(oss.str());
 	}
-	overlay->draw(drawMap);
-	drawMap = false;
+	overlay->draw(false);
 
 	//
 
