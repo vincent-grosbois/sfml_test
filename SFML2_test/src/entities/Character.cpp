@@ -5,7 +5,7 @@
 #include "ZoneContainer.h"
 #include "TilePlane.h"
 #include "Map.h"
-#include "OverWorldScene.h"
+#include "overworld/OverWorldScene.h"
 #include "GameTicks.h"
 
 Character::Character(const sf::Vector2f& position, ZoneContainer& ZC, GameTicks& ticks, MoveAnimation& move_anim):

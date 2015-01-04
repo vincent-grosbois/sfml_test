@@ -1,7 +1,7 @@
 #include "entities/LightEntity.h"
 
 #include "ZoneContainer.h"
-#include "OverWorldScene.h"
+#include "overworld/OverWorldScene.h"
 #include "ZoneContainer.h"
 #include "TilePlane.h"
 #include "Map.h"

@@ -47,7 +47,6 @@ public:
 	void unloadAllGraphics();
 	void updateGraphics(const OverWorldCamera& camera,  bool checkAnimatedTilesUpdate);
 	void loadAndWakeUp(const OverWorldCamera& camera);
-	bool isGraphicsTotallyUnloaded() const { return graphicsTotallyUnloaded; };
 	sf::Vector2i size() const; // <* map size, in tile units
 
 	void dumpLoadedTiles() const ;
@@ -60,7 +59,6 @@ public:
 	Array2D<sf::VertexArray> tileBlocks;
 
 protected:
-	bool graphicsTotallyUnloaded;
 	Tileset& tileset;
 	void unloadGraphics(const sf::FloatRect& rect);
 	sf::Vertex* getQuadVertexFromTileIndex(int x, int y);

@@ -20,7 +20,7 @@ DIRECTION::e getOppositeDir(DIRECTION::e dir) {
 
 NPC::NPC(sf::Vector2f const& position,  ZoneContainer& ZC, GameTicks& ticks, MoveAnimation& move_anim):
 	Character(position,  ZC, ticks, move_anim),
-	behavior(NPC_BEHAVIOR::WANDER)
+	behavior(NPC_BEHAVIOR::WANDER_NOSTOP)
 {
 	type = EntityType::NPC;
 	this->waypointModule = new WaypointModule();

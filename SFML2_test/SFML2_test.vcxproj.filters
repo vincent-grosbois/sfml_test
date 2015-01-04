@@ -28,6 +28,12 @@
     <Filter Include="Header Files\AI">
       <UniqueIdentifier>{4b1c06f7-94f3-4cbd-8ab4-e2cfa72c80ad}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\overworld">
+      <UniqueIdentifier>{1de0a1f8-879c-4a8e-a7d9-59257463091e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\overworld">
+      <UniqueIdentifier>{c3160a68-a98c-48ff-93be-881bf75bd236}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\utils\SetUnionIterator.h">
@@ -102,25 +108,10 @@
     <ClInclude Include="include\OverlayScreen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\OverWorldCamera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\OverWorldScene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\OverWorldTone.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\SceneManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Tile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OverworldCommands.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\OverworldCommands.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\entities\Character.h">
@@ -161,6 +152,18 @@
     </ClInclude>
     <ClInclude Include="include\utils\AngleUtils.h">
       <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\overworld\OverWorldCamera.h">
+      <Filter>Header Files\overworld</Filter>
+    </ClInclude>
+    <ClInclude Include="include\overworld\OverworldCommands.h">
+      <Filter>Header Files\overworld</Filter>
+    </ClInclude>
+    <ClInclude Include="include\overworld\OverWorldScene.h">
+      <Filter>Header Files\overworld</Filter>
+    </ClInclude>
+    <ClInclude Include="include\overworld\OverWorldTone.h">
+      <Filter>Header Files\overworld</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -212,20 +215,8 @@
     <ClCompile Include="src\Overlay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\OverWorldCamera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\OverWorldScene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\OverWorldTone.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\utils\StringUtils.cpp">
       <Filter>Source Files\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="src\OverworldCommands.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\entities\Character.cpp">
       <Filter>Source Files\Entities</Filter>
@@ -259,6 +250,21 @@
     </ClCompile>
     <ClCompile Include="src\utils\AngleUtils.cpp">
       <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\overworld\OverWorldCamera.cpp">
+      <Filter>Source Files\overworld</Filter>
+    </ClCompile>
+    <ClCompile Include="src\overworld\OverworldCommands.cpp">
+      <Filter>Source Files\overworld</Filter>
+    </ClCompile>
+    <ClCompile Include="src\overworld\OverWorldScene.cpp">
+      <Filter>Source Files\overworld</Filter>
+    </ClCompile>
+    <ClCompile Include="src\overworld\OverWorldTone.cpp">
+      <Filter>Source Files\overworld</Filter>
+    </ClCompile>
+    <ClCompile Include="src\overworld\OverworldDisplay.cpp">
+      <Filter>Source Files\overworld</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

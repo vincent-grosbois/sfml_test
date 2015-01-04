@@ -1,6 +1,6 @@
 #include "entities/Projectile.h"
 
-#include "OverWorldScene.h"
+#include "overworld/OverWorldScene.h"
 
 #include "utils/AngleUtils.h"
 

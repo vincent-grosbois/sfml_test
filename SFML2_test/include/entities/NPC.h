@@ -1,7 +1,7 @@
 #pragma once
 #include "Character.h"
 #include "ZoneContainer.h"
-#include "OverWorldScene.h"
+#include "overworld/OverWorldScene.h"
 
 enum class NPC_BEHAVIOR  { STILL, WANDER, WANDER_NOSTOP, USE_WAYPOINT } ;
 

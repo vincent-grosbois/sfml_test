@@ -7,14 +7,13 @@
 #include "Tileset.h"
 #include "Map.h"
 #include "TileAnimator.h"
-#include "OverWorldScene.h"
+#include "overworld/OverWorldScene.h"
 
 
 TilePlane::TilePlane(Tileset& tileset, sf::Vector2<tile_units> size, sf::Vector2<tile_units> offset, Array2D<int>& table):
 elements(size),
 	offset(offset),
 	tileset(tileset),
-	graphicsTotallyUnloaded(true),
 	myMap(NULL),
 	tileBlocks(TILE_BLOCK_PER_MAP_X,TILE_BLOCK_PER_MAP_Y)
 {
@@ -116,12 +115,10 @@ void TilePlane::updateGraphics(const OverWorldCamera& camera, bool checkAnimated
 }
 
 void TilePlane::unloadAllGraphics() {
-	graphicsTotallyUnloaded = true;
 }
 
 void TilePlane::loadAndWakeUp(const OverWorldCamera& camera) {
 	updateGraphics(camera, true);
-	graphicsTotallyUnloaded = false;
 }
 
 

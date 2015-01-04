@@ -2,7 +2,7 @@
 
 #include "entities/EntityPhysical.h"
 #include "ZoneContainer.h"
-#include "OverWorldScene.h"
+#include "overworld/OverWorldScene.h"
 
 
 EntityPhysical::EntityPhysical(const sf::Vector2f& position,  ZoneContainer& ZC):

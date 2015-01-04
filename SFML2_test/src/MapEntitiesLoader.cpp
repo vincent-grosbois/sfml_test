@@ -6,7 +6,7 @@
 #include <cassert>
 #include <fstream>
 
-#include "OverWorldScene.h"
+#include "overworld/OverWorldScene.h"
 
 #include "entities/LightEntity.h"
 #include "entities/NPC.h"

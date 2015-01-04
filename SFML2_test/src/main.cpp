@@ -2,7 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "OverWorldScene.h"
+#include "overworld/OverWorldScene.h"
 #include "SceneManager.h"
 #include "TitleMenuScene.h"
 #include "ZoneContainerData.h"
