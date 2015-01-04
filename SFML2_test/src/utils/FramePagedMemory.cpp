@@ -20,6 +20,8 @@ PagedVector::~PagedVector() {
 
 void PagedVector::resetForNewFrame() {
 
+
+	//std::cout << current_byte_offset << '\n';
 	//remove pages except the first one
 	auto it = pages.begin();
 	++it;

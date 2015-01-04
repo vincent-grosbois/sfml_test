@@ -77,7 +77,7 @@ public:
 			float boundingBoxWidth = boundingBoxSize.x;
 			float boundingBoxHeight = boundingBoxSize.y;
 
-			BoundingBoxRectReal = sf::FloatRect(position.x + boundingBoxOffset.x, position.y + boundingBoxOffset.y, boundingBoxWidth, boundingBoxHeight);
+			boundingBoxRectReal = sf::FloatRect(position.x + boundingBoxOffset.x, position.y + boundingBoxOffset.y, boundingBoxWidth, boundingBoxHeight);
 
 			positionSprite();
 			isMoving = true;

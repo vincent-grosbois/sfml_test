@@ -12,9 +12,6 @@ public:
 	virtual void draw(OverWorldDisplay& owDisplay) override;
 	virtual sf::FloatRect getVisibilityRectangle() const override;
 
-	virtual void registerInMaps() override;
-	virtual void unregister() override;
-
 	virtual ~LightEntity() override;
 
 	virtual void update(int delta_ms) override;

@@ -16,7 +16,7 @@ public:
 
 protected:
 	sf::Vector2f boundingBoxSize;
-	sf::FloatRect BoundingBoxRectReal;
+	sf::FloatRect boundingBoxRectReal;
 	sf::Sprite sprite;
 	sf::Vector2f spriteOffset;
 	sf::Vector2f boundingBoxOffset;
@@ -36,9 +36,9 @@ public:
 
 	virtual sf::FloatRect getVisibilityRectangle() const override { return getSpriteRectangle();}
 
-	virtual sf::FloatRect getPresenceRectangle() const override{ return BoundingBoxRectReal; }
+	virtual sf::FloatRect getPresenceRectangle() const override{ return boundingBoxRectReal; }
 
-	sf::FloatRect getBoundingBoxRectReal() const { return BoundingBoxRectReal; }
+	sf::FloatRect getBoundingBoxRectReal() const { return boundingBoxRectReal; }
 
 	virtual bool intersectsForCollision(const sf::FloatRect& rectangle, sf::FloatRect* result = NULL) override;
 };

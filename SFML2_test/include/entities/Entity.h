@@ -50,7 +50,7 @@ public:
 protected:
 	ZoneContainer* ZC;
 	sf::Vector2f position;
-	std::map<Map*, std::set<EntitySet*>> locationList;
+	std::map<Map*, std::pair<std::set<EntitySet*>,std::set<EntitySet*>>> locationList;
 	bool markedForDeletion;
 	EntityType type;
 

@@ -328,7 +328,6 @@ void OverWorldScene::update(int deltaTime) {
 		for(auto ent = (*map)->entities_list().begin();  ent != (*map)->entities_list().end(); ) {
 			//std::cout << *ent << '\t';
 			if(entities_updated.count(*ent) == 0) { 
-				assert((*ent)->getType() != EntityType::LIGHT);
 				part1_start = clock();
 				auto current_ent = *ent;
 				(*ent++)->update(myDeltaTime);
@@ -349,26 +348,6 @@ void OverWorldScene::update(int deltaTime) {
 	part2_start = clock();
 	std::sort(entities_visible->begin(), entities_visible->end(), z_orderer);
 	part2_total += clock() - part2_start;
-
-	for (auto map = loadedMaps.begin() ; map != loadedMaps.end(); ++map ) {
-
-		for(std::set<LightEntity*>::iterator it_ent = (*map)->lights_list().begin(); it_ent != (*map)->lights_list().end(); ) {
-
-			if(lights_updated->count((*it_ent)) == 0) { 
-				LightEntity* entity_ptr = *it_ent;
-
-				assert(entity_ptr->getType() == EntityType::LIGHT);
-				part1_start = clock();
-				(*it_ent++)->update(myDeltaTime);
-
-				if( camera.getViewRect().intersects(entity_ptr->getVisibilityRectangle())) {
-					lights_updated->insert(entity_ptr);
-				}
-				part1_total += clock() - part1_start;
-			}
-			else   ++it_ent;
-		}
-	}
 }
 
 

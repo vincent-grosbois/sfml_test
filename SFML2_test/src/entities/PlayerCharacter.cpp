@@ -43,7 +43,7 @@ void PlayerCharacter::receiveItem(Collectible* collectible) {
 
 void PlayerCharacter::teleportTo(sf::Vector2f pos, ZoneContainer* destinationZC) {
 	position = pos;
-	BoundingBoxRectReal = sf::FloatRect(pos.x, pos.y, boundingBoxSize.x,  boundingBoxSize.y);
+	boundingBoxRectReal = sf::FloatRect(pos.x, pos.y, boundingBoxSize.x,  boundingBoxSize.y);
 	positionSprite();
 
 	unregister();
@@ -55,8 +55,8 @@ void PlayerCharacter::teleportTo(sf::Vector2f pos, ZoneContainer* destinationZC)
 }
 
 void PlayerCharacter::drawDebugInfo(OverWorldDisplay& owDisplay) { 
-	sf::RectangleShape rect(sf::Vector2f(BoundingBoxRectReal.width, BoundingBoxRectReal.height));
-	rect.setPosition(BoundingBoxRectReal.left,BoundingBoxRectReal.top);
+	sf::RectangleShape rect(sf::Vector2f(boundingBoxRectReal.width, boundingBoxRectReal.height));
+	rect.setPosition(boundingBoxRectReal.left,boundingBoxRectReal.top);
 	rect.setFillColor(sf::Color(0,0,0,0));
 	rect.setOutlineColor(sf::Color::Blue);
 	rect.setOutlineThickness(1);

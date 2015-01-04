@@ -141,16 +141,16 @@ sf::FloatRect NPC::getAwarenessZone() const {
 
 	switch(facingDir) {
 	case DIRECTION::RIGHT:
-		return sf::FloatRect(BoundingBoxRectReal.left + BoundingBoxRectReal.width, BoundingBoxRectReal.top - side_size_y, advance, width);
+		return sf::FloatRect(boundingBoxRectReal.left + boundingBoxRectReal.width, boundingBoxRectReal.top - side_size_y, advance, width);
 		break;
 	case DIRECTION::LEFT:
-		return sf::FloatRect(BoundingBoxRectReal.left - advance, BoundingBoxRectReal.top -  side_size_y, advance, width);
+		return sf::FloatRect(boundingBoxRectReal.left - advance, boundingBoxRectReal.top -  side_size_y, advance, width);
 		break;
 	case DIRECTION::DOWN:
-		return sf::FloatRect(BoundingBoxRectReal.left - side_size_x, BoundingBoxRectReal.top + BoundingBoxRectReal.height, width, advance);
+		return sf::FloatRect(boundingBoxRectReal.left - side_size_x, boundingBoxRectReal.top + boundingBoxRectReal.height, width, advance);
 		break;
 	case DIRECTION::UP:
-		return sf::FloatRect(BoundingBoxRectReal.left - side_size_x, BoundingBoxRectReal.top - advance, width, advance);
+		return sf::FloatRect(boundingBoxRectReal.left - side_size_x, boundingBoxRectReal.top - advance, width, advance);
 		break;
 	}
 	assert(false);
@@ -159,8 +159,8 @@ sf::FloatRect NPC::getAwarenessZone() const {
 
 void  NPC::drawDebugInfo(OverWorldDisplay& owDisplay)  { 
 
-	sf::RectangleShape rect(sf::Vector2f(BoundingBoxRectReal.width, BoundingBoxRectReal.height));
-	rect.setPosition(BoundingBoxRectReal.left,BoundingBoxRectReal.top);
+	sf::RectangleShape rect(sf::Vector2f(boundingBoxRectReal.width, boundingBoxRectReal.height));
+	rect.setPosition(boundingBoxRectReal.left,boundingBoxRectReal.top);
 	rect.setFillColor(sf::Color(0,0,0,0));
 	rect.setOutlineColor(sf::Color::Blue);
 	rect.setOutlineThickness(1);

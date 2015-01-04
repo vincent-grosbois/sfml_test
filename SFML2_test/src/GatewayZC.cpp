@@ -27,12 +27,12 @@ bool GatewayZC::onCollision(Entity& activator) {
 bool GatewayZC::intersectsForCollision(const sf::FloatRect& rectangle, sf::FloatRect* result) 
 {
 
-	sf::FloatRect BoundingBoxRectReal(position, sf::Vector2f(10,10));
+	sf::FloatRect boundingBoxRectReal(position, sf::Vector2f(10,10));
 	// Compute overlapping rect
-	float left =  std::max(BoundingBoxRectReal.left,   rectangle.left);
-	float top =  std::max(BoundingBoxRectReal.top,    rectangle.top);
-	float right = std::min(BoundingBoxRectReal.left + BoundingBoxRectReal.width,  rectangle.left + rectangle.width);
-	float bottom = std::min(BoundingBoxRectReal.top + BoundingBoxRectReal.height, rectangle.top + rectangle.height);
+	float left =  std::max(boundingBoxRectReal.left,   rectangle.left);
+	float top =  std::max(boundingBoxRectReal.top,    rectangle.top);
+	float right = std::min(boundingBoxRectReal.left + boundingBoxRectReal.width,  rectangle.left + rectangle.width);
+	float bottom = std::min(boundingBoxRectReal.top + boundingBoxRectReal.height, rectangle.top + rectangle.height);
 	sf::Rect<float> OverlappingRect( left,
 		top,
 		right - left,

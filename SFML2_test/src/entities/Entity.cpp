@@ -19,8 +19,11 @@ void Entity::unregister() {
 	for(auto it = locationList.begin(); it != locationList.end(); ++it) {
 		it->first->entities_list().erase(this);
 		//std::cout << "erasing " << this << " from " << it->first->getId() << '\n';
-		for(auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
-					(**it2).remove_entity(this);
+		for(auto it2 = it->second.first.begin(); it2 != it->second.first.end(); ++it2) {
+			(**it2).remove_entity(this);
+		}
+		for(auto it2 = it->second.second.begin(); it2 != it->second.second.end(); ++it2) {
+			(**it2).remove_entity(this);
 		}
 	}
 
@@ -60,10 +63,12 @@ void Entity::registerInMaps() {
 
 			//std::cout << "leaving map\n";
 			//OnLeavingMap();
-			for(auto entity_set = it->second.begin(); entity_set != it->second.end(); ++entity_set) {
+			for(auto entity_set = it->second.first.begin(); entity_set != it->second.first.end(); ++entity_set) {
 				(**entity_set).remove_entity(this);
 			}
-
+			for(auto entity_set = it->second.second.begin(); entity_set != it->second.second.end(); ++entity_set) {
+				(**entity_set).remove_entity(this);
+			}
 			//remove from the map's global list of characters:
 			//std::cout << "unregister " << this << '\n';
 			it->first->entities_list().erase(this);
@@ -78,23 +83,26 @@ void Entity::registerInMaps() {
 
 	for(std::set<Map*>::const_iterator map = colliding_maps.begin(); map != colliding_maps.end(); ++map) {
 
-		std::set<EntitySet*> new_set;
-
+		std::set<EntitySet*> new_set_presence;
+		std::set<EntitySet*> new_set_vibility;
 		//get the set of tiles that collide with the character in the given map
-		(*map)->getCollidingTiles(getPresenceRectangle(), new_set);
+		(*map)->getCollidingEntitySets(getPresenceRectangle(), new_set_presence);
+		(*map)->getCollidingVisibilitySets(getVisibilityRectangle(), new_set_vibility);
 
-		std::set<EntitySet*>& old_set = locationList[*map];
+		std::set<EntitySet*>& old_set_presence = locationList[*map].first;
+		std::set<EntitySet*>& old_set_visibility = locationList[*map].second;
 
-		if(old_set.empty())  { 
+		if(old_set_presence.empty() || old_set_visibility.empty())  { 
 			//insert ourself in the global list of characters from the map:
 			(*map)->entities_list().insert(this);
 		} 
 
-		iterate_over_union(old_set, new_set, UpdateElementSetOldNew(this));
+		iterate_over_union(old_set_presence, new_set_presence, UpdateElementSetOldNew(this));
+		iterate_over_union(old_set_visibility, new_set_vibility, UpdateElementSetOldNew(this));
 
 		//insert the new map into our own list of maps:
-		old_set = std::move(new_set); 
-
+		old_set_presence = std::move(new_set_presence); 
+		old_set_visibility = std::move(new_set_vibility);
 	}
 
 	if(colliding_maps.empty()) {

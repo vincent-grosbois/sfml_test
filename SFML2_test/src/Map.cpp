@@ -22,6 +22,7 @@ Map::Map(ZoneContainer& ZC, TilePlane* layer0, TilePlane* layer1, TilePlane* lay
 	id(id),
 	size(layer0->size()),
 	entities_grid(size),
+	visibility_grid(VISIBILITY_BLOCK_PER_MAP_X,VISIBILITY_BLOCK_PER_MAP_Y),
 	offset(layer0->offset),
 	myZC(&ZC)
 {
@@ -49,9 +50,6 @@ void Map::drawLayer(const sf::View& view, OverWorldDisplay& owDisplay, int layer
 Map::~Map()
 {
 	for(std::set<Entity*>::iterator it = entities_on_map.begin(); it != entities_on_map.end(); ) 
-		delete (*it++);
-
-	for(std::set<LightEntity*>::iterator it = lights_on_map.begin(); it != lights_on_map.end(); ) 
 		delete (*it++);
 
 	delete layer0;
@@ -87,8 +85,6 @@ void Map::loadTilesFromNothing(const OverWorldCamera& camera) {
 		layer2->loadAndWakeUp(camera);
 }
 
-
-
 void Map::unloadAll() {
 	if(layer0)
 		layer0->unloadAllGraphics();
@@ -100,7 +96,7 @@ void Map::unloadAll() {
 		layer2->unloadAllGraphics();
 }
 
-void Map::getCollidingTiles(const sf::FloatRect& rect, std::set<EntitySet*>& result)  {
+void Map::getCollidingEntitySets(const sf::FloatRect& rect, std::set<EntitySet*>& result)  {
 
 	tile_units left = static_cast<tile_units>(floor( rect.left / TILE_SIZE_X )) - offset.x;
 	tile_units right = static_cast<tile_units>(ceil( (rect.left + rect.width) / TILE_SIZE_X ))  - offset.x;
@@ -121,6 +117,32 @@ void Map::getCollidingTiles(const sf::FloatRect& rect, std::set<EntitySet*>& res
 	for(int i=left; i < right; i++) {
 		for(int j=top; j < bottom; j++) {
 				result.insert(&entities_grid(i,j));
+		}
+	}
+
+}
+
+void Map::getCollidingVisibilitySets(const sf::FloatRect& rect, std::set<EntitySet*>& result)  {
+
+	tile_units left = static_cast<tile_units>(floor( rect.left / VISIBILITY_BLOCK_SIZE_X )) - offset.x*VISIBILITY_BLOCK_PER_MAP_X/TILES_PER_MAP_X;
+	tile_units right = static_cast<tile_units>(ceil( (rect.left + rect.width) / TILE_SIZE_X ))  - offset.x*VISIBILITY_BLOCK_PER_MAP_X/TILES_PER_MAP_X;
+
+	tile_units top = static_cast<tile_units>(floor( rect.top / VISIBILITY_BLOCK_SIZE_Y ))  - offset.y*VISIBILITY_BLOCK_PER_MAP_Y/TILES_PER_MAP_Y;
+	tile_units bottom = static_cast<tile_units>(ceil(  (rect.top + rect.height) / TILE_SIZE_Y )) - offset.y*VISIBILITY_BLOCK_PER_MAP_Y/TILES_PER_MAP_Y;
+
+	if(top<0)
+		top = 0;
+	if(left<0)
+		left = 0;
+	if(bottom > VISIBILITY_BLOCK_PER_MAP_Y)
+		bottom = VISIBILITY_BLOCK_PER_MAP_Y;
+	if(right > VISIBILITY_BLOCK_PER_MAP_X)
+		right = VISIBILITY_BLOCK_PER_MAP_X;
+
+
+	for(int i=left; i < right; i++) {
+		for(int j=top; j < bottom; j++) {
+			result.insert(&visibility_grid(i,j));
 		}
 	}
 

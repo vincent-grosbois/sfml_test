@@ -121,7 +121,7 @@ bool Character::tryMoving(int value, DIRECTION::e dir) {
 
 		std::set<EntitySet*> new_set;
 
-		(*it_maps)->getCollidingTiles(BoundingBoxRect, new_set);
+		(*it_maps)->getCollidingEntitySets(BoundingBoxRect, new_set);
 
 		sf::Rect<float> temp_inter;
 
@@ -175,7 +175,7 @@ bool Character::tryMoving(int value, DIRECTION::e dir) {
 
 
 	facingDir = dir;
-	BoundingBoxRectReal = BoundingBoxRect;
+	boundingBoxRectReal = BoundingBoxRect;
 
 	positionSprite();
 	isMoving = true;
@@ -189,16 +189,16 @@ const sf::FloatRect Character::getActivableZone() const {
 	const float advance = 22;
 	switch(facingDir) {
 	case DIRECTION::RIGHT:
-		return sf::FloatRect(BoundingBoxRectReal.left + BoundingBoxRectReal.width, BoundingBoxRectReal.top - boundingBoxSize.y/2, advance, 2*BoundingBoxRectReal.height);
+		return sf::FloatRect(boundingBoxRectReal.left + boundingBoxRectReal.width, boundingBoxRectReal.top - boundingBoxSize.y/2, advance, 2*boundingBoxRectReal.height);
 		break;
 	case DIRECTION::LEFT:
-		return sf::FloatRect(BoundingBoxRectReal.left - advance, BoundingBoxRectReal.top - boundingBoxSize.y/2, advance, 2*BoundingBoxRectReal.height);
+		return sf::FloatRect(boundingBoxRectReal.left - advance, boundingBoxRectReal.top - boundingBoxSize.y/2, advance, 2*boundingBoxRectReal.height);
 		break;
 	case DIRECTION::DOWN:
-		return sf::FloatRect(BoundingBoxRectReal.left - boundingBoxSize.x/2, BoundingBoxRectReal.top + BoundingBoxRectReal.height, 2*BoundingBoxRectReal.width, advance);
+		return sf::FloatRect(boundingBoxRectReal.left - boundingBoxSize.x/2, boundingBoxRectReal.top + boundingBoxRectReal.height, 2*boundingBoxRectReal.width, advance);
 		break;
 	case DIRECTION::UP:
-		return sf::FloatRect(BoundingBoxRectReal.left - boundingBoxSize.x/2, BoundingBoxRectReal.top - advance, 2*BoundingBoxRectReal.width, advance);
+		return sf::FloatRect(boundingBoxRectReal.left - boundingBoxSize.x/2, boundingBoxRectReal.top - advance, 2*boundingBoxRectReal.width, advance);
 		break;
 	}
 
@@ -216,7 +216,7 @@ void Character::activateThings() {
 
 	for(iter_maps = set.begin(); iter_maps != set.end(); ++iter_maps) {
 
-		(*iter_maps)->getCollidingTiles(getActivableZone(), colliding_tiles);
+		(*iter_maps)->getCollidingEntitySets(getActivableZone(), colliding_tiles);
 
 		for (it_set = colliding_tiles.begin() ; it_set != colliding_tiles.end(); ++it_set) {
 

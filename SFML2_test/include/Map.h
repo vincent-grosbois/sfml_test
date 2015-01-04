@@ -95,18 +95,14 @@ public:
 
 	int getId() const;
 
-	void getCollidingTiles(const sf::FloatRect& rect, std::set<EntitySet*>& result);
+	void getCollidingEntitySets(const sf::FloatRect& rect, std::set<EntitySet*>& result);
+	void getCollidingVisibilitySets(const sf::FloatRect& rect, std::set<EntitySet*>& result);
 
 	void dumpLoadedTiles() const ;
 
 	std::set<Entity*>& entities_list()  {
 		return entities_on_map;
 	}
-
-	std::set<LightEntity*>& lights_list()  {
-		return lights_on_map;
-	}
-
 	bool collideWithLayer(int layer_id, const sf::FloatRect& rect, sf::Vector2f* collidingPos) const;
 
 private:
@@ -121,9 +117,9 @@ private:
 	TilePlane* layer2;
 
 	Array2D<EntitySet> entities_grid;
+	Array2D<EntitySet> visibility_grid;
 
 	std::set<Entity*> entities_on_map;
-	std::set<LightEntity*> lights_on_map;
 
 private:
 	Map(const Map&);

@@ -15,7 +15,7 @@ Projectile::Projectile(const sf::Vector2f & position,  ZoneContainer& ZC):
 	boundingBoxSize.x = 20;
 	boundingBoxSize.y = 20;
 
-	BoundingBoxRectReal = sf::FloatRect(position.x, position.y, boundingBoxSize.x, boundingBoxSize.y);
+	boundingBoxRectReal = sf::FloatRect(position.x, position.y, boundingBoxSize.x, boundingBoxSize.y);
 
 	speed = 1.5f*350.f/1000;
 	angle = rand();
@@ -60,7 +60,7 @@ void Projectile::update(int delta_ms) {
 	position.x += speed*delta_ms*cos(angle);
 	position.y += speed*delta_ms*sin(angle);
 
-	BoundingBoxRectReal = sf::FloatRect(position.x, position.y, boundingBoxSize.x, boundingBoxSize.y);
+	boundingBoxRectReal = sf::FloatRect(position.x, position.y, boundingBoxSize.x, boundingBoxSize.y);
 
 	registerInMaps();
 
@@ -91,8 +91,8 @@ void Projectile::draw(OverWorldDisplay& owDisplay) {
 }
 
 void Projectile::drawDebugInfo(OverWorldDisplay& owDisplay) { 
-	sf::RectangleShape rect(sf::Vector2f(BoundingBoxRectReal.width, BoundingBoxRectReal.height));
-	rect.setPosition(BoundingBoxRectReal.left,BoundingBoxRectReal.top);
+	sf::RectangleShape rect(sf::Vector2f(boundingBoxRectReal.width, boundingBoxRectReal.height));
+	rect.setPosition(boundingBoxRectReal.left,boundingBoxRectReal.top);
 	rect.setFillColor(sf::Color(0,0,0,0));
 	rect.setOutlineColor(sf::Color::Blue);
 	rect.setOutlineThickness(1);
