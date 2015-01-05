@@ -12,6 +12,7 @@
 #include "OverworldCommands.h"
 
 #include "utils/FramePagedMemory.h"
+#include <SFML/System/Vector2.hpp>
 
 struct Tone;
 class PlayerCharacter;
@@ -107,6 +108,29 @@ public:
 
 };
 
+
+struct ChangeZCRequest {
+	std::string newZC;
+	sf::Vector2f position;
+};
+
+struct PauseRequest {
+	bool pause;
+};
+
+struct PauseRequest;
+struct ChangeZCRequest;
+
+struct OverworldGameStateRequest {
+
+OverworldGameStateRequest():
+	myPauseRequest(NULL),
+		myChangeZCRequest(NULL) { }
+
+	PauseRequest*	myPauseRequest;
+	ChangeZCRequest* myChangeZCRequest;
+};
+
 class OverWorldScene : public GameScene
 {
 public:
@@ -130,6 +154,7 @@ private:
 	OverWorldDisplay owDisplay;
 	OverworldCommands owCommands;
 	OverWorldCommandsState owCommandsState;
+	OverworldGameStateRequest owStateChangeRequest;
 
 	CallBackSystem callbackSystem;		 // <* Callback system used only when the game is paused
 	CallBackSystem callbackSystemAlways; // <* Callback system used even when the game is paused

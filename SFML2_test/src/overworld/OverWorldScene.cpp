@@ -64,7 +64,7 @@ void OverWorldScene::unbindContentToClock() {
 }
 
 void OverWorldScene::loadEntities() {
-	generateEntityFromFile(ZC->getData().entitiesDataPath , *ZC, gameResources, ticks);
+	generateEntityFromFile(ZC->getData().entitiesDataPath , *ZC, gameResources, ticks, owStateChangeRequest);
 }
 
 void OverWorldScene::onInit() {
@@ -141,6 +141,14 @@ void OverWorldScene::update(int deltaTime) {
 	pagedVectorStatic.resetForNewFrame();
 
 	pause_state.beginNewFrame();
+
+
+	if(owStateChangeRequest.myChangeZCRequest) {
+		changeZone(owStateChangeRequest.myChangeZCRequest->newZC);
+		delete owStateChangeRequest.myChangeZCRequest;
+		owStateChangeRequest.myChangeZCRequest = 0;
+	}
+
 
 	owCommands.pollComands(*App);
 
@@ -463,11 +471,12 @@ void OverWorldScene::draw() {
 
 void OverWorldScene::changeZone(const std::string& newZC) {
 	
-	auto newZone = new ZoneContainer(newZC, gameResources);
+	auto newZone = new ZoneContainer(metaGameData.basePath+newZC, gameResources);
 	PC->teleportTo(newZone->getData().startingPos, newZone);
 	unbindContentToClock();
 	delete ZC;
 	ZC = newZone;
+	torchLight = new LightEntity(PC->getSpriteCenter(), *ZC, 300, 20, sf::Color(10,10,10,250));
 	visibleMaps.clear();
 	loadEntities();
 	bindContentToClock();

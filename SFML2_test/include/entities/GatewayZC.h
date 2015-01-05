@@ -1,25 +1,30 @@
 #pragma once
-#include "Entity.h"
+#include "EntityPhysical.h"
 
-class GatewayZC : public Entity
+
+struct OverworldGameStateRequest;
+
+
+class GatewayZC : public EntityPhysical
 {
 public:
-	GatewayZC(sf::Vector2f const& position,  ZoneContainer& ZC, ZoneContainer& destination, sf::Vector2f position_destination);
+	GatewayZC(const sf::Vector2f& position, ZoneContainer& ZC, OverworldGameStateRequest& request, const std::string& destinationZC, const sf::Vector2f& position_destination);
 	
 	virtual bool onCollision(Entity& activator) override;
 	
-	//virtual void drawDebugInfo(OverWorldDisplay& owDisplay) override {}// ZoneContainer::worldTexture->draw(sf::Shape::Rectangle(sf::FloatRect(position, sf::Vector2f(10,10)), sf::Color::White)); };
+	virtual ~GatewayZC() override { unregister(); }
 
-	ZoneContainer* getDestination() const { return teleport_ZC; };
-	sf::Vector2f getDestinationPos() const { return teleport_position; };
+	std::string getDestination() const { return destinationZC; }
+	sf::Vector2f getDestinationPos() const { return destinationPosition; }
+	bool isDestinationInThisZC() const { return destinationZC.empty(); }
 
 	virtual sf::FloatRect getVisibilityRectangle() const override{ return sf::FloatRect(position.x, position.y,  position.x +  10,  position.y + 10);};
-	
-	virtual bool intersectsForCollision (const sf::FloatRect& rectangle, sf::FloatRect* result = NULL) override;
+
 
 protected:
-	ZoneContainer* teleport_ZC;
-	sf::Vector2f teleport_position;
+	std::string destinationZC;
+	sf::Vector2f destinationPosition;
+	OverworldGameStateRequest& request;
 
 };
 

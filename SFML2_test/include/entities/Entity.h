@@ -17,7 +17,8 @@ enum class EntityType {
 	PLAYER_CHARACTER,
 	NPC,
 	LIGHT,
-	PROJECTILE
+	PROJECTILE,
+	GATEWAY
 };
 
 

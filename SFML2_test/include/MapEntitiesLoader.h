@@ -83,5 +83,6 @@ public:
 std::map<std::string, FieldValue> processString(const std::string& str);
 
 class GameResource;
-void entityFactory(const std::string& desc, ZoneContainer& ZC, GameResource& gr,  GameTicks& ticks);
-void generateEntityFromFile(const std::string& fileName, ZoneContainer& ZC, GameResource& gr, GameTicks& ticks);
+struct OverworldGameStateRequest;
+void entityFactory(const std::string& desc, ZoneContainer& ZC, GameResource& gr,  GameTicks& ticks, OverworldGameStateRequest& request);
+void generateEntityFromFile(const std::string& fileName, ZoneContainer& ZC, GameResource& gr, GameTicks& ticks,  OverworldGameStateRequest& request);

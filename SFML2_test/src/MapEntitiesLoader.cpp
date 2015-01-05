@@ -10,6 +10,7 @@
 
 #include "entities/LightEntity.h"
 #include "entities/NPC.h"
+#include "entities/GatewayZC.h"
 #include "TilePlane.h"
 #include "utils/StringUtils.h"
 #include "GameResource.h"
@@ -240,7 +241,7 @@ std::map<std::string, FieldValue> processString(const std::string& str) {
 	return map;
 }
 
-void generateEntityFromFile(const std::string& fileName, ZoneContainer& ZC, GameResource& gr, GameTicks& ticks) {
+void generateEntityFromFile(const std::string& fileName, ZoneContainer& ZC, GameResource& gr, GameTicks& ticks, OverworldGameStateRequest& request) {
 
 	std::string line;
 	std::ifstream myfile (fileName);
@@ -248,14 +249,14 @@ void generateEntityFromFile(const std::string& fileName, ZoneContainer& ZC, Game
 	{
 		while ( std::getline (myfile,line) )
 		{
-			entityFactory(line, ZC, gr, ticks);
+			entityFactory(line, ZC, gr, ticks, request);
 		}
 		myfile.close();
 	}
 	else std::cout << "Unable to open file " << fileName; 
 }
 
-void entityFactory(const std::string& desc, ZoneContainer& ZC, GameResource& gr, GameTicks& ticks) {
+void entityFactory(const std::string& desc, ZoneContainer& ZC, GameResource& gr, GameTicks& ticks, OverworldGameStateRequest& request) {
 
 	auto map = processString(desc);
 
@@ -323,6 +324,12 @@ void entityFactory(const std::string& desc, ZoneContainer& ZC, GameResource& gr,
 		}
 		std::cout << "done, deleted "<< deleted <<" out of "<< max_NPC << " NPCs\n";
 
+	}
+	else if (type == LoadableEntityType::TELEPORTER) {
+		auto pos = map["pos"].vect2f();
+		auto destinationZone = map["destinationZone"].string();
+		auto destination = map["destination"].vect2f();
+		new GatewayZC(pos, ZC, request, destinationZone, destination);
 	}
 	else {
 		assert(false); //unknown entity type
