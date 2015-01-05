@@ -157,20 +157,16 @@ private:
 
 	bool debug_key_pressed;
 
+	std::set<Entity*> entities_visible;
+
+	
+	clock_t part1_total;
+	clock_t part2_total;
+
 private:
 	void changeZone(const std::string& newZC);
 	void bindContentToClock();
 	void unbindContentToClock();
 	void loadEntities();
-
-private:
-
-	//these containers have to be build / rebuild at each frame as they rely on FramePagedMemory allocator
-	std::set<LightEntity*,  std::less<LightEntity*>,  FramePagedMemory<LightEntity*>>* lights_updated;
-	std::vector<Entity* ,  FramePagedMemory<Entity*>>* entities_visible;
-
-
-	clock_t part1_total;
-	clock_t part2_total;
 };
 

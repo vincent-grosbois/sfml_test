@@ -27,7 +27,7 @@ public:
 	Entity(const sf::Vector2f& position,  ZoneContainer& ZC);
 	virtual ~Entity() {  }
 	
-	virtual void update(int delta_ms) {  }
+	virtual void update(int delta_ms, bool will_be_drawn) {  }
 
 	virtual void draw(OverWorldDisplay& owDisplay) { }
 	virtual void drawDebugInfo(OverWorldDisplay& owDisplay) { }

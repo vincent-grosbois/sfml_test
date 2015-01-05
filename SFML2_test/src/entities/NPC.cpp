@@ -58,7 +58,7 @@ bool NPC::moveAtRandom(float value) {
 
 }
 
-void NPC::update(int value)  { 
+void NPC::update(int value, bool will_be_drawn)  { 
 
 	if(behavior == NPC_BEHAVIOR::WANDER ){
 

@@ -32,7 +32,7 @@ LightEntity::LightEntity(sf::Vector2f const& position,  ZoneContainer& ZC, float
 }
 
 
-void LightEntity::update(int delta_ms) {
+void LightEntity::update(int delta_ms, bool will_be_drawn) {
 	//color.a += 0.1*delta_ms;
 	//color.g += 0.1*delta_ms;
 	//color.b += 0.03*delta_ms;

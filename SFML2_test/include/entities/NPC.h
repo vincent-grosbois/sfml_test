@@ -13,7 +13,7 @@ class NPC :
 public:
 	NPC(sf::Vector2f const& position,  ZoneContainer& ZC, GameTicks& ticks, MoveAnimation& move_anim);
 	~NPC();
-	virtual void update(int delta_ms) override;
+	virtual void update(int delta_ms, bool will_be_drawn) override;
 
 	bool moveAtRandom(float value);
 

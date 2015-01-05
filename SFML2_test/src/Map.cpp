@@ -122,7 +122,7 @@ void Map::getCollidingEntitySets(const sf::FloatRect& rect, std::set<EntitySet*>
 
 }
 
-void Map::getCollidingVisibilitySets(const sf::FloatRect& rect, std::set<EntitySet*>& result)  {
+void Map::getCollidingVisibilitySets(const sf::FloatRect& rect, std::set<EntitySet*>& result, bool only_return_non_empty_sets)  {
 
 	tile_units left = static_cast<tile_units>(floor( rect.left / VISIBILITY_BLOCK_SIZE_X )) - offset.x*VISIBILITY_BLOCK_PER_MAP_X/TILES_PER_MAP_X;
 	tile_units right = static_cast<tile_units>(ceil( (rect.left + rect.width) / VISIBILITY_BLOCK_SIZE_X ))  - offset.x*VISIBILITY_BLOCK_PER_MAP_X/TILES_PER_MAP_X;
@@ -139,10 +139,20 @@ void Map::getCollidingVisibilitySets(const sf::FloatRect& rect, std::set<EntityS
 	if(right > VISIBILITY_BLOCK_PER_MAP_X)
 		right = VISIBILITY_BLOCK_PER_MAP_X;
 
-
-	for(int i=left; i < right; i++) {
-		for(int j=top; j < bottom; j++) {
-			result.insert(&visibility_grid(i,j));
+	if( only_return_non_empty_sets ) {
+		for(int i=left; i < right; i++) {
+			for(int j=top; j < bottom; j++) {
+				if(visibility_grid(i,j).has_entities()) {
+					result.insert(&visibility_grid(i,j));
+				}
+			}
+		}
+	}
+	else {
+		for(int i=left; i < right; i++) {
+			for(int j=top; j < bottom; j++) {
+				result.insert(&visibility_grid(i,j));
+			}
 		}
 	}
 

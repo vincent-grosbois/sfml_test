@@ -14,7 +14,7 @@ public:
 
 	virtual ~LightEntity() override;
 
-	virtual void update(int delta_ms) override;
+	virtual void update(int delta_ms, bool will_be_drawn) override;
 
 	//float getRadius() { return radius; };
 

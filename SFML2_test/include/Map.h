@@ -96,7 +96,7 @@ public:
 	int getId() const;
 
 	void getCollidingEntitySets(const sf::FloatRect& rect, std::set<EntitySet*>& result);
-	void getCollidingVisibilitySets(const sf::FloatRect& rect, std::set<EntitySet*>& result);
+	void getCollidingVisibilitySets(const sf::FloatRect& rect, std::set<EntitySet*>& result, bool only_return_non_empty_sets = false);
 
 	void dumpLoadedTiles() const ;
 

@@ -64,7 +64,7 @@ Projectile::~Projectile(void)
 	//std::cout << "projectile removed\n";
 }
 
-void Projectile::update(int delta_ms) {
+void Projectile::update(int delta_ms, bool will_be_drawn) {
 	position.x += speed*delta_ms*cos(angle);
 	position.y += speed*delta_ms*sin(angle);
 
@@ -105,4 +105,11 @@ void Projectile::drawDebugInfo(OverWorldDisplay& owDisplay) {
 	rect.setOutlineColor(sf::Color::Blue);
 	rect.setOutlineThickness(1);
 	owDisplay.overWorld_texture.draw(rect); 
+
+	sf::RectangleShape rect5(sf::Vector2f(getVisibilityRectangle().width, getVisibilityRectangle().height));
+	rect5.setPosition(getVisibilityRectangle().left,getVisibilityRectangle().top);
+	rect5.setFillColor(sf::Color(0,0,0,0));
+	rect5.setOutlineColor(sf::Color::Yellow);
+	rect5.setOutlineThickness(1);
+	owDisplay.overWorld_texture.draw(rect5); 
 }

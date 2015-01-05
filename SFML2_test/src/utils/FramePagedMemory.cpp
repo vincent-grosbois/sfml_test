@@ -1,9 +1,10 @@
 #include "utils/FramePagedMemory.h"
+#include <iostream>
 
 PagedVector pagedVectorStatic;
 
 PagedVector::PagedVector():
-	pageSize(5*1024*1024),
+	pageSize(5*1024*1024), // 5 MB 
 	current_byte_offset(0),
 	current_page(0)
 {
@@ -21,14 +22,13 @@ PagedVector::~PagedVector() {
 void PagedVector::resetForNewFrame() {
 
 
-	//std::cout << current_byte_offset << '\n';
 	//remove pages except the first one
 	auto it = pages.begin();
 	++it;
 
 	for( ; it != pages.end(); ) {
 		free(it->first);
-		pages.erase(it++);
+		it = pages.erase(it);
 	}
 
 	//reset page count

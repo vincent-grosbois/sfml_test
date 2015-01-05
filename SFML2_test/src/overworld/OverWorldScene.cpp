@@ -24,7 +24,7 @@
 
 bool z_orderer (const Entity* lhs, const Entity* rhs) {
 	return lhs->getPosition().y < rhs->getPosition().y;
-}
+};
 
 
 OverWorldScene::OverWorldScene(const MetaGameData& metaGameData, GameResource& gr) :
@@ -89,8 +89,6 @@ void OverWorldScene::onInit() {
 	PC = new PlayerCharacter(ZC->getData().startingPos, *ZC, ticks, anim, *overlay);
 	torchLight = new LightEntity(PC->getSpriteCenter(), *ZC, 300, 20, sf::Color(10,10,10,250));
 
-	lights_updated = 0;
-	entities_visible = 0;
 }
 
 
@@ -120,16 +118,19 @@ struct UpdateMapGraphics {
 	bool checkAnimatedTilesUpdate;
 };
 
+const float update_margin_x = 300;
+const float update_margin_y = 300;
+
 sf::FloatRect getUpdateRect(const sf::FloatRect& rect) {
 	auto rect2 = rect;
-	rect2.left -= 300;
-	rect2.top -= 300;
-	rect2.width += 600;
-	rect2.height += 600;
+	rect2.left -= update_margin_x;
+	rect2.top -= update_margin_y;
+	rect2.width += 2*update_margin_x;
+	rect2.height += 2*update_margin_y;
 	return rect2;
 }
 
-bool isTooFarForUpdate(const Entity* ent, const sf::FloatRect& updateRect) {
+inline bool isTooFarForUpdate(const Entity* ent, const sf::FloatRect& updateRect) {
 
 	return !updateRect.contains(ent->getPosition());
 
@@ -273,9 +274,9 @@ void OverWorldScene::update(int deltaTime) {
 
 	camera.cameraSetForFrame();
 
-	auto cameraCenter = camera.getCenter();
-	auto viewRect = camera.getViewRect();
-	auto entityUpdateRect = getUpdateRect(viewRect);
+	sf::Vector2f cameraCenter = camera.getCenter();
+	sf::FloatRect viewRect = camera.getViewRect();
+	sf::FloatRect entityUpdateRect = getUpdateRect(viewRect);
 
 	//update list of visible maps :
 	std::set<Map*> newVisibleMaps = ZC->getCollidingMaps(viewRect);
@@ -286,10 +287,8 @@ void OverWorldScene::update(int deltaTime) {
 
 	//manage entities:
 	ZC->deleteElements();
-	delete lights_updated;
-	lights_updated = new std::set<LightEntity*, std::less<LightEntity*>, FramePagedMemory<LightEntity*>>();
-	delete entities_visible;
-	entities_visible = new std::vector<Entity*, FramePagedMemory<Entity*>>();
+
+	entities_visible.clear();
 
 	clock_t start;
 
@@ -302,6 +301,54 @@ void OverWorldScene::update(int deltaTime) {
 
 	std::set<Entity*, std::less<Entity*>, FramePagedMemory<Entity*>> entities_updated;
 
+	part2_start = clock();
+	for (auto map = visibleMaps.begin() ; map != visibleMaps.end(); ++map ) {
+		std::set<EntitySet*> res;
+		(*map)->getCollidingVisibilitySets(viewRect, res, true);
+
+		for(auto& entitySet : res) {
+			
+			//this set can have been emptied due to entity update from within the loop
+			if(!entitySet->has_entities()) {
+				continue;
+			}
+
+			std::set<Entity*>& set = entitySet->entities();
+
+			for(auto ent = set.begin();  entitySet->has_entities() && ent != set.end(); ) {
+
+				if(!viewRect.intersects((*ent)->getVisibilityRectangle())) {
+					//entity is in the visibility set but not in view
+					++ent;
+					continue;
+				}
+
+
+
+				//visible entities have to be updated :
+				if(entities_updated.count(*ent) != 0) {
+					++ent;
+					continue;
+				}
+
+				part1_start = clock();
+				Entity* current_ent = *ent;
+				(*ent++)->update(myDeltaTime, true);
+				entities_updated.insert(current_ent);
+
+				if(!current_ent->isMarkedForDeletion()) { //TODO : remove if not visible now due to update
+					entities_visible.insert(current_ent);
+				}
+
+				part1_total += clock() - part1_start;
+			}
+		}
+	}
+
+	part2_total += clock() - part2_start;
+
+	//handle update of entities that are going to be drawn:
+
 	//std::cout <<  "\nstart entity loop\n";
 	for (auto map = newEntityUpdateMaps.begin() ; map != newEntityUpdateMaps.end(); ++map ) {
 		//std::cout <<  "\n\n";
@@ -311,7 +358,7 @@ void OverWorldScene::update(int deltaTime) {
 				++ent;
 				continue;
 			}
-				
+
 			if(entities_updated.count(*ent) != 0) {
 				++ent;
 				continue;
@@ -319,20 +366,16 @@ void OverWorldScene::update(int deltaTime) {
 
 			part1_start = clock();
 			Entity* current_ent = *ent;
-			(*ent++)->update(myDeltaTime);
+			(*ent++)->update(myDeltaTime, false);
 			entities_updated.insert(current_ent);
+
+			//TODO : add to entities_visible if visible now
+
 			part1_total += clock() - part1_start;
-			part2_start = clock();
-			if( camera.getViewRect().intersects(current_ent->getVisibilityRectangle())) {
-				entities_visible->push_back(current_ent);
-			}
-			part2_total += clock() - part2_start;
 		}
 	}
-	//std::cout <<  "\nend entity loop\n";
-	part2_start = clock();
-	std::sort(entities_visible->begin(), entities_visible->end(), z_orderer);
-	part2_total += clock() - part2_start;
+
+
 }
 
 
@@ -368,23 +411,26 @@ void OverWorldScene::draw() {
 
 	//draw the entities:
 	clock_t entities_draw = clock();
-	for(auto& ent : *entities_visible) {
+
+	std::vector<Entity*, FramePagedMemory<Entity*>> entities_y_sorted;
+	entities_y_sorted.reserve(entities_visible.size());
+
+	for(auto& ent : entities_visible) {
+		entities_y_sorted.push_back(ent);
+	}
+
+	std::sort(entities_y_sorted.begin(), entities_y_sorted.end(), z_orderer);
+
+	for(auto& ent : entities_y_sorted) {
 		ent->draw(owDisplay);
 	}
-
-	for(auto& light : *lights_updated) {
-		light->draw(owDisplay);
-	}
-
 	entities_draw = clock() - entities_draw;
 
-#ifdef _DEBUG
 	if(debug_key_pressed) {
-		for(auto& ent : *entities_visible) {
+		for(auto& ent : entities_visible) {
 			ent->drawDebugInfo(owDisplay);
 		}
 	}
-#endif
 
 
 	//
