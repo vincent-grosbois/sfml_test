@@ -1,7 +1,10 @@
 #include "entities/NPC.h"
 #include "entities/PlayerCharacter.h"
+#include "utils/DrawingUtils.h"
 #include "GameTicks.h"
 #include "AI/WaypointModule.h"
+
+using namespace utils;
 
 DIRECTION::e getOppositeDir(DIRECTION::e dir) {
 
@@ -157,35 +160,16 @@ sf::FloatRect NPC::getAwarenessZone() const {
 	return sf::FloatRect();
 }
 
+
+
 void  NPC::drawDebugInfo(OverWorldDisplay& owDisplay)  { 
 
-	sf::RectangleShape rect(sf::Vector2f(boundingBoxRectReal.width, boundingBoxRectReal.height));
-	rect.setPosition(boundingBoxRectReal.left,boundingBoxRectReal.top);
-	rect.setFillColor(sf::Color(0,0,0,0));
-	rect.setOutlineColor(sf::Color::Blue);
-	rect.setOutlineThickness(1);
-	owDisplay.overWorld_texture.draw(rect); 
-
-	sf::RectangleShape rect2(sf::Vector2f(getAwarenessZone().width, getAwarenessZone().height));
-	rect2.setPosition(getAwarenessZone().left,getAwarenessZone().top);
-	rect2.setFillColor(sf::Color(0,0,0,0));
-	rect2.setOutlineColor(sf::Color::Green);
-	rect2.setOutlineThickness(1);
-	owDisplay.overWorld_texture.draw(rect2); 
-
-	sf::RectangleShape rect3(sf::Vector2f(1,1));
-	rect3.setPosition(getPosition());
-	rect3.setFillColor(sf::Color(0,0,0,0));
-	rect3.setOutlineColor(sf::Color::Green);
-	rect3.setOutlineThickness(1);
-	owDisplay.overWorld_texture.draw(rect3); 
-
-	sf::RectangleShape rect4(sf::Vector2f(1,1));
-	rect4.setPosition(getSpriteCenter());
-	rect4.setFillColor(sf::Color(0,0,0,0));
-	rect4.setOutlineColor(sf::Color::Cyan);
-	rect4.setOutlineThickness(1);
-	owDisplay.overWorld_texture.draw(rect4); 
+	drawRectangle(owDisplay.debug_texture,  boundingBoxRectReal, sf::Color::Blue);
+	drawRectangle(owDisplay.debug_texture,  getAwarenessZone(), sf::Color::Green);
+	drawRectangle(owDisplay.debug_texture,  getVisibilityRectangle(), sf::Color::Yellow);
+	
+	drawPoint(owDisplay.debug_texture, getPosition(), sf::Color::Green);
+	drawPoint(owDisplay.debug_texture, getSpriteCenter(), sf::Color::Cyan);
 
 	if(waypointModule && behavior == NPC_BEHAVIOR::USE_WAYPOINT ) {
 
@@ -197,13 +181,7 @@ void  NPC::drawDebugInfo(OverWorldDisplay& owDisplay)  {
 			++i;
 		}
 
-		owDisplay.overWorld_texture.draw(waypoint.data(), waypointModule->waypoints.size() + 1, sf::LinesStrip);
+		owDisplay.debug_texture.draw(waypoint.data(), waypointModule->waypoints.size() + 1, sf::LinesStrip);
 	}
 
-	sf::RectangleShape rect5(sf::Vector2f(getVisibilityRectangle().width, getVisibilityRectangle().height));
-	rect5.setPosition(getVisibilityRectangle().left,getVisibilityRectangle().top);
-	rect5.setFillColor(sf::Color(0,0,0,0));
-	rect5.setOutlineColor(sf::Color::Yellow);
-	rect5.setOutlineThickness(1);
-	owDisplay.overWorld_texture.draw(rect5); 
 }

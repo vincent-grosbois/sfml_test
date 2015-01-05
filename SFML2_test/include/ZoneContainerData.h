@@ -21,6 +21,7 @@ public:
 
 	bool isOutside;
 	bool isDark;
+	bool retainAfterUnloading;
 
 	sf::Vector2f startingPos;
 };

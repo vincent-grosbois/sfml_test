@@ -10,6 +10,7 @@
 
 #include "CallBackSystem.h"
 #include "OverworldCommands.h"
+#include "OverworldGameStateRequest.h"
 
 #include "utils/FramePagedMemory.h"
 #include <SFML/System/Vector2.hpp>
@@ -31,7 +32,11 @@ struct OverWorldDisplay
 	sf::RenderTexture overWorld_texture;
 	sf::RenderTexture light_texture;
 
+	sf::RenderTexture debug_texture;
+
 	sf::Sprite world_sprite;
+	sf::Sprite debug_sprite;
+
 	sf::RenderStates shader_render_state;
 
 	void init(const MetaGameData& metaGameData);
@@ -109,27 +114,7 @@ public:
 };
 
 
-struct ChangeZCRequest {
-	std::string newZC;
-	sf::Vector2f position;
-};
 
-struct PauseRequest {
-	bool pause;
-};
-
-struct PauseRequest;
-struct ChangeZCRequest;
-
-struct OverworldGameStateRequest {
-
-OverworldGameStateRequest():
-	myPauseRequest(NULL),
-		myChangeZCRequest(NULL) { }
-
-	PauseRequest*	myPauseRequest;
-	ChangeZCRequest* myChangeZCRequest;
-};
 
 class OverWorldScene : public GameScene
 {
@@ -192,6 +177,6 @@ private:
 	void changeZone(const std::string& newZC);
 	void bindContentToClock();
 	void unbindContentToClock();
-	void loadEntities();
+	void loadEntities(bool already_created);
 };
 

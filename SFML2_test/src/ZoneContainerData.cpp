@@ -9,7 +9,7 @@
 using namespace utils;
 
 ZoneContainerData::ZoneContainerData(const std::string& dataPath):
-	dataPath(dataPath)
+	dataPath(dataPath), retainAfterUnloading(false)
 {
 	basePath = getDirectory(dataPath);
 
@@ -52,6 +52,9 @@ void ZoneContainerData::processLine(int lineNb, const std::string& line) {
 	else if(lineNb == 7) {
 		splitValue(line, "start", startingPos);
 	}
+	else if(lineNb == 8) {
+		splitValue(line, "retain_after_unloading", retainAfterUnloading);
+	}
 }
 
 
@@ -72,7 +75,7 @@ MetaGameData::MetaGameData(const std::string& dataPath):
 		}
 		myfile.close();
 	}
-	else std::cout << "Unable to open file " << dataPath; 
+	else std::cout << "\nUnable to open file " << dataPath << "\n"; 
 }
 
 void MetaGameData::processLine(int lineNb, const std::string& line) {

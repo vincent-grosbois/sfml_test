@@ -38,6 +38,7 @@
     <ClInclude Include="include\OverlayScreen.h" />
     <ClInclude Include="include\overworld\OverWorldCamera.h" />
     <ClInclude Include="include\overworld\OverworldCommands.h" />
+    <ClInclude Include="include\overworld\OverworldGameStateRequest.h" />
     <ClInclude Include="include\overworld\OverWorldScene.h" />
     <ClInclude Include="include\overworld\OverWorldTone.h" />
     <ClInclude Include="include\SceneManager.h" />
@@ -48,6 +49,7 @@
     <ClInclude Include="include\TitleMenuScene.h" />
     <ClInclude Include="include\utils\AngleUtils.h" />
     <ClInclude Include="include\utils\Array2D.h" />
+    <ClInclude Include="include\utils\DrawingUtils.h" />
     <ClInclude Include="include\utils\FramePagedMemory.h" />
     <ClInclude Include="include\utils\SetUnionIterator.h" />
     <ClInclude Include="include\utils\StorageProvider.h" />
@@ -79,12 +81,14 @@
     <ClCompile Include="src\overworld\OverWorldCamera.cpp" />
     <ClCompile Include="src\overworld\OverworldCommands.cpp" />
     <ClCompile Include="src\overworld\OverworldDisplay.cpp" />
+    <ClCompile Include="src\overworld\OverworldGameStateRequest.cpp" />
     <ClCompile Include="src\overworld\OverWorldScene.cpp" />
     <ClCompile Include="src\overworld\OverWorldTone.cpp" />
     <ClCompile Include="src\SceneManager.cpp" />
     <ClCompile Include="src\TilePlane.cpp" />
     <ClCompile Include="src\Tileset.cpp" />
     <ClCompile Include="src\utils\AngleUtils.cpp" />
+    <ClCompile Include="src\utils\DrawingUtils.cpp" />
     <ClCompile Include="src\utils\FramePagedMemory.cpp" />
     <ClCompile Include="src\utils\StringUtils.cpp" />
     <ClCompile Include="src\ZoneContainer.cpp" />

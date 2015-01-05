@@ -245,18 +245,24 @@ void generateEntityFromFile(const std::string& fileName, ZoneContainer& ZC, Game
 
 	std::string line;
 	std::ifstream myfile (fileName);
+	clock_t c = clock();
+	int entities_count = 0;
 	if (myfile.is_open())
 	{
 		while ( std::getline (myfile,line) )
 		{
-			entityFactory(line, ZC, gr, ticks, request);
+			entities_count += entityFactory(line, ZC, gr, ticks, request);
 		}
 		myfile.close();
 	}
-	else std::cout << "Unable to open file " << fileName; 
+	else std::cout << "\nUnable to open file " << fileName << "\n"; 
+
+	int t = clock() - c;
+
+	std::cout << "Generated "<< entities_count<< " entities in " << t << " ms\n";
 }
 
-void entityFactory(const std::string& desc, ZoneContainer& ZC, GameResource& gr, GameTicks& ticks, OverworldGameStateRequest& request) {
+int entityFactory(const std::string& desc, ZoneContainer& ZC, GameResource& gr, GameTicks& ticks, OverworldGameStateRequest& request) {
 
 	auto map = processString(desc);
 
@@ -270,12 +276,14 @@ void entityFactory(const std::string& desc, ZoneContainer& ZC, GameResource& gr,
 		auto color = map["color"].color();
 
 		new LightEntity(pos, ZC, radius, sides, color);
+		return 1;
 	}
 	else if (type == LoadableEntityType::NPC) {
 		auto pos = map["pos"].vect2f();
 
 		auto& anim = gr.getMoveAnimation("../../ressources/sprites/001.png");
 		new NPC(pos, ZC, ticks, anim);
+		return 1;
 	}
 	else if (type == LoadableEntityType::RANDOM_NPC_ZONE) {
 		auto origin = map["origin"].vect2f();
@@ -322,18 +330,19 @@ void entityFactory(const std::string& desc, ZoneContainer& ZC, GameResource& gr,
 				new NPC(pos, ZC, ticks, anim) ;
 
 		}
-		std::cout << "done, deleted "<< deleted <<" out of "<< max_NPC << " NPCs\n";
-
+		return max_NPC-deleted;
 	}
 	else if (type == LoadableEntityType::TELEPORTER) {
 		auto pos = map["pos"].vect2f();
 		auto destinationZone = map["destinationZone"].string();
 		auto destination = map["destination"].vect2f();
 		new GatewayZC(pos, ZC, request, destinationZone, destination);
+		return 1;
 	}
 	else {
 		assert(false); //unknown entity type
 	}
 
+	return 0;
 
 }

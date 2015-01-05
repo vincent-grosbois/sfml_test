@@ -3,8 +3,10 @@
 #include "overworld/OverWorldScene.h"
 
 #include "utils/AngleUtils.h"
+#include "utils/DrawingUtils.h"
 
 using namespace utils;
+using namespace utils::angles;
 
 
 Projectile::Projectile(const sf::Vector2f & position,  ZoneContainer& ZC, DIRECTION::e dir):
@@ -32,7 +34,7 @@ Projectile::Projectile(const sf::Vector2f & position,  ZoneContainer& ZC, DIRECT
 	radius = 10;
 
 	registerInMaps();
-	float deuxpi = float(2*3.14159265);
+	float deuxpi = 2*pi;
 	float my_angle = 0.f;
 	lightZone[0].position = getPosition();
 	lightZone[0].color = color;
@@ -72,7 +74,7 @@ void Projectile::update(int delta_ms, bool will_be_drawn) {
 
 	registerInMaps();
 
-	float deuxpi = float(2*3.14159265);
+	float deuxpi = 2*pi;
 	float my_angle = 0.f;
 	lightZone[0].position = getPosition();
 	lightZone2[0].position = getPosition();
@@ -99,17 +101,6 @@ void Projectile::draw(OverWorldDisplay& owDisplay) {
 }
 
 void Projectile::drawDebugInfo(OverWorldDisplay& owDisplay) { 
-	sf::RectangleShape rect(sf::Vector2f(boundingBoxRectReal.width, boundingBoxRectReal.height));
-	rect.setPosition(boundingBoxRectReal.left,boundingBoxRectReal.top);
-	rect.setFillColor(sf::Color(0,0,0,0));
-	rect.setOutlineColor(sf::Color::Blue);
-	rect.setOutlineThickness(1);
-	owDisplay.overWorld_texture.draw(rect); 
-
-	sf::RectangleShape rect5(sf::Vector2f(getVisibilityRectangle().width, getVisibilityRectangle().height));
-	rect5.setPosition(getVisibilityRectangle().left,getVisibilityRectangle().top);
-	rect5.setFillColor(sf::Color(0,0,0,0));
-	rect5.setOutlineColor(sf::Color::Yellow);
-	rect5.setOutlineThickness(1);
-	owDisplay.overWorld_texture.draw(rect5); 
+	drawRectangle(owDisplay.debug_texture, boundingBoxRectReal, sf::Color::Blue);
+	drawRectangle(owDisplay.debug_texture, getVisibilityRectangle(), sf::Color::Yellow);
 }

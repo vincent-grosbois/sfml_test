@@ -2,7 +2,7 @@
 #include "EntityPhysical.h"
 
 
-struct OverworldGameStateRequest;
+class OverworldGameStateRequest;
 
 
 class GatewayZC : public EntityPhysical

@@ -40,7 +40,7 @@ OverWorldScene::OverWorldScene(const MetaGameData& metaGameData, GameResource& g
 { }
 
 OverWorldScene::~OverWorldScene() {
-	delete ZC;
+	gameResources.releaseZoneContainer(ZC->getData().dataPath);
 }
 
 void OverWorldScene::bindContentToClock() {
@@ -63,8 +63,10 @@ void OverWorldScene::unbindContentToClock() {
 	}
 }
 
-void OverWorldScene::loadEntities() {
-	generateEntityFromFile(ZC->getData().entitiesDataPath , *ZC, gameResources, ticks, owStateChangeRequest);
+void OverWorldScene::loadEntities(bool already_created) {
+	if(!already_created) {
+		generateEntityFromFile(ZC->getData().entitiesDataPath , *ZC, gameResources, ticks, owStateChangeRequest);
+	}
 }
 
 void OverWorldScene::onInit() {
@@ -77,18 +79,17 @@ void OverWorldScene::onInit() {
 	PC_moved = false;
 
 	overlay = new Overlay(*App);
-
-	ZC = new ZoneContainer(metaGameData.firstZonePath, gameResources);
+	
+	ZC = &gameResources.getZoneContainer(metaGameData.firstZonePath);
 
 	bindContentToClock();
 
-	loadEntities();
+	loadEntities(false);
 
 	auto& anim = gameResources.getMoveAnimation("../../ressources/male_walkcycle.png");
 	
 	PC = new PlayerCharacter(ZC->getData().startingPos, *ZC, ticks, anim, *overlay);
 	torchLight = new LightEntity(PC->getSpriteCenter(), *ZC, 300, 20, sf::Color(10,10,10,250));
-
 }
 
 
@@ -143,10 +144,9 @@ void OverWorldScene::update(int deltaTime) {
 	pause_state.beginNewFrame();
 
 
-	if(owStateChangeRequest.myChangeZCRequest) {
-		changeZone(owStateChangeRequest.myChangeZCRequest->newZC);
-		delete owStateChangeRequest.myChangeZCRequest;
-		owStateChangeRequest.myChangeZCRequest = 0;
+	if(auto changeZoneRequest = owStateChangeRequest.popZoneChangeRequest()) {
+		changeZone(changeZoneRequest->newZC);
+		delete changeZoneRequest;
 	}
 
 
@@ -471,13 +471,15 @@ void OverWorldScene::draw() {
 
 void OverWorldScene::changeZone(const std::string& newZC) {
 	
-	auto newZone = new ZoneContainer(metaGameData.basePath+newZC, gameResources);
-	PC->teleportTo(newZone->getData().startingPos, newZone);
+	bool already_loaded = false;
+	ZoneContainer& newZone = gameResources.getZoneContainer(metaGameData.basePath+newZC, already_loaded);
+	
+	PC->teleportTo(newZone.getData().startingPos, &newZone);
 	unbindContentToClock();
-	delete ZC;
-	ZC = newZone;
+	gameResources.releaseZoneContainer(ZC->getData().dataPath);
+	ZC = &newZone;
 	torchLight = new LightEntity(PC->getSpriteCenter(), *ZC, 300, 20, sf::Color(10,10,10,250));
 	visibleMaps.clear();
-	loadEntities();
+	loadEntities(already_loaded);
 	bindContentToClock();
 }

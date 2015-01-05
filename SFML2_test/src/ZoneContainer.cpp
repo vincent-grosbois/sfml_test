@@ -16,6 +16,8 @@ ZoneContainer::ZoneContainer(const std::string& dataFile, GameResource& gr):
 
 ZoneContainer::~ZoneContainer()
 {
+	std::cout << "deleting ZC " << data.dataPath << std::endl;
+
 	for(int i =0; i < maps.size().x; ++i) 
 		for(int j =0; j < maps.size().y; ++j)
 			delete maps(i,j);

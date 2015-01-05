@@ -28,6 +28,10 @@ public:
 	void addForDeletion(Entity* e);
 
 private:
+	ZoneContainer(const ZoneContainer&);
+	ZoneContainer& operator=(ZoneContainer&);
+
+private:
 	ZoneContainerData data;
 	Tileset& tileset;
 	Array2D<Map*> maps;

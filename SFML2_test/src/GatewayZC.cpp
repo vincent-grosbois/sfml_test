@@ -1,6 +1,6 @@
 #include "entities/GatewayZC.h"
 #include "entities/PlayerCharacter.h"
-#include "overworld/OverWorldScene.h"
+#include "overworld/overworldGameStateRequest.h"
 
 GatewayZC::GatewayZC(const sf::Vector2f& position, ZoneContainer& ZC, OverworldGameStateRequest& request, const std::string& destinationZC, const sf::Vector2f& position_destination):
 EntityPhysical(position, ZC),
@@ -20,11 +20,7 @@ bool GatewayZC::onCollision(Entity& activator) {
 
 	std::cout << "collision!\n" ;
 
-	delete request.myChangeZCRequest;
-	request.myChangeZCRequest = new ChangeZCRequest();
-	request.myChangeZCRequest->newZC = destinationZC;
-	request.myChangeZCRequest->position = destinationPosition;
-	
+	request.pushZoneChangeRequest(destinationZC, destinationPosition);
 
 	return true; 
 }
