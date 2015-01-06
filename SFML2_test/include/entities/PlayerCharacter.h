@@ -1,10 +1,9 @@
 #pragma once
 #include "Character.h"
 #include "NPC.h"
-#include "Overlay.h"
-
 
 class Collectible;
+class Overlay;
 
 class PlayerCharacter : public Character
 {

@@ -50,7 +50,7 @@
     <ClInclude Include="include\utils\AngleUtils.h" />
     <ClInclude Include="include\utils\Array2D.h" />
     <ClInclude Include="include\utils\DrawingUtils.h" />
-    <ClInclude Include="include\utils\FramePagedMemory.h" />
+    <ClInclude Include="include\utils\FrameAllocator.h" />
     <ClInclude Include="include\utils\SetUnionIterator.h" />
     <ClInclude Include="include\utils\StorageProvider.h" />
     <ClInclude Include="include\utils\StringUtils.h" />
@@ -89,7 +89,7 @@
     <ClCompile Include="src\Tileset.cpp" />
     <ClCompile Include="src\utils\AngleUtils.cpp" />
     <ClCompile Include="src\utils\DrawingUtils.cpp" />
-    <ClCompile Include="src\utils\FramePagedMemory.cpp" />
+    <ClCompile Include="src\utils\FrameAllocator.cpp" />
     <ClCompile Include="src\utils\StringUtils.cpp" />
     <ClCompile Include="src\ZoneContainer.cpp" />
     <ClCompile Include="src\ZoneContainerData.cpp" />

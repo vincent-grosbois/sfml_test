@@ -5,7 +5,6 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 
-#include <iostream>
 #include "../Constants.h"
 
 class Projectile : public EntityPhysical

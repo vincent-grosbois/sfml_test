@@ -12,7 +12,7 @@
 #include "OverworldCommands.h"
 #include "OverworldGameStateRequest.h"
 
-#include "utils/FramePagedMemory.h"
+#include "utils/FrameAllocator.h"
 #include <SFML/System/Vector2.hpp>
 
 struct Tone;
@@ -113,8 +113,31 @@ public:
 
 };
 
+struct OverWorldTransition {
 
+	int time_remaining_ms;
+	int total_time_ms;
+	bool fadeOut;
 
+	bool isActive() const {
+		return time_remaining_ms > 0;
+	}
+
+OverWorldTransition():
+	time_remaining_ms(-1),
+		total_time_ms(1000),
+	fadeOut(false)
+{
+
+	}
+
+};
+
+enum class OverWorldSceneState {
+	NORMAL,
+	PAUSED,
+	TRANSITIONING
+};
 
 class OverWorldScene : public GameScene
 {
@@ -140,6 +163,7 @@ private:
 	OverworldCommands owCommands;
 	OverWorldCommandsState owCommandsState;
 	OverworldGameStateRequest owStateChangeRequest;
+	OverWorldTransition owTransition;
 
 	CallBackSystem callbackSystem;		 // <* Callback system used only when the game is paused
 	CallBackSystem callbackSystemAlways; // <* Callback system used even when the game is paused

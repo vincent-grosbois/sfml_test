@@ -147,9 +147,6 @@
     <ClInclude Include="include\AI\WaypointModule.h">
       <Filter>Header Files\AI</Filter>
     </ClInclude>
-    <ClInclude Include="include\utils\FramePagedMemory.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
     <ClInclude Include="include\utils\AngleUtils.h">
       <Filter>Header Files\utils</Filter>
     </ClInclude>
@@ -169,6 +166,9 @@
       <Filter>Header Files\overworld</Filter>
     </ClInclude>
     <ClInclude Include="include\utils\DrawingUtils.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\FrameAllocator.h">
       <Filter>Header Files\utils</Filter>
     </ClInclude>
   </ItemGroup>
@@ -251,9 +251,6 @@
     <ClCompile Include="src\entities\Projectile.cpp">
       <Filter>Source Files\Entities</Filter>
     </ClCompile>
-    <ClCompile Include="src\utils\FramePagedMemory.cpp">
-      <Filter>Source Files\utils</Filter>
-    </ClCompile>
     <ClCompile Include="src\utils\AngleUtils.cpp">
       <Filter>Source Files\utils</Filter>
     </ClCompile>
@@ -276,6 +273,9 @@
       <Filter>Source Files\overworld</Filter>
     </ClCompile>
     <ClCompile Include="src\utils\DrawingUtils.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils\FrameAllocator.cpp">
       <Filter>Source Files\utils</Filter>
     </ClCompile>
   </ItemGroup>

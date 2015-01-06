@@ -15,7 +15,7 @@
 #include "entities/Projectile.h"
 
 #include "utils/SetUnionIterator.h"
-#include "utils/FramePagedMemory.h"
+#include "utils/FrameAllocator.h"
 
 #include "MapEntitiesLoader.h"
 #include "GameResource.h"
@@ -90,6 +90,8 @@ void OverWorldScene::onInit() {
 	
 	PC = new PlayerCharacter(ZC->getData().startingPos, *ZC, ticks, anim, *overlay);
 	torchLight = new LightEntity(PC->getSpriteCenter(), *ZC, 300, 20, sf::Color(10,10,10,250));
+
+	owTransition.time_remaining_ms = owTransition.total_time_ms;
 }
 
 
@@ -143,10 +145,12 @@ void OverWorldScene::update(int deltaTime) {
 
 	pause_state.beginNewFrame();
 
-
-	if(auto changeZoneRequest = owStateChangeRequest.popZoneChangeRequest()) {
+	ChangeZCRequest* changeZoneRequest = NULL;
+	if(!owTransition.isActive() && (changeZoneRequest = owStateChangeRequest.popZoneChangeRequest())) {
 		changeZone(changeZoneRequest->newZC);
 		delete changeZoneRequest;
+		owTransition.time_remaining_ms = owTransition.total_time_ms;
+		owTransition.fadeOut = true;
 	}
 
 
@@ -157,13 +161,15 @@ void OverWorldScene::update(int deltaTime) {
 	if (owCommands.isActive(OVERWORLD_COMMANDS::EXIT) ) {
 		close();
 	}
-	if (owCommands.isActive(OVERWORLD_COMMANDS::PAUSE) ) {
+
+	if (!owTransition.isActive() && owCommands.isActive(OVERWORLD_COMMANDS::PAUSE) ) {
 		if(pause_state) {
 			pause_state.unpauseOnNextFrame();
 		} else {
 			pause_state.pauseOnNextFrame();
 		}
 	}
+
 	myDeltaTimeAlways = deltaTime;
 	myTotalTimeAlways += deltaTime;
 
@@ -178,6 +184,11 @@ void OverWorldScene::update(int deltaTime) {
 		}
 		myDeltaTime = 0;
 		return;
+	}
+
+	if(owTransition.isActive()) {
+		owTransition.time_remaining_ms -= deltaTime;
+		std::cout << "transition\n";
 	}
 	
 	//this part will be updated only if the gameplay isn't paused:
@@ -307,7 +318,7 @@ void OverWorldScene::update(int deltaTime) {
 	clock_t part1_start;
 	clock_t part2_start;
 
-	std::set<Entity*, std::less<Entity*>, FramePagedMemory<Entity*>> entities_updated;
+	std::set<Entity*, std::less<Entity*>, FrameAllocator<Entity*>> entities_updated;
 
 	part2_start = clock();
 	for (auto map = visibleMaps.begin() ; map != visibleMaps.end(); ++map ) {
@@ -420,7 +431,7 @@ void OverWorldScene::draw() {
 	//draw the entities:
 	clock_t entities_draw = clock();
 
-	std::vector<Entity*, FramePagedMemory<Entity*>> entities_y_sorted;
+	std::vector<Entity*, FrameAllocator<Entity*>> entities_y_sorted;
 	entities_y_sorted.reserve(entities_visible.size());
 
 	for(auto& ent : entities_visible) {
@@ -449,7 +460,27 @@ void OverWorldScene::draw() {
 
 	owDisplay.updateToneParameters(t);
 
+
 	owDisplay.draw(*App);
+
+	if(owTransition.isActive()) {
+		sf::RectangleShape shape(sf::Vector2f(metaGameData.resolution.x, metaGameData.resolution.y));
+		shape.setPosition(0,0);
+		float opacity = owTransition.fadeOut ?
+			255.f*(1.f - float(owTransition.time_remaining_ms) / float(owTransition.total_time_ms))
+			:
+			255.f*( float(owTransition.time_remaining_ms) / float(owTransition.total_time_ms));
+
+		sf::Uint8 o = 0;
+		if(opacity > 0 && opacity <= 255.f) {
+			o = static_cast<sf::Uint8>(opacity);
+		} else if(opacity > 255.f) {
+			o = 255;
+		}
+		shape.setFillColor(sf::Color(0,0,0,o));
+		App->draw(shape); 
+	}
+
 	shader_draw = clock() - shader_draw;
 
 
@@ -470,10 +501,14 @@ void OverWorldScene::draw() {
 }
 
 void OverWorldScene::changeZone(const std::string& newZC) {
-	
+
+	if(owTransition.isActive()) {
+		return;
+	}
+
 	bool already_loaded = false;
 	ZoneContainer& newZone = gameResources.getZoneContainer(newZC, already_loaded);
-	
+
 	PC->teleportTo(newZone.getData().startingPos, &newZone);
 	unbindContentToClock();
 	gameResources.releaseZoneContainer(ZC->getData().dataPath);
