@@ -17,9 +17,9 @@ int main()
 
 	MetaGameData metaGame("../../ressources/Game.txt");
 
-	GameResource gameResource;
+	GameResource gameResource(metaGame);
 
-	sf::RenderWindow app(sf::VideoMode(metaGame.resolution.x, metaGame.resolution.y), metaGame.title);
+	sf::RenderWindow app(sf::VideoMode(metaGame.resolution.x, metaGame.resolution.y), metaGame.gameTitle);
 	app.setFramerateLimit(60);
 
 	SceneManager sceneManager(app);

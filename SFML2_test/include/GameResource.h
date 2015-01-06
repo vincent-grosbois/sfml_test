@@ -26,14 +26,16 @@ public:
 };
 
 class ZoneContainer;
+class MetaGameData;
 
 class GameResource {
 	ResourceCache<Tileset> tilesetCache;
 	ResourceCache<MoveAnimation> animationCache;
 	ResourceCacheWithGameResource<ZoneContainer> retainedZoneContainerCache;
+	const MetaGameData& metaGameData;
 
 public:
-	GameResource();
+	GameResource(const MetaGameData& metaGameData);
 
 	Tileset& getTileset(const std::string& key);
 

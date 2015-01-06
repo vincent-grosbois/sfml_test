@@ -3,7 +3,7 @@
 #include "Tileset.h"
 #include "MoveAnimation.h"
 #include "ZoneContainer.h"
-
+#include "ZoneContainerData.h"
 
 #include <iostream>
 template<class R>
@@ -61,8 +61,9 @@ template ResourceCache<Tileset>;
 template ResourceCache<MoveAnimation>;
 template ResourceCacheWithGameResource<ZoneContainer>;
 
-GameResource::GameResource():
-retainedZoneContainerCache(*this)
+GameResource::GameResource(const MetaGameData& metaGameData):
+retainedZoneContainerCache(*this),
+metaGameData(metaGameData)
 {
 }
 
@@ -76,11 +77,18 @@ MoveAnimation& GameResource::getMoveAnimation(const std::string& key) {
 
 ZoneContainer& GameResource::getZoneContainer(const std::string& key) {
 	bool unused;
-	return retainedZoneContainerCache.get(key, unused);
+	return getZoneContainer(key, unused);
 }
 
 ZoneContainer& GameResource::getZoneContainer(const std::string& key, bool& already_loaded) {
-	return retainedZoneContainerCache.get(key, already_loaded);
+
+	auto it = metaGameData.zoneList.find(key);
+
+	if(it == metaGameData.zoneList.end()) {
+		throw std::exception();
+	}
+
+	return retainedZoneContainerCache.get(metaGameData.basePath+it->second, already_loaded);
 }
 
 bool GameResource::releaseZoneContainer(const std::string& key) {

@@ -81,23 +81,51 @@ MetaGameData::MetaGameData(const std::string& dataPath):
 void MetaGameData::processLine(int lineNb, const std::string& line) {
 
 	if(lineNb == 1) {
-		splitValue(line, "title", title);
+		splitValue(line, "title", gameTitle);
 	}
-	if(lineNb == 2) {
+	else if(lineNb == 2) {
 		splitValue(line, "resolution", resolution);
 	}
+	//
 	else if(lineNb == 3) {
-		std::string path;
-		splitValue(line, "first_zone", path);
-		firstZonePath = basePath + path;
+		std::string zoneListFile;
+		splitValue(line, "zones", zoneListFile);
+		zoneListFile = basePath + zoneListFile;
+		loadZoneList(zoneListFile);
 	}
+	//
 	else if(lineNb == 4) {
-		splitValue(line, "start_time_hours", start_time_hours);
+		splitValue(line, "first_zone", firstZone);
 	}
 	else if(lineNb == 5) {
-		splitValue(line, "start_time_minutes", start_time_minutes);
+		splitValue(line, "start_time_hours", start_time_hours);
 	}
 	else if(lineNb == 6) {
+		splitValue(line, "start_time_minutes", start_time_minutes);
+	}
+	else if(lineNb == 7) {
 		splitValue(line, "clock_speed_factor", clock_speed_factor);
 	}
+}
+
+void MetaGameData::loadZoneList(const std::string& file) {
+	std::string line;
+	std::ifstream myfile (file);
+	if (myfile.is_open())
+	{
+
+		while ( std::getline (myfile,line) )
+		{
+
+			auto res = split(line, ":");
+
+			assert(res.size() == 2);
+
+			zoneList.insert(std::make_pair(res[0], res[1]));
+		}
+
+		myfile.close();
+	}
+	else std::cout << "\nUnable to open file " << file << "\n"; 
+
 }

@@ -80,7 +80,7 @@ void OverWorldScene::onInit() {
 
 	overlay = new Overlay(*App);
 	
-	ZC = &gameResources.getZoneContainer(metaGameData.firstZonePath);
+	ZC = &gameResources.getZoneContainer(metaGameData.firstZone);
 
 	bindContentToClock();
 
@@ -472,7 +472,7 @@ void OverWorldScene::draw() {
 void OverWorldScene::changeZone(const std::string& newZC) {
 	
 	bool already_loaded = false;
-	ZoneContainer& newZone = gameResources.getZoneContainer(metaGameData.basePath+newZC, already_loaded);
+	ZoneContainer& newZone = gameResources.getZoneContainer(newZC, already_loaded);
 	
 	PC->teleportTo(newZone.getData().startingPos, &newZone);
 	unbindContentToClock();

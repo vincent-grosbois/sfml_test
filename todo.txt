@@ -1,0 +1,2 @@
+- room transitions
+- text zone

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <map>
 #include <SFML/System/Vector2.hpp>
 
 class ZoneContainerData
@@ -33,17 +34,21 @@ public:
 
 private:
 	void processLine(int lineNB, const std::string& line);
+	void loadZoneList(const std::string& file);
+
 public:
 	std::string dataPath;
 
 	std::string basePath;
-	std::string firstZonePath;
+	std::string gameTitle;
+	std::string firstZone;
 	sf::Vector2i resolution;
-	std::string title;
 
 	int start_time_hours;
 	int start_time_minutes;
 	float clock_speed_factor;
+
+	std::map<std::string, std::string> zoneList;
 };
 
 
