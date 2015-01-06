@@ -36,7 +36,8 @@ OverWorldScene::OverWorldScene(const MetaGameData& metaGameData, GameResource& g
 	myTotalTime(0),
 	myTotalTimeAlways(0),
 	gameResources(gr),
-	debug_key_pressed(false)
+	debug_key_pressed(false),
+	myState(OverworldSceneState::TRANSITIONING_IN)
 { }
 
 OverWorldScene::~OverWorldScene() {
@@ -142,27 +143,52 @@ inline bool isTooFarForUpdate(const Entity* ent, const sf::FloatRect& updateRect
 void OverWorldScene::update(int deltaTime) {
 
 	pagedVectorStatic.resetForNewFrame();
-
 	pause_state.beginNewFrame();
 
-	ChangeZCRequest* changeZoneRequest = NULL;
-	if(!owTransition.isActive() && (changeZoneRequest = owStateChangeRequest.popZoneChangeRequest())) {
-		changeZone(changeZoneRequest->newZC);
-		delete changeZoneRequest;
-		owTransition.time_remaining_ms = owTransition.total_time_ms;
-		owTransition.fadeOut = true;
+	if(myState == OverworldSceneState::TRANSITIONING_IN && !owTransition.isActive()) {
+		myState = OverworldSceneState::NORMAL;
 	}
+	else if(myState == OverworldSceneState::TRANSITIONING_OUT && !owTransition.isActive()) {
+		myState = OverworldSceneState::TRANSITIONING_IN;
+		this->changeZone(owTransition.ZoneId);
+		deltaTime = 1;
+		owTransition.time_remaining_ms = owTransition.total_time_ms;
+	}
+	else if(myState == OverworldSceneState::NORMAL) {
 
+		if(pause_state) {
+			myState = OverworldSceneState::PAUSED;
+		}
+		else {
+			if(ChangeZCRequest* changeZoneRequest = owStateChangeRequest.popZoneChangeRequest()) {
+				owTransition.ZoneId  = changeZoneRequest->newZC;
+				owTransition.time_remaining_ms = owTransition.total_time_ms;
+				myState = OverworldSceneState::TRANSITIONING_OUT;
+				delete changeZoneRequest;
+			}
+		}
+	}
+	else if(myState == OverworldSceneState::PAUSED) {
+		if(!pause_state) {
+			myState = OverworldSceneState::NORMAL;
+		}
+	}
 
 	owCommands.pollComands(*App);
 
-	debug_key_pressed = owCommands.isActive(OVERWORLD_COMMANDS::DEBUG) ? !debug_key_pressed : debug_key_pressed;
-
 	if (owCommands.isActive(OVERWORLD_COMMANDS::EXIT) ) {
 		close();
+		return;
 	}
 
-	if (!owTransition.isActive() && owCommands.isActive(OVERWORLD_COMMANDS::PAUSE) ) {
+	if(owCommands.isActive(OVERWORLD_COMMANDS::DEBUG)) {
+		debug_key_pressed = !debug_key_pressed;
+	}
+
+
+	if ( (myState == OverworldSceneState::NORMAL || myState == OverworldSceneState::PAUSED)
+		&& owCommands.isActive(OVERWORLD_COMMANDS::PAUSE) 
+		) {
 		if(pause_state) {
 			pause_state.unpauseOnNextFrame();
 		} else {
@@ -177,7 +203,7 @@ void OverWorldScene::update(int deltaTime) {
 	callbackSystemAlways.callAllUpToTime(myTotalTimeAlways);
 
 	//end the update loop here if gameplay is paused :
-	if(pause_state) {
+	if(myState == OverworldSceneState::PAUSED) {
 		camera.cameraSetForFrame();
 		for(auto& map : visibleMaps) {
 			map->updateGraphics(camera, ZC->getTileset().getNeedUpdating());
@@ -186,12 +212,9 @@ void OverWorldScene::update(int deltaTime) {
 		return;
 	}
 
-	if(owTransition.isActive()) {
+	if(myState == OverworldSceneState::TRANSITIONING_IN || myState == OverworldSceneState::TRANSITIONING_OUT) {
 		owTransition.time_remaining_ms -= deltaTime;
-		std::cout << "transition\n";
 	}
-	
-	//this part will be updated only if the gameplay isn't paused:
 
 	camera.newFrame();
 	ticks.update(deltaTime);
@@ -211,10 +234,6 @@ void OverWorldScene::update(int deltaTime) {
 
 	if(owCommands.isActive(OVERWORLD_COMMANDS::ACTIVATE)) {
 		new Projectile(PC->getPosition(), *ZC, PC->getFacingDir());
-	}
-
-	if(owCommands.isActive(OVERWORLD_COMMANDS::ZOOM_RESET)) {
-		camera.resetSize();
 	}
 
 	PC_moved = false;
@@ -276,6 +295,10 @@ void OverWorldScene::update(int deltaTime) {
 	if(!PC_moved)
 		PC->isMoving = false;
 
+	if(owCommands.isActive(OVERWORLD_COMMANDS::ZOOM_RESET)) {
+		camera.resetSize();
+	}
+
 	camera.setCenter(PC->getSpriteCenter());
 
 	if (owCommands.isActive(OVERWORLD_COMMANDS::ZOOM_IN))      
@@ -287,9 +310,6 @@ void OverWorldScene::update(int deltaTime) {
 	else if (owCommands.isActive(OVERWORLD_COMMANDS::ZOOM_OUT_FAST)) 
 		camera.zoom(1.1f);
 
-	/*if(owCommands.isActive(OVERWORLD_COMMANDS::DISPLAY_MAP)) 
-		drawMap = true;
-	*/
 
 	camera.cameraSetForFrame();
 
@@ -463,13 +483,14 @@ void OverWorldScene::draw() {
 
 	owDisplay.draw(*App);
 
-	if(owTransition.isActive()) {
+	if(myState == OverworldSceneState::TRANSITIONING_IN || myState == OverworldSceneState::TRANSITIONING_OUT) {
 		sf::RectangleShape shape(sf::Vector2f(metaGameData.resolution.x, metaGameData.resolution.y));
 		shape.setPosition(0,0);
-		float opacity = owTransition.fadeOut ?
+
+		float opacity = myState == OverworldSceneState::TRANSITIONING_OUT ?
 			255.f*(1.f - float(owTransition.time_remaining_ms) / float(owTransition.total_time_ms))
 			:
-			255.f*( float(owTransition.time_remaining_ms) / float(owTransition.total_time_ms));
+		255.f*( float(owTransition.time_remaining_ms) / float(owTransition.total_time_ms));
 
 		sf::Uint8 o = 0;
 		if(opacity > 0 && opacity <= 255.f) {
@@ -485,7 +506,7 @@ void OverWorldScene::draw() {
 
 
 	//infos : 
-	if(true || ticks.getTicks(TICKS::_100MS) > 0) {
+	if(myState == OverworldSceneState::PAUSED || ticks.getTicks(TICKS::_100MS) > 0) {
 		std::stringstream oss;
 		int FPS = int(1000/myDeltaTimeAlways);
 		oss << "FPS: " << FPS<<  " ent update: " << 1000.f*(float)part1_total/CLOCKS_PER_SEC  << "ms, ent z sort: " << 1000.f*(float)part2_total/CLOCKS_PER_SEC <<"ms";
@@ -502,12 +523,8 @@ void OverWorldScene::draw() {
 
 void OverWorldScene::changeZone(const std::string& newZC) {
 
-	if(owTransition.isActive()) {
-		return;
-	}
-
-	bool already_loaded = false;
-	ZoneContainer& newZone = gameResources.getZoneContainer(newZC, already_loaded);
+	bool zone_already_loaded = false;
+	ZoneContainer& newZone = gameResources.getZoneContainer(newZC, zone_already_loaded);
 
 	PC->teleportTo(newZone.getData().startingPos, &newZone);
 	unbindContentToClock();
@@ -515,6 +532,6 @@ void OverWorldScene::changeZone(const std::string& newZC) {
 	ZC = &newZone;
 	torchLight = new LightEntity(PC->getSpriteCenter(), *ZC, 300, 20, sf::Color(10,10,10,250));
 	visibleMaps.clear();
-	loadEntities(already_loaded);
+	loadEntities(zone_already_loaded);
 	bindContentToClock();
 }

@@ -58,7 +58,7 @@ struct OverWorldCommandsState {
 	bool already_pressed_r;
 
 	void init() {
-		flashlight_on = false;
+		flashlight_on = true;
 		already_pressed_u = true;
 		already_pressed_d = true;
 		already_pressed_l = true;
@@ -117,26 +117,27 @@ struct OverWorldTransition {
 
 	int time_remaining_ms;
 	int total_time_ms;
-	bool fadeOut;
+	std::string ZoneId;
+	sf::Vector2f pos;
 
 	bool isActive() const {
 		return time_remaining_ms > 0;
 	}
 
-OverWorldTransition():
-	time_remaining_ms(-1),
-		total_time_ms(1000),
-	fadeOut(false)
-{
+	OverWorldTransition():
+		time_remaining_ms(-1),
+		total_time_ms(500)
+	{
 
 	}
 
 };
 
-enum class OverWorldSceneState {
+enum class OverworldSceneState {
 	NORMAL,
 	PAUSED,
-	TRANSITIONING
+	TRANSITIONING_OUT,
+	TRANSITIONING_IN
 };
 
 class OverWorldScene : public GameScene
@@ -154,6 +155,8 @@ public:
 	virtual void onInit() override;
 
 private:
+	OverworldSceneState myState;
+
 	const MetaGameData& metaGameData;
 
 	GameResource& gameResources;
