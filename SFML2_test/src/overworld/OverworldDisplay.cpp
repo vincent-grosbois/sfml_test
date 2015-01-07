@@ -1,10 +1,13 @@
 #include "overworld/OverWorldScene.h"
 #include "ZoneContainerData.h"
 #include "overworld/OverWorldTone.h"
-
+#include "utils/AngleUtils.h"
 
 void OverWorldDisplay::init(const MetaGameData& metaGameData) {
+
 	colorizeShader.loadFromFile(metaGameData.basePath+"shader/colorize.sfx", sf::Shader::Fragment);
+	waterShader.loadFromFile(metaGameData.basePath+"shader/empty.frag", sf::Shader::Vertex);
+	changeWaterParameters(myWaveParameters);
 
 	overWorld_texture.create(metaGameData.resolution.x, metaGameData.resolution.y);
 	light_texture.create(metaGameData.resolution.x, metaGameData.resolution.y);
@@ -30,6 +33,31 @@ void OverWorldDisplay::draw(sf::RenderWindow& app) {
 void OverWorldDisplay::updateToneParameters(const Tone& t) {
 	colorizeShader.setParameter("Alpha", 1 - t.gray);
 	colorizeShader.setParameter("ToneColor", t.red, t.green, t.blue);
+}
+
+
+WaveParameters::WaveParameters() :
+	wave_angle(utils::angles::degrees2rad(-45)),
+	wave_time_period(2.f),
+	wave_spatial_period(32*5.f),
+	wave_amplitude(8.f) {
+}
+
+void OverWorldDisplay::updateWaterParameters(int time_ms) {
+
+	float time_phase = 2*utils::angles::pi*time_ms/(myWaveParameters.wave_time_period*1000.f);
+
+	waterShader.setParameter("waveTimePhase", time_phase);
+}
+
+void OverWorldDisplay::changeWaterParameters(const WaveParameters& waveParameters) {
+
+	myWaveParameters = waveParameters;
+
+	float dir_x = 2*utils::angles::pi * cos(waveParameters.wave_angle)/ waveParameters.wave_spatial_period;
+	float dir_y = 2*utils::angles::pi *-sin(waveParameters.wave_angle)/ waveParameters.wave_spatial_period;
+
+	waterShader.setParameter("waveInfo", dir_x,  dir_y, waveParameters.wave_amplitude);
 }
 
 void OverWorldDisplay::clearAndSetView(const sf::View& view) {

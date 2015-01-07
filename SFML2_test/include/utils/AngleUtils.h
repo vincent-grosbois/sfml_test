@@ -17,5 +17,7 @@ namespace utils {
 
 	radian_t dir2angle(DIRECTION::e dir);
 
+	radian_t degrees2rad(float degrees); 
+
 	};
 };

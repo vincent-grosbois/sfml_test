@@ -78,7 +78,7 @@ struct EntitySet {
 class Map
 {
 public:
-	Map(ZoneContainer& ZC, TilePlane* layer0, TilePlane* layer1, TilePlane* layer2, sf::Vector2<tile_units> position, int id);
+	Map(ZoneContainer& ZC, TilePlane* waterLayer, TilePlane* layer0, TilePlane* layer1, TilePlane* layer2, sf::Vector2<tile_units> position, int id);
 
 	~Map();
 
@@ -88,7 +88,7 @@ public:
 
 	void unloadAll();
 
-	void updateGraphics(const OverWorldCamera& camera, bool checkAnimatedTilesUpdate);
+	void updateGraphics(const OverWorldCamera& camera, bool checkAnimatedTilesUpdate, int deltaTime);
 	void loadTilesFromNothing(const OverWorldCamera& camera);
 
 	sf::Vector2i getMapCoords() const;
@@ -112,6 +112,7 @@ private:
 	sf::Vector2<tile_units> size;
 	sf::Vector2<tile_units> offset;
 
+	TilePlane* waterLayer;
 	TilePlane* layer0;
 	TilePlane* layer1;
 	TilePlane* layer2;

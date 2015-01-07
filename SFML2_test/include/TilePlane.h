@@ -38,14 +38,14 @@ private:
 class TilePlane {
 
 public:
-	TilePlane(Tileset& tileset, sf::Vector2<tile_units> size, sf::Vector2<tile_units> offset, Array2D<int>& table);
+	TilePlane(Tileset& tileset, sf::Vector2<tile_units> size, sf::Vector2<tile_units> offset, Array2D<int>& table, bool waterPlane = false);
 
 	void draw(const sf::View& view, OverWorldDisplay& owDisplay);
 
 	bool collideWith(const sf::FloatRect& rect, sf::Vector2f* CollidingPos) const;
 	void getCollidingEntitySets(const sf::FloatRect& rect, std::set<MapElement*>& result);
 	void unloadAllGraphics();
-	void updateGraphics(const OverWorldCamera& camera,  bool checkAnimatedTilesUpdate);
+	void updateGraphics(const OverWorldCamera& camera,  bool checkAnimatedTilesUpdate, int deltaTime);
 	void loadAndWakeUp(const OverWorldCamera& camera);
 	sf::Vector2i size() const; // <* map size, in tile units
 
@@ -63,4 +63,5 @@ protected:
 	void unloadGraphics(const sf::FloatRect& rect);
 	sf::Vertex* getQuadVertexFromTileIndex(int x, int y);
 	void setQuadTextureToFrame(sf::Vertex* quad, const sf::IntRect& rect);
+	bool water_plane;
 };

@@ -25,9 +25,19 @@ class MetaGameData;
 class LightEntity;
 class Entity;
 
+struct WaveParameters {
+	radian_t wave_angle ;
+	float wave_time_period ; // time period in seconds
+	float wave_spatial_period; // spatial period in pixel
+	float wave_amplitude;// in pixels
+
+	WaveParameters();
+};
+
 struct OverWorldDisplay 
 {
 	sf::Shader colorizeShader;
+	sf::Shader waterShader;
 
 	sf::RenderTexture overWorld_texture;
 	sf::RenderTexture light_texture;
@@ -39,9 +49,14 @@ struct OverWorldDisplay
 
 	sf::RenderStates shader_render_state;
 
+	WaveParameters myWaveParameters;
+
 	void init(const MetaGameData& metaGameData);
 	void draw(sf::RenderWindow& app);
 	void updateToneParameters(const Tone& tone);
+
+	void updateWaterParameters(int time_ms);
+	void changeWaterParameters(const WaveParameters& waveParameters);
 
 	void clearAndSetView(const sf::View& view);
 };

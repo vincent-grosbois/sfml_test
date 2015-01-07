@@ -25,5 +25,9 @@ namespace utils {
 			return 0.f;
 		}
 
+		radian_t degrees2rad(float degrees) {
+			return degrees*2.f*pi/360.f;
+		}
+
 	};
 };

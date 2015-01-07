@@ -98,8 +98,8 @@ void OverWorldScene::onInit() {
 
 struct UpdateMapGraphics {
 
-	UpdateMapGraphics(OverWorldCamera& camera, bool checkAnimatedTilesUpdate) :
-		camera(camera), checkAnimatedTilesUpdate(checkAnimatedTilesUpdate)
+	UpdateMapGraphics(OverWorldCamera& camera, bool checkAnimatedTilesUpdate, int deltaTime) :
+		camera(camera), checkAnimatedTilesUpdate(checkAnimatedTilesUpdate), deltaTime(deltaTime)
 	{ }
 
 	void visit_first(Map* map) {
@@ -115,11 +115,12 @@ struct UpdateMapGraphics {
 	}
 
 	void visit_both(Map* map, Map*) {
-		map->updateGraphics(camera, checkAnimatedTilesUpdate);
+		map->updateGraphics(camera, checkAnimatedTilesUpdate, deltaTime);
 	}
 
 	OverWorldCamera& camera;
 	bool checkAnimatedTilesUpdate;
+	int deltaTime;
 };
 
 const float update_margin_x = 300;
@@ -206,7 +207,7 @@ void OverWorldScene::update(int deltaTime) {
 	if(myState == OverworldSceneState::PAUSED) {
 		camera.cameraSetForFrame();
 		for(auto& map : visibleMaps) {
-			map->updateGraphics(camera, ZC->getTileset().getNeedUpdating());
+			map->updateGraphics(camera, ZC->getTileset().getNeedUpdating(), myDeltaTimeAlways);
 		}
 		myDeltaTime = 0;
 		return;
@@ -320,7 +321,7 @@ void OverWorldScene::update(int deltaTime) {
 	//update list of visible maps :
 	std::set<Map*> newVisibleMaps = ZC->getCollidingMaps(viewRect);
 	std::set<Map*> newEntityUpdateMaps = ZC->getCollidingMaps(entityUpdateRect);
-	UpdateMapGraphics updater(camera, ZC->getTileset().getNeedUpdating());
+	UpdateMapGraphics updater(camera, ZC->getTileset().getNeedUpdating(), myDeltaTimeAlways);
 	iterate_over_union(newVisibleMaps, visibleMaps, updater);
 	visibleMaps = std::move(newVisibleMaps);
 
@@ -441,8 +442,14 @@ void OverWorldScene::draw() {
 
 
 	owDisplay.clearAndSetView(camera.getView());
+	owDisplay.updateWaterParameters(myTotalTimeAlways);
+
+
 	//draw the world:
 	clock_t world_draw = clock();
+	for (auto map = visibleMaps.begin() ; map != visibleMaps.end(); ++map ) {
+		(*map)->drawLayer(camera.getView(), owDisplay, -1);
+	}
 	for (auto map = visibleMaps.begin() ; map != visibleMaps.end(); ++map ) {
 		(*map)->drawLayer(camera.getView(), owDisplay, 0);
 	}
@@ -480,6 +487,7 @@ void OverWorldScene::draw() {
 
 	owDisplay.updateToneParameters(t);
 
+	
 
 	owDisplay.draw(*App);
 

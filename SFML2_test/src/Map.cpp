@@ -14,7 +14,8 @@ StorageProvider<std::set<Entity*>, NoElementPredicate> EntitySet::entitySetStora
 	NoElementPredicate());
 
 
-Map::Map(ZoneContainer& ZC, TilePlane* layer0, TilePlane* layer1, TilePlane* layer2, sf::Vector2<tile_units> position, int id):
+Map::Map(ZoneContainer& ZC, TilePlane* waterLayer, TilePlane* layer0, TilePlane* layer1, TilePlane* layer2, sf::Vector2<tile_units> position, int id):
+	waterLayer(waterLayer),
 	layer0(layer0),
 	layer1(layer1),
 	layer2(layer2),
@@ -26,6 +27,8 @@ Map::Map(ZoneContainer& ZC, TilePlane* layer0, TilePlane* layer1, TilePlane* lay
 	offset(layer0->offset),
 	myZC(&ZC)
 {
+	if(waterLayer)
+		waterLayer->myMap = this;
 	if(layer0)
 		layer0->myMap = this;
 	if(layer1)
@@ -36,6 +39,9 @@ Map::Map(ZoneContainer& ZC, TilePlane* layer0, TilePlane* layer1, TilePlane* lay
 
 
 void Map::drawLayer(const sf::View& view, OverWorldDisplay& owDisplay, int layer) {
+
+	if(layer == -1 && waterLayer!=NULL)
+		waterLayer->draw(view, owDisplay);
 
 	if(layer == 0 && layer0!=NULL)
 		layer0->draw(view, owDisplay);
@@ -52,6 +58,7 @@ Map::~Map()
 	for(std::set<Entity*>::iterator it = entities_on_map.begin(); it != entities_on_map.end(); ) 
 		delete (*it++);
 
+	delete waterLayer;
 	delete layer0;
 	delete layer1;	
 	delete layer2;
@@ -61,20 +68,27 @@ void Map::printDebug() const {
 	std::cout << "Map @" << id << " X:" << position.x << " Y:"  << position.y << "\n"; 
 }
 
-void Map::updateGraphics(const OverWorldCamera& camera, bool checkAnimatedTilesUpdate) {
+void Map::updateGraphics(const OverWorldCamera& camera, bool checkAnimatedTilesUpdate, int deltaTime) {
+
+	if(waterLayer)
+		waterLayer->updateGraphics(camera, checkAnimatedTilesUpdate, deltaTime);
 
 	if(layer0)
-		layer0->updateGraphics(camera, checkAnimatedTilesUpdate);
+		layer0->updateGraphics(camera, checkAnimatedTilesUpdate, deltaTime);
 
 	if(layer1)
-		layer1->updateGraphics(camera, checkAnimatedTilesUpdate);
+		layer1->updateGraphics(camera, checkAnimatedTilesUpdate, deltaTime);
 
 	if(layer2)
-		layer2->updateGraphics(camera, checkAnimatedTilesUpdate);
+		layer2->updateGraphics(camera, checkAnimatedTilesUpdate, deltaTime);
 
 }
 
 void Map::loadTilesFromNothing(const OverWorldCamera& camera) {
+
+	if(waterLayer)
+		waterLayer->loadAndWakeUp(camera);
+
 	if(layer0)
 		layer0->loadAndWakeUp(camera);
 
@@ -86,6 +100,9 @@ void Map::loadTilesFromNothing(const OverWorldCamera& camera) {
 }
 
 void Map::unloadAll() {
+	if(waterLayer)
+		waterLayer->unloadAllGraphics();
+
 	if(layer0)
 		layer0->unloadAllGraphics();
 
@@ -165,6 +182,9 @@ void Map::dumpLoadedTiles() const  {
 
 bool Map::collideWithLayer(int layer_id, const sf::FloatRect& rect, sf::Vector2f* collidingPos) const
 {
+	if(waterLayer && layer_id == -1) {
+		return waterLayer->collideWith(rect, collidingPos);
+	}
 	if(layer0 && layer_id == 0) {
 		return layer0->collideWith(rect, collidingPos);
 	}

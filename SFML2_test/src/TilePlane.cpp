@@ -10,12 +10,13 @@
 #include "overworld/OverWorldScene.h"
 
 
-TilePlane::TilePlane(Tileset& tileset, sf::Vector2<tile_units> size, sf::Vector2<tile_units> offset, Array2D<int>& table):
+TilePlane::TilePlane(Tileset& tileset, sf::Vector2<tile_units> size, sf::Vector2<tile_units> offset, Array2D<int>& table, bool waterPlane /*= false*/):
 elements(size),
 	offset(offset),
 	tileset(tileset),
 	myMap(NULL),
-	tileBlocks(TILE_BLOCK_PER_MAP_X,TILE_BLOCK_PER_MAP_Y)
+	tileBlocks(TILE_BLOCK_PER_MAP_X,TILE_BLOCK_PER_MAP_Y),
+	water_plane(waterPlane)
 {
 
 	for(int i = 0; i < TILE_BLOCK_PER_MAP_X; ++i) {
@@ -45,9 +46,17 @@ elements(size),
 			quad[3].position = 
 				sf::Vector2f(static_cast<float>(i*TILE_SIZE_X + offset_x),		static_cast<float>((j+1)*TILE_SIZE_Y + offset_y));
 
-			Tile& tile = tileset.getTile(id);
 
+			if(!waterPlane && id == 0) {
+				id = 10;
+			} else if(waterPlane && id != 0) {
+				id = 0;
+			}
+
+			Tile& tile = tileset.getTile(id);
+			
 			setQuadTextureToFrame(quad, tile.myRect);
+					
 
 			elements(i,j).init(tile);
 		}
@@ -80,7 +89,7 @@ sf::Vertex* TilePlane::getQuadVertexFromTileIndex(int i, int j) {
 
 }
 
-void TilePlane::updateGraphics(const OverWorldCamera& camera, bool checkAnimatedTilesUpdate) {
+void TilePlane::updateGraphics(const OverWorldCamera& camera, bool checkAnimatedTilesUpdate, int deltaTime) {
 
 	auto rect = camera.getViewRect();
 
@@ -118,7 +127,7 @@ void TilePlane::unloadAllGraphics() {
 }
 
 void TilePlane::loadAndWakeUp(const OverWorldCamera& camera) {
-	updateGraphics(camera, true);
+	updateGraphics(camera, true, 1);
 }
 
 
@@ -149,11 +158,16 @@ void TilePlane::draw(const sf::View& view, OverWorldDisplay& owDisplay) {
 	sf::RenderStates state;
 	state.texture = &tileset.getAtlas();
 
+	if(water_plane) {
+		state.shader = &owDisplay.waterShader;
+	}
+
 	for(int i = left; i <= right; ++i) {
 		for(int j = top; j <= bottom; ++j) {
 			owDisplay.overWorld_texture.draw(tileBlocks(i,j), state);
 		}
 	}
+
 
 }
 

@@ -59,26 +59,28 @@ Array2D<Map*> gameMapGenerator(const std::string& theFile, Tileset* theTileSet, 
 	
 	MAP.loadFromFile(theFile);
 
-	int X  = MAP.getSize().x*3 / TILES_PER_MAP_X;
-	int Y  = MAP.getSize().y*3 / TILES_PER_MAP_Y;
+	int map_size_x  = MAP.getSize().x*3 / TILES_PER_MAP_X;
+	int map_size_y  = MAP.getSize().y*3 / TILES_PER_MAP_Y;
 
-	if(X < 1)
-		X = 1;
+	if(map_size_x < 1)
+		map_size_x = 1;
 
-	if(Y < 1)
-		Y = 1;
+	if(map_size_y < 1)
+		map_size_y = 1;
 
-	if(X > 15) X  = 8;
-	if(Y > 15) Y  = 8;
+	if(map_size_x > 8)
+		map_size_x  = 8;
+	if(map_size_y > 8)
+		map_size_y  = 8;
 	
 
-	mapList = std::move(Array2D<Map*>(X,Y));
+	mapList = std::move(Array2D<Map*>(map_size_x,map_size_y));
 
 	Array2D<int> tableau2D(MAP.getSize().x, MAP.getSize().y);
 	sf::Color value;
 	int* v2;
-	for(int i=0; i<MAP.getSize().x; ++i) {
-		for(int j=0; j<MAP.getSize().y; ++j)  {
+	for(int i=0; i<map_size_x*TILES_PER_MAP_X/3; ++i) {
+		for(int j=0; j<map_size_y*TILES_PER_MAP_Y/3; ++j)  {
 
 			value = MAP.getPixel(i,j);
 
@@ -107,16 +109,26 @@ Array2D<Map*> gameMapGenerator(const std::string& theFile, Tileset* theTileSet, 
 
 	int id=0;
 
-	for(int i=0; i<X; ++i) {
+	for(int i=0; i<map_size_x; ++i) {
 
-		for(int j=0; j<Y; ++j)  {
+		for(int j=0; j<map_size_y; ++j)  {
 
 			TilePlane* TP  = new TilePlane(*theTileSet, 
 				sf::Vector2<tile_units>(TILES_PER_MAP_X, TILES_PER_MAP_Y), 
 				sf::Vector2<tile_units>(TILES_PER_MAP_X*i, TILES_PER_MAP_Y*j), 
 				tableau2D);
 
+			TilePlane* water  = NULL;
+
+			if(ZC.getData().isOutside) {
+				water = new TilePlane(*theTileSet, 
+					sf::Vector2<tile_units>(TILES_PER_MAP_X, TILES_PER_MAP_Y), 
+					sf::Vector2<tile_units>(TILES_PER_MAP_X*i, TILES_PER_MAP_Y*j), 
+					tableau2D, true);
+			}
+
 			mapList(i,j) = new Map(ZC,
+				water,
 				TP, 
 				NULL, 
 				NULL, 
