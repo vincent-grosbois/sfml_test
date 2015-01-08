@@ -141,6 +141,22 @@ inline bool isTooFarForUpdate(const Entity* ent, const sf::FloatRect& updateRect
 
 }
 
+std::string getGameStateName(OverworldSceneState e) {
+	if(e == OverworldSceneState::NORMAL) {
+		return "normal";
+	}
+	if(e == OverworldSceneState::PAUSED) {
+		return "paused";
+	}
+	if(e == OverworldSceneState::TRANSITIONING_IN) {
+		return "transition (in)";
+	}
+	if(e == OverworldSceneState::TRANSITIONING_OUT) {
+		return "transition (out)";
+	}
+	return "unknown";
+}
+
 void OverWorldScene::update(int deltaTime) {
 
 	pagedVectorStatic.resetForNewFrame();
@@ -210,6 +226,7 @@ void OverWorldScene::update(int deltaTime) {
 			map->updateGraphics(camera, ZC->getTileset().getNeedUpdating(), myDeltaTimeAlways);
 		}
 		myDeltaTime = 0;
+		gameClock.update(deltaTime, true);
 		return;
 	}
 
@@ -222,7 +239,7 @@ void OverWorldScene::update(int deltaTime) {
 
 	myDeltaTime = deltaTime;
 	myTotalTime += deltaTime;
-	gameClock.update(deltaTime);
+	gameClock.update(deltaTime, false);
 	
 
 	callbackSystem.callAllUpToTime(myTotalTime);
@@ -287,6 +304,47 @@ void OverWorldScene::update(int deltaTime) {
 
 	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_RIGHT_FAST))  { 
 		PC->tryMoving(deltaTime*10, DIRECTION::RIGHT, 0,owCommandsState.already_pressed_u, debug_move_through);
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::T))
+	{
+		owDisplay.myWaveParameters.wave_amplitude += 0.1;
+		owDisplay.changeWaterParameters(owDisplay.myWaveParameters);
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::G))
+	{
+		owDisplay.myWaveParameters.wave_amplitude -= 0.1;
+		owDisplay.changeWaterParameters(owDisplay.myWaveParameters);
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y))
+	{
+		owDisplay.myWaveParameters.wave_angle += 0.005;
+		owDisplay.changeWaterParameters(owDisplay.myWaveParameters);
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::H))
+	{
+		owDisplay.myWaveParameters.wave_angle -= 0.005;
+		owDisplay.changeWaterParameters(owDisplay.myWaveParameters);
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::U))
+	{
+		owDisplay.myWaveParameters.wave_spatial_period += 0.1;
+		owDisplay.changeWaterParameters(owDisplay.myWaveParameters);
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::J))
+	{
+		owDisplay.myWaveParameters.wave_spatial_period -= 0.1;
+		owDisplay.changeWaterParameters(owDisplay.myWaveParameters);
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::I))
+	{
+		owDisplay.myWaveParameters.wave_time_period -= 0.1;
+		owDisplay.changeWaterParameters(owDisplay.myWaveParameters);
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::K))
+	{
+		owDisplay.myWaveParameters.wave_time_period += 0.1;
+		owDisplay.changeWaterParameters(owDisplay.myWaveParameters);
 	}
 
 	if(torchLight->isOn_()) {
@@ -517,9 +575,9 @@ void OverWorldScene::draw() {
 	if(myState == OverworldSceneState::PAUSED || ticks.getTicks(TICKS::_100MS) > 0) {
 		std::stringstream oss;
 		int FPS = int(1000/myDeltaTimeAlways);
-		oss << "FPS: " << FPS<<  " ent update: " << 1000.f*(float)part1_total/CLOCKS_PER_SEC  << "ms, ent z sort: " << 1000.f*(float)part2_total/CLOCKS_PER_SEC <<"ms";
-		oss << "\nmap drawing time: " << 1000.f*(float)world_draw/CLOCKS_PER_SEC<< "ms\tent draw time:" << 1000.f*(float)entities_draw/CLOCKS_PER_SEC << "ms\tfinal shader drawing: "<<1000.f*(float)shader_draw/CLOCKS_PER_SEC;
-		oss << "\n" << ZC->getData().name;
+		oss << "FPS: " << FPS<<  " ent update: " << 1000.f*part1_total/CLOCKS_PER_SEC  << "ms, ent z sort: " << 1000.f*part2_total/CLOCKS_PER_SEC <<"ms";
+		oss << "\nmap drawing time: " << 1000.f*world_draw/CLOCKS_PER_SEC<< "ms\tent draw time:" << 1000.f*entities_draw/CLOCKS_PER_SEC << "ms\tfinal shader drawing: "<<1000.f*shader_draw/CLOCKS_PER_SEC;
+		oss << "\n" << ZC->getData().name << "\t(" << getGameStateName(myState)<<")";
 		overlay->FPStext.setString(oss.str());
 	}
 	overlay->draw(false);

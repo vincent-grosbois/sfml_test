@@ -46,6 +46,8 @@ std::set<Map*> ZoneContainer::getCollidingMaps(const sf::FloatRect& rect)  {
 	return list;
 }
 
+void dumpToFile(std::string str, Array2D<int>& tab);
+
 Array2D<Map*> gameMapGenerator(const std::string& theFile, Tileset* theTileSet, ZoneContainer& ZC)
 {
 
@@ -106,6 +108,8 @@ Array2D<Map*> gameMapGenerator(const std::string& theFile, Tileset* theTileSet, 
 				*v2 = 8;
 		}
 	}
+
+	//dumpToFile("here.txt", tableau2D);
 
 	int id=0;
 
@@ -171,4 +175,18 @@ void ZoneContainer::deleteElements() {
 
 void ZoneContainer::addForDeletion(Entity* e) {
 	to_delete.insert(e);
+}
+
+void dumpToFile(std::string str, Array2D<int>& tab) {
+
+	std::string res;
+
+	for(int i = 0; i < tab.size().x; ++i) {
+		for(int j = 0; j < tab.size().y; ++j) {
+			res += "," ;
+			res += (tab(i,j) == 7) ? "1" : "0";
+		}
+	}
+
+	std::cout << res;
 }

@@ -6,7 +6,7 @@
 void OverWorldDisplay::init(const MetaGameData& metaGameData) {
 
 	colorizeShader.loadFromFile(metaGameData.basePath+"shader/colorize.sfx", sf::Shader::Fragment);
-	waterShader.loadFromFile(metaGameData.basePath+"shader/empty.frag", sf::Shader::Vertex);
+	waterShader.loadFromFile(metaGameData.basePath+"shader/wave.vert", sf::Shader::Vertex);
 	changeWaterParameters(myWaveParameters);
 
 	overWorld_texture.create(metaGameData.resolution.x, metaGameData.resolution.y);
@@ -38,9 +38,9 @@ void OverWorldDisplay::updateToneParameters(const Tone& t) {
 
 WaveParameters::WaveParameters() :
 	wave_angle(utils::angles::degrees2rad(-45)),
-	wave_time_period(2.f),
+	wave_time_period(2.f*4),
 	wave_spatial_period(32*5.f),
-	wave_amplitude(8.f) {
+	wave_amplitude(7.f) {
 }
 
 void OverWorldDisplay::updateWaterParameters(int time_ms) {
