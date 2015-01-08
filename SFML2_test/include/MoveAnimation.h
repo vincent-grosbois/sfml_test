@@ -7,6 +7,40 @@
 #include "Tile.h"
 #include "utils/Array2D.h"
 
+
+enum class AnimationType {
+
+	MOVING,
+	ATTACKING,
+	SPELLCASTING,
+	DYING,
+
+};
+
+
+class Animation {
+public:
+	std::vector<sf::IntRect> frames[4]; // < one for each direction
+	int frame_duration_ms;
+	AnimationType type;
+	bool looping;
+};
+
+struct AnimationProgress {
+	Animation* animation;
+	int current_frame;
+	int current_frame_time_elapsed_ms;
+
+	AnimationProgress(Animation* anim) :
+	animation(anim), current_frame(0), current_frame_time_elapsed_ms(0)
+	{ }
+};
+
+class AnimationHolder {
+	std::map<AnimationType, Animation> resources;
+};
+
+
 class MoveAnimation
 {
 public:

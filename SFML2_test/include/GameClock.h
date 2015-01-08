@@ -18,32 +18,36 @@ public:
 		currentGameTime(0)
 	{ }
 
-	void update(int dt_ms) { 
+	void update(int dt_ms, bool gameplay_paused) { 
 		real_ms_remainder+=dt_ms;
-		game_ms_remainder+= int( speed_factor*(dt_ms) );
-		if(game_ms_remainder > 1000) {
-			int increment = game_ms_remainder/1000;
-			game_ms_remainder%=1000;
-			currentGameTime += increment;
-		}
 		if(real_ms_remainder > 1000) {
 			int increment = real_ms_remainder/1000;
 			real_ms_remainder%=1000;
 			totalGameTime += increment;
 		}
+
+		if(gameplay_paused)
+			return;
+
+		game_ms_remainder+= int( speed_factor*dt_ms );
+		if(game_ms_remainder > 1000) {
+			int increment = game_ms_remainder/1000;
+			game_ms_remainder%=1000;
+			currentGameTime += increment;
+		}
 	}
 
-	//"game" seconds elapsed since the game was started
+	//seconds in game time elapsed since the game was started
 	gameTime getTotalGameTime() const {
 		return currentGameTime;
 	} 
 
-	//RL total number of seconds of game played
+	//seconds in real time elapsed since the game was started
 	gameTime getTotalPlayedTime() const {
 		return totalGameTime;
 	}
 
-	//game seconds elapsed since the begining of the game day
+	//seconds in game time elapsed since the begining of the game day
 	gameTime getCurrentTimeOfDay() const {
 		return (currentGameTime + offset)%SECONDS_IN_DAY;
 	} 
