@@ -34,6 +34,12 @@
     <Filter Include="Header Files\overworld">
       <UniqueIdentifier>{c3160a68-a98c-48ff-93be-881bf75bd236}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Recast">
+      <UniqueIdentifier>{d46ea22e-5959-4737-bc60-80a6accdf99e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Recast">
+      <UniqueIdentifier>{2e17d06c-fd5d-4a65-b5c2-e17708e84739}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\utils\SetUnionIterator.h">
@@ -64,15 +70,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\ZoneContainerData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\BoxedText.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\BoxedTextScrollable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\CallBackSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Constants.h">
@@ -171,6 +168,9 @@
     <ClInclude Include="include\utils\FrameAllocator.h">
       <Filter>Header Files\utils</Filter>
     </ClInclude>
+    <ClInclude Include="NavMeshGenerator.h">
+      <Filter>Header Files\Recast</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SceneManager.cpp">
@@ -188,19 +188,10 @@
     <ClCompile Include="src\ZoneContainerData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\BoxedText.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\BoxedTextScrollable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\CallBackSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\GameResource.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\GameScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\GameTicks.cpp">
@@ -277,6 +268,9 @@
     </ClCompile>
     <ClCompile Include="src\utils\FrameAllocator.cpp">
       <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="NavMeshGenerator.cpp">
+      <Filter>Source Files\Recast</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

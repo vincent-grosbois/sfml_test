@@ -6,50 +6,14 @@
 #include "GameResource.h"
 #include "Map.h"
 
-Array2D<Map*> gameMapGenerator(const std::string& theFile, Tileset* theTileSet, ZoneContainer& ZC);
+
 
 ZoneContainer::ZoneContainer(const std::string& dataFile, GameResource& gr):
 	data(dataFile),
 	tileset(gr.getTileset(data.tilesetDataPath)),
-	maps(std::move(gameMapGenerator(data.mapDataPath, &tileset, *this)))
-{ }
-
-ZoneContainer::~ZoneContainer()
-{
-	std::cout << "deleting ZC " << data.dataPath << std::endl;
-
-	for(int i =0; i < maps.size().x; ++i) 
-		for(int j =0; j < maps.size().y; ++j)
-			delete maps(i,j);
-}
-
-std::set<Map*> ZoneContainer::getCollidingMaps(const sf::FloatRect& rect)  {
-
-	tile_units left = static_cast<tile_units>(floor( rect.left / (TILES_PER_MAP_X*TILE_SIZE_X) ) );
-	tile_units right = static_cast<tile_units>(ceil( (rect.left + rect.width) / (TILES_PER_MAP_X*TILE_SIZE_X))) ;
-
-	tile_units top = static_cast<tile_units>(floor( rect.top / (TILES_PER_MAP_Y*TILE_SIZE_Y)));
-	tile_units bottom = static_cast<tile_units>(ceil( (rect.top + rect.height) / (TILES_PER_MAP_Y*TILE_SIZE_Y) ));
-
-	top = top < 0 ? 0 : top;
-	left = left < 0 ? 0 : left;
-	bottom = bottom > maps.size().y ? maps.size().y : bottom;
-	right = right > maps.size().x ? maps.size().x : right;
-
-	std::set<Map*> list;
-	for(int i=left; i < right; i++) {
-		for(int j=top; j < bottom; j++) {
-			list.insert( maps(i,j) );
-		}
-	}
-
-	return list;
-}
-
-void dumpToFile(std::string str, Array2D<int>& tab);
-
-Array2D<Map*> gameMapGenerator(const std::string& theFile, Tileset* theTileSet, ZoneContainer& ZC)
-{
+	maps(0,0),
+	collisionArray(0,0)
+{ 
 
 	Array2D<Map*> mapList(0,0);
 
@@ -59,7 +23,7 @@ Array2D<Map*> gameMapGenerator(const std::string& theFile, Tileset* theTileSet, 
 
 	sf::Image MAP;
 	
-	MAP.loadFromFile(theFile);
+	MAP.loadFromFile(data.mapDataPath);
 
 	int map_size_x  = MAP.getSize().x*3 / TILES_PER_MAP_X;
 	int map_size_y  = MAP.getSize().y*3 / TILES_PER_MAP_Y;
@@ -109,7 +73,7 @@ Array2D<Map*> gameMapGenerator(const std::string& theFile, Tileset* theTileSet, 
 		}
 	}
 
-	//dumpToFile("here.txt", tableau2D);
+	
 
 	int id=0;
 
@@ -117,21 +81,21 @@ Array2D<Map*> gameMapGenerator(const std::string& theFile, Tileset* theTileSet, 
 
 		for(int j=0; j<map_size_y; ++j)  {
 
-			TilePlane* TP  = new TilePlane(*theTileSet, 
+			TilePlane* TP  = new TilePlane(tileset, 
 				sf::Vector2<tile_units>(TILES_PER_MAP_X, TILES_PER_MAP_Y), 
 				sf::Vector2<tile_units>(TILES_PER_MAP_X*i, TILES_PER_MAP_Y*j), 
 				tableau2D);
 
 			TilePlane* water  = NULL;
 
-			if(ZC.getData().isOutside) {
-				water = new TilePlane(*theTileSet, 
+			if(getData().isOutside) {
+				water = new TilePlane(tileset, 
 					sf::Vector2<tile_units>(TILES_PER_MAP_X, TILES_PER_MAP_Y), 
 					sf::Vector2<tile_units>(TILES_PER_MAP_X*i, TILES_PER_MAP_Y*j), 
 					tableau2D, true);
 			}
 
-			mapList(i,j) = new Map(ZC,
+			mapList(i,j) = new Map(*this,
 				water,
 				TP, 
 				NULL, 
@@ -148,8 +112,62 @@ Array2D<Map*> gameMapGenerator(const std::string& theFile, Tileset* theTileSet, 
 	clock_t end = clock();
 	std::cout << "Map generated, in "<< (float)(1000*(end-start))/CLOCKS_PER_SEC << "ms." <<std::endl;
 
-	return mapList;
+	maps = std::move(mapList);
+
+	createCollisionArray(tableau2D);
+
 }
+
+void ZoneContainer::createCollisionArray(Array2D<int>& tab) {
+
+	Array2D<int> collision(maps.size().x*TILES_PER_MAP_X/3, maps.size().y*TILES_PER_MAP_X/3);
+
+	for(int i = 0; i < maps.size().x*TILES_PER_MAP_X/3; ++i) {
+		for(int j = 0; j < maps.size().y*TILES_PER_MAP_Y/3; ++j) {
+			collision(i,j) = (tab(i,j) == 7 || tab(i,j) == 0) ? 1 : 0;
+		}
+
+	}
+
+
+	collisionArray = std::move(collision);
+}
+
+
+ZoneContainer::~ZoneContainer()
+{
+	std::cout << "deleting ZC " << data.dataPath << std::endl;
+
+	for(int i =0; i < maps.size().x; ++i) 
+		for(int j =0; j < maps.size().y; ++j)
+			delete maps(i,j);
+}
+
+std::set<Map*> ZoneContainer::getCollidingMaps(const sf::FloatRect& rect)  {
+
+	tile_units left = static_cast<tile_units>(floor( rect.left / (TILES_PER_MAP_X*TILE_SIZE_X) ) );
+	tile_units right = static_cast<tile_units>(ceil( (rect.left + rect.width) / (TILES_PER_MAP_X*TILE_SIZE_X))) ;
+
+	tile_units top = static_cast<tile_units>(floor( rect.top / (TILES_PER_MAP_Y*TILE_SIZE_Y)));
+	tile_units bottom = static_cast<tile_units>(ceil( (rect.top + rect.height) / (TILES_PER_MAP_Y*TILE_SIZE_Y) ));
+
+	top = top < 0 ? 0 : top;
+	left = left < 0 ? 0 : left;
+	bottom = bottom > maps.size().y ? maps.size().y : bottom;
+	right = right > maps.size().x ? maps.size().x : right;
+
+	std::set<Map*> list;
+	for(int i=left; i < right; i++) {
+		for(int j=top; j < bottom; j++) {
+			list.insert( maps(i,j) );
+		}
+	}
+
+	return list;
+}
+
+
+
 
 void ZoneContainer::dumpLoadedTiles() const {
 	for(int i =0; i < maps.size().x; ++i) 
@@ -177,16 +195,3 @@ void ZoneContainer::addForDeletion(Entity* e) {
 	to_delete.insert(e);
 }
 
-void dumpToFile(std::string str, Array2D<int>& tab) {
-
-	std::string res;
-
-	for(int i = 0; i < tab.size().x; ++i) {
-		for(int j = 0; j < tab.size().y; ++j) {
-			res += "," ;
-			res += (tab(i,j) == 7) ? "1" : "0";
-		}
-	}
-
-	std::cout << res;
-}

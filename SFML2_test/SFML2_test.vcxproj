@@ -13,9 +13,6 @@
   <ItemGroup>
     <ClInclude Include="FramePagedMemory.h" />
     <ClInclude Include="include\AI\WaypointModule.h" />
-    <ClInclude Include="include\BoxedText.h" />
-    <ClInclude Include="include\BoxedTextScrollable.h" />
-    <ClInclude Include="include\CallBackSystem.h" />
     <ClInclude Include="include\Constants.h" />
     <ClInclude Include="include\entities\Character.h" />
     <ClInclude Include="include\entities\Collectible.h" />
@@ -56,10 +53,10 @@
     <ClInclude Include="include\utils\StringUtils.h" />
     <ClInclude Include="include\ZoneContainer.h" />
     <ClInclude Include="include\ZoneContainerData.h" />
+    <ClInclude Include="NavMeshGenerator.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\BoxedText.cpp" />
-    <ClCompile Include="src\BoxedTextScrollable.cpp" />
+    <ClCompile Include="NavMeshGenerator.cpp" />
     <ClCompile Include="src\CallBackSystem.cpp" />
     <ClCompile Include="src\entities\Character.cpp" />
     <ClCompile Include="src\entities\Collectible.cpp" />
@@ -70,7 +67,6 @@
     <ClCompile Include="src\entities\PlayerCharacter.cpp" />
     <ClCompile Include="src\entities\Projectile.cpp" />
     <ClCompile Include="src\GameResource.cpp" />
-    <ClCompile Include="src\GameScene.cpp" />
     <ClCompile Include="src\GameTicks.cpp" />
     <ClCompile Include="src\GatewayZC.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -124,10 +120,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\cpp\Thor\extlibs\aurora\include;C:\cpp\Thor\include;C:\cpp\SFML-2.2\include;include\;$(IncludePath)</IncludePath>
+    <IncludePath>C:\cpp\Thor\extlibs\aurora\include;C:\cpp\Thor\include;C:\cpp\SFML-2.2\include;include\;C:\cpp\recastnavigation\Detour\Include;C:\cpp\recastnavigation\Recast\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LibraryPath>C:\cpp\Thor\src\Debug;C:\Users\Vincent\Documents\Visual Studio 2010\Projects\SFML2_test\SFML2_test\Debug;C:\cpp\SFML-2.2\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\cpp\Thor\src\Debug;C:\Users\Vincent\Documents\Visual Studio 2010\Projects\SFML2_test\SFML2_test\Debug;C:\cpp\SFML-2.2\lib;C:\cpp\recastnavigation\RecastDemo\Build\vs2010\lib\Debug;$(LibraryPath)</LibraryPath>
     <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -145,7 +141,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>sfml-audio-d.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-network-d.lib;thor-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sfml-audio-d.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-network-d.lib;thor-d.lib;Recast.lib;Detour.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Users\Vincent\Documents\Visual Studio 2010\Projects\SFML2_test\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>

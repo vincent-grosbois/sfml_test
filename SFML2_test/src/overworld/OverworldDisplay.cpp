@@ -39,8 +39,8 @@ void OverWorldDisplay::updateToneParameters(const Tone& t) {
 WaveParameters::WaveParameters() :
 	wave_angle(utils::angles::degrees2rad(-45)),
 	wave_time_period(2.f*4),
-	wave_spatial_period(32*5.f),
-	wave_amplitude(7.f) {
+	wave_spatial_period(176.f),
+	wave_amplitude(1.8f) {
 }
 
 void OverWorldDisplay::updateWaterParameters(int time_ms) {

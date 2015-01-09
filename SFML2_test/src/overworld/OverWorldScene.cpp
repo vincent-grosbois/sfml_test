@@ -37,7 +37,8 @@ OverWorldScene::OverWorldScene(const MetaGameData& metaGameData, GameResource& g
 	myTotalTimeAlways(0),
 	gameResources(gr),
 	debug_key_pressed(false),
-	myState(OverworldSceneState::TRANSITIONING_IN)
+	myState(OverworldSceneState::TRANSITIONING_IN),
+	navMeshGenerator(&buildContext)
 { }
 
 OverWorldScene::~OverWorldScene() {
@@ -93,6 +94,8 @@ void OverWorldScene::onInit() {
 	torchLight = new LightEntity(PC->getSpriteCenter(), *ZC, 300, 20, sf::Color(10,10,10,250));
 
 	owTransition.time_remaining_ms = owTransition.total_time_ms;
+
+	navMeshGenerator.handleBuild(ZC->getCollisionArray());
 }
 
 
@@ -347,6 +350,11 @@ void OverWorldScene::update(int deltaTime) {
 		owDisplay.changeWaterParameters(owDisplay.myWaveParameters);
 	}
 
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::B))
+	{
+		this->navMeshGenerator.handleBuild(ZC->getCollisionArray());
+	}
+
 	if(torchLight->isOn_()) {
 		torchLight->setPosition(PC->getSpriteCenter());
 	}
@@ -534,6 +542,8 @@ void OverWorldScene::draw() {
 		for(auto& ent : entities_visible) {
 			ent->drawDebugInfo(owDisplay);
 		}
+
+		drawNavMesh();
 	}
 
 
@@ -600,4 +610,154 @@ void OverWorldScene::changeZone(const std::string& newZC) {
 	visibleMaps.clear();
 	loadEntities(zone_already_loaded);
 	bindContentToClock();
+}
+
+void drawMeshTile(sf::RenderTexture& rt, const dtNavMesh&, const dtMeshTile*);
+
+void OverWorldScene::drawNavMesh() {
+
+	const dtNavMesh* mesh = navMeshGenerator.getNavMesh();
+
+	if(!mesh)
+		return;
+
+
+
+	for (int i = 0; i < mesh->getMaxTiles(); ++i)
+	{
+		const dtMeshTile* tile = mesh->getTile(i);
+		if (!tile->header) continue;
+		drawMeshTile(owDisplay.debug_texture, *mesh, tile);
+	}
+}
+
+static float distancePtLine2d(const float* pt, const float* p, const float* q)
+{
+	float pqx = q[0] - p[0];
+	float pqz = q[2] - p[2];
+	float dx = pt[0] - p[0];
+	float dz = pt[2] - p[2];
+	float d = pqx*pqx + pqz*pqz;
+	float t = pqx*dx + pqz*dz;
+	if (d != 0) t /= d;
+	dx = p[0] + t*pqx - pt[0];
+	dz = p[2] + t*pqz - pt[2];
+	return dx*dx + dz*dz;
+}
+
+void drawMeshTile(sf::RenderTexture& rt, const dtNavMesh& mesh, const dtMeshTile* tile)  {
+
+	dtPolyRef base = mesh.getPolyRefBase(tile);
+
+	int tileNum = mesh.decodePolyIdTile(base);
+	
+	sf::VertexArray v0;
+	v0.setPrimitiveType(sf::PrimitiveType::Triangles);
+	for (int i = 0; i < tile->header->polyCount; ++i)
+	{
+		const dtPoly* p = &tile->polys[i];
+		if (p->getType() == DT_POLYTYPE_OFFMESH_CONNECTION)	// Skip off-mesh links.
+			continue;
+
+		const dtPolyDetail* pd = &tile->detailMeshes[i];
+
+		sf::Color col;
+
+		if (p->getArea() == 0) // Treat zero area type as default.
+			col = sf::Color(0,192,255,64);
+		else
+			col = sf::Color(100,192,255, 64);
+
+
+		
+		for (int j = 0; j < pd->triCount; ++j)
+		{
+			const unsigned char* t = &tile->detailTris[(pd->triBase+j)*4];
+			for (int k = 0; k < 3; ++k)
+			{
+				if (t[k] < p->vertCount)
+					v0.append(sf::Vertex(sf::Vector2f(tile->verts[p->verts[t[k]]*3],tile->verts[p->verts[t[k]]*3 +2]) , col));
+					//dd->vertex(&tile->verts[p->verts[t[k]]*3], col);
+				else
+					v0.append(sf::Vertex(sf::Vector2f(tile->detailVerts[(pd->vertBase+t[k]-p->vertCount)*3], tile->detailVerts[(pd->vertBase+t[k]-p->vertCount)*3+2] ), col));
+			}
+		}
+	}
+	
+	rt.draw(v0);
+
+	///////////////--------------------------------
+	sf::VertexArray v;
+	v.setPrimitiveType(sf::PrimitiveType::Lines);
+
+	static const float thr = 0.1f*0.1f;
+
+	sf::Color col = sf::Color::White;
+
+	for (int i = 0; i < tile->header->polyCount; ++i)
+	{
+		const dtPoly* p = &tile->polys[i];
+
+		if (p->getType() == DT_POLYTYPE_OFFMESH_CONNECTION) continue;
+
+		const dtPolyDetail* pd = &tile->detailMeshes[i];
+
+		for (int j = 0, nj = (int)p->vertCount; j < nj; ++j)
+		{
+			sf::Color c = col;
+
+			if (p->neis[j] & DT_EXT_LINK)
+			{
+				bool con = false;
+				for (unsigned int k = p->firstLink; k != DT_NULL_LINK; k = tile->links[k].next)
+				{
+					if (tile->links[k].edge == j)
+					{
+						con = true;
+						break;
+					}
+				}
+				if (con)
+					c = sf::Color(255,255,255,255);
+				else
+					c = sf::Color(0,0,0,255);
+			}
+			else
+				c = sf::Color(0,48,64,255);
+
+
+
+			const float* v0 = &tile->verts[p->verts[j]*3];
+			const float* v1 = &tile->verts[p->verts[(j+1) % nj]*3];
+
+			// Draw detail mesh edges which align with the actual poly edge.
+			// This is really slow.
+			for (int k = 0; k < pd->triCount; ++k)
+			{
+				const unsigned char* t = &tile->detailTris[(pd->triBase+k)*4];
+				const float* tv[3];
+				for (int m = 0; m < 3; ++m)
+				{
+					if (t[m] < p->vertCount)
+						tv[m] = &tile->verts[p->verts[t[m]]*3];
+					else
+						tv[m] = &tile->detailVerts[(pd->vertBase+(t[m]-p->vertCount))*3];
+				}
+				for (int m = 0, n = 2; m < 3; n=m++)
+				{
+					if (((t[3] >> (n*2)) & 0x3) == 0) continue;	// Skip inner detail edges.
+					if (true)
+						//distancePtLine2d(tv[n],v0,v1) < thr &&
+						//distancePtLine2d(tv[m],v0,v1) < thr )
+					{
+						v.append(sf::Vertex(sf::Vector2f(tv[n][0]*1,tv[n][2]*1) , col));
+						v.append(sf::Vertex(sf::Vector2f(tv[m][0]*1,tv[m][2]*1) , col));
+					}
+				}
+			}
+		}
+	}
+	
+	
+	rt.draw(v);
 }

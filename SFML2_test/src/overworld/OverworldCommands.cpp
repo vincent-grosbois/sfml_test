@@ -11,6 +11,8 @@ OverworldCommands::OverworldCommands()
 
 	map[OVERWORLD_COMMANDS::DEBUG] = thor::Action(sf::Keyboard::A, thor::Action::PressOnce); 
 
+	map[OVERWORLD_COMMANDS::DEBUG_DISPLAY_MESH] = thor::Action(sf::Keyboard::M, thor::Action::Hold); 
+
 	map[OVERWORLD_COMMANDS::DEBUG_NO_COLLIDE] = thor::Action(sf::Keyboard::LShift, thor::Action::Hold); 
 
 	map[OVERWORLD_COMMANDS::MOVE_UP] = thor::Action(sf::Keyboard::Up, thor::Action::Hold);

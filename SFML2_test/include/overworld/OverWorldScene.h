@@ -15,6 +15,8 @@
 #include "utils/FrameAllocator.h"
 #include <SFML/System/Vector2.hpp>
 
+#include "../NavMeshGenerator.h"
+
 struct Tone;
 class PlayerCharacter;
 class Overlay;
@@ -215,10 +217,15 @@ private:
 	clock_t part1_total;
 	clock_t part2_total;
 
+
+	BuildContext buildContext;
+	NavMeshGenerator  navMeshGenerator;
+
 private:
 	void changeZone(const std::string& newZC);
 	void bindContentToClock();
 	void unbindContentToClock();
 	void loadEntities(bool already_created);
+	void drawNavMesh();
 };
 

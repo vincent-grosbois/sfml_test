@@ -11,8 +11,17 @@
 
 const int MIN_FPS = 4;
 
+
 int main()
 {
+
+	std::cout << "Build on " << __DATE__ << " at " << __TIME__ << "\n";
+#ifdef _DEBUG
+	std::cout << "Debug version\n";
+#else
+	std::cout << "Release version\n";
+#endif
+
 	srand(87611);
 
 	MetaGameData metaGame("../../ressources/Game.txt");
