@@ -7,9 +7,9 @@
 Collectible::Collectible(sf::Vector2f const& position,  ZoneContainer& ZC, const sf::Sprite& sprite):
 EntityPhysical(position, ZC)
 {
-	this->sprite = sprite;
-	boundingBoxSize = sprite.getScale();
-	positionSprite();
+	spriteCpt.sprite = sprite;
+	//boundingBoxSize = sprite.getScale();
+	spriteCpt.positionSprite(position);
 }
 
 bool Collectible::OnActivated(Entity& activator) {

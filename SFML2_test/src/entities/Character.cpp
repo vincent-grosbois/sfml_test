@@ -18,13 +18,13 @@ Character::Character(const sf::Vector2f& position, ZoneContainer& ZC, GameTicks&
 	ticks(ticks),
 	waypointModule(NULL)
 {
-	spriteOffset.x = - move_anim.getFrame(DIRECTION::DOWN,0).width/2;
-	spriteOffset.y = - move_anim.getFrame(DIRECTION::DOWN,0).height + 10;
+	spriteCpt.spriteOffset.x = - move_anim.getFrame(DIRECTION::DOWN,0).width/2;
+	spriteCpt.spriteOffset.y = - move_anim.getFrame(DIRECTION::DOWN,0).height + 10;
 
-	sprite.setTexture(move_anim.getTexture());
-	sprite.setTextureRect(move_anim.getFrame(facingDir, current_frame ) );
+	spriteCpt.sprite.setTexture(move_anim.getTexture());
+	spriteCpt.sprite.setTextureRect(move_anim.getFrame(facingDir, current_frame ) );
 
-	positionSprite();
+	spriteCpt.positionSprite(position);
 }
 
 void Character::draw(OverWorldDisplay& owDisplay) {
@@ -34,9 +34,9 @@ void Character::draw(OverWorldDisplay& owDisplay) {
 	current_frame = isMoving ? (current_frame + ticks) %9 : 0;
 
 	if(old_frame != current_frame) {
-		sprite.setTextureRect(move_anim->getFrame(facingDir, current_frame ) );
+		spriteCpt.sprite.setTextureRect(move_anim->getFrame(facingDir, current_frame ) );
 	}
-	owDisplay.overWorld_texture.draw(sprite);
+	owDisplay.overWorld_texture.draw(spriteCpt.sprite);
 }
 
 
@@ -76,7 +76,10 @@ bool Character::tryMoving(int value, DIRECTION::e dir) {
 	*coord_to_change +=  increment;
 
 
-	sf::FloatRect BoundingBoxRect(position.x + boundingBoxOffset.x, position.y + boundingBoxOffset.y, boundingBoxSize.x, boundingBoxSize.y);
+	sf::FloatRect BoundingBoxRect(
+		position.x + boundingBox.boundingBoxOffset.x, 
+		position.y + boundingBox.boundingBoxOffset.y, 
+		boundingBox.boundingBoxRectReal.width, boundingBox.boundingBoxRectReal.height);
 
 	std::set<Map*>::const_iterator it_maps;
 	std::set<EntitySet*>::const_iterator it_set;
@@ -93,16 +96,16 @@ bool Character::tryMoving(int value, DIRECTION::e dir) {
 
 			switch(dir) {
 			case DIRECTION::RIGHT:
-				*coord_to_change = collision_coords.x + boundingBoxOffset.x;
+				*coord_to_change = collision_coords.x + boundingBox.boundingBoxOffset.x;
 				break;
 			case DIRECTION::LEFT:
-				*coord_to_change = collision_coords.x + TILE_SIZE_X - boundingBoxOffset.x;
+				*coord_to_change = collision_coords.x + TILE_SIZE_X - boundingBox.boundingBoxOffset.x;
 				break;
 			case DIRECTION::DOWN:
-				*coord_to_change = collision_coords.y + boundingBoxOffset.y;
+				*coord_to_change = collision_coords.y + boundingBox.boundingBoxOffset.y;
 				break;
 			case DIRECTION::UP:
-				*coord_to_change = collision_coords.y + TILE_SIZE_Y - boundingBoxOffset.y;
+				*coord_to_change = collision_coords.y + TILE_SIZE_Y - boundingBox.boundingBoxOffset.y;
 				break;
 			}
 
@@ -115,7 +118,7 @@ bool Character::tryMoving(int value, DIRECTION::e dir) {
 
 			increment = *coord_to_change - oldvalue;
 			facingDir = dir;
-			BoundingBoxRect = sf::FloatRect(position.x + boundingBoxOffset.x, position.y + boundingBoxOffset.y, boundingBoxSize.x, boundingBoxSize.y);	
+			boundingBox.positionBoundingBox(position);
 		}
 
 
@@ -142,16 +145,16 @@ bool Character::tryMoving(int value, DIRECTION::e dir) {
 				{ 
 					switch(dir) {
 					case DIRECTION::RIGHT:
-						*coord_to_change = temp_inter.left + boundingBoxOffset.x;
+						*coord_to_change = temp_inter.left + boundingBox.boundingBoxOffset.x;
 						break;
 					case DIRECTION::LEFT:
-						*coord_to_change = temp_inter.left + temp_inter.width - boundingBoxOffset.x;
+						*coord_to_change = temp_inter.left + temp_inter.width - boundingBox.boundingBoxOffset.x;
 						break;
 					case DIRECTION::DOWN:
-						*coord_to_change = temp_inter.top + boundingBoxOffset.y;
+						*coord_to_change = temp_inter.top + boundingBox.boundingBoxOffset.y;
 						break;
 					case DIRECTION::UP:
-						*coord_to_change = temp_inter.top + temp_inter.height - boundingBoxOffset.y;
+						*coord_to_change = temp_inter.top + temp_inter.height - boundingBox.boundingBoxOffset.y;
 						break;
 					}
 
@@ -162,8 +165,7 @@ bool Character::tryMoving(int value, DIRECTION::e dir) {
 					}
 
 					(*it_element)->onCollision(*this);
-
-					BoundingBoxRect = sf::FloatRect(position.x+ boundingBoxOffset.x, position.y+ boundingBoxOffset.y, boundingBoxSize.x, boundingBoxSize.y);	
+					boundingBox.positionBoundingBox(position);
 					break;
 				}
 
@@ -175,9 +177,9 @@ bool Character::tryMoving(int value, DIRECTION::e dir) {
 
 
 	facingDir = dir;
-	boundingBoxRectReal = BoundingBoxRect;
+	boundingBox.boundingBoxRectReal = BoundingBoxRect;
 
-	positionSprite();
+	spriteCpt.positionSprite(position);
 	isMoving = true;
 
 	registerInMaps();
@@ -189,16 +191,16 @@ const sf::FloatRect Character::getActivableZone() const {
 	const float advance = 22;
 	switch(facingDir) {
 	case DIRECTION::RIGHT:
-		return sf::FloatRect(boundingBoxRectReal.left + boundingBoxRectReal.width, boundingBoxRectReal.top - boundingBoxSize.y/2, advance, 2*boundingBoxRectReal.height);
+		return sf::FloatRect(boundingBox.boundingBoxRectReal.left + boundingBox.boundingBoxRectReal.width, boundingBox.boundingBoxRectReal.top -boundingBox.boundingBoxRectReal.height/2, advance, 2*boundingBox.boundingBoxRectReal.height);
 		break;
 	case DIRECTION::LEFT:
-		return sf::FloatRect(boundingBoxRectReal.left - advance, boundingBoxRectReal.top - boundingBoxSize.y/2, advance, 2*boundingBoxRectReal.height);
+		return sf::FloatRect(boundingBox.boundingBoxRectReal.left - advance, boundingBox.boundingBoxRectReal.top - boundingBox.boundingBoxRectReal.height/2, advance, 2*boundingBox.boundingBoxRectReal.height);
 		break;
 	case DIRECTION::DOWN:
-		return sf::FloatRect(boundingBoxRectReal.left - boundingBoxSize.x/2, boundingBoxRectReal.top + boundingBoxRectReal.height, 2*boundingBoxRectReal.width, advance);
+		return sf::FloatRect(boundingBox.boundingBoxRectReal.left - boundingBox.boundingBoxRectReal.width/2, boundingBox.boundingBoxRectReal.top + boundingBox.boundingBoxRectReal.height, 2*boundingBox.boundingBoxRectReal.width, advance);
 		break;
 	case DIRECTION::UP:
-		return sf::FloatRect(boundingBoxRectReal.left - boundingBoxSize.x/2, boundingBoxRectReal.top - advance, 2*boundingBoxRectReal.width, advance);
+		return sf::FloatRect(boundingBox.boundingBoxRectReal.left - boundingBox.boundingBoxRectReal.width/2, boundingBox.boundingBoxRectReal.top - advance, 2*boundingBox.boundingBoxRectReal.width, advance);
 		break;
 	}
 
@@ -249,5 +251,4 @@ void Character::receiveItem(Collectible* collectible) {
 }
 
 Character::~Character()
-{
-}
+{ }

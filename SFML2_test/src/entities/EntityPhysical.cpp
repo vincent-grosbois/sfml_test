@@ -7,38 +7,24 @@
 
 EntityPhysical::EntityPhysical(const sf::Vector2f& position,  ZoneContainer& ZC):
 	Entity(position, ZC),
-	boundingBoxSize(16,15),
-	spriteOffset(0,0),
-	boundingBoxOffset(-boundingBoxSize.x/2, -boundingBoxSize.y/2),
-	boundingBoxRectReal(position.x, position.y, boundingBoxSize.x, boundingBoxSize.y)
+	boundingBox(position, sf::Vector2f(16,15))
 {
-	positionSprite();
-	positionBoundingBox();
+	spriteCpt.spriteOffset = sf::Vector2f(0,0);
+	spriteCpt.positionSprite(position);
 	registerInMaps();
 }
 
-
-void EntityPhysical::positionSprite() {
-	sprite.setPosition(position + spriteOffset);
-}
-
-void EntityPhysical::positionBoundingBox() {
-	boundingBoxRectReal.left = position.x + boundingBoxOffset.x;
-	boundingBoxRectReal.top = position.y + boundingBoxOffset.y;
-}
-
-
 void EntityPhysical::draw(OverWorldDisplay& owDisplay) {
-	owDisplay.overWorld_texture.draw(sprite);
+	owDisplay.overWorld_texture.draw(spriteCpt.sprite);
 }
 
 bool EntityPhysical::intersectsForCollision(const sf::FloatRect& rectangle, sf::FloatRect* result) 
 {
 	// Compute overlapping rect
-	float left = std::max(boundingBoxRectReal.left, rectangle.left);
-	float top =  std::max(boundingBoxRectReal.top, rectangle.top);
-	float right = std::min(boundingBoxRectReal.left + boundingBoxRectReal.width,  rectangle.left + rectangle.width);
-	float bottom = std::min(boundingBoxRectReal.top + boundingBoxRectReal.height, rectangle.top + rectangle.height);
+	float left = std::max(boundingBox.boundingBoxRectReal.left, rectangle.left);
+	float top =  std::max(boundingBox.boundingBoxRectReal.top, rectangle.top);
+	float right = std::min(boundingBox.boundingBoxRectReal.left + boundingBox.boundingBoxRectReal.width,  rectangle.left + rectangle.width);
+	float bottom = std::min(boundingBox.boundingBoxRectReal.top + boundingBox.boundingBoxRectReal.height, rectangle.top + rectangle.height);
 	
 	sf::FloatRect OverlappingRect (left, top, right - left, bottom-top);
 
@@ -57,10 +43,5 @@ bool EntityPhysical::intersectsForCollision(const sf::FloatRect& rectangle, sf::
 }
 
 void EntityPhysical::drawDebugInfo(OverWorldDisplay& owd) { 
-	sf::RectangleShape rect(sf::Vector2f(boundingBoxRectReal.width, boundingBoxRectReal.height));
-	rect.setPosition(boundingBoxRectReal.left,boundingBoxRectReal.top);
-	rect.setFillColor(sf::Color(0,0,0,0));
-	rect.setOutlineColor(sf::Color::White);
-	rect.setOutlineThickness(1);
-	owd.overWorld_texture.draw(rect); 
+	//
 }

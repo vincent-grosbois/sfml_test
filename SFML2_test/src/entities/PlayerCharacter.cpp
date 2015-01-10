@@ -25,10 +25,10 @@ void PlayerCharacter::draw(OverWorldDisplay& owDisplay) {
 	else
 		current_frame = isMoving ? (current_frame + ticks) %4 : 0;
 
-	sprite.setTexture(move_anim->getTexture() );
-	sprite.setTextureRect(move_anim->getFrame(facingDir, current_frame ) );
+	spriteCpt.sprite.setTexture(move_anim->getTexture() );
+	spriteCpt.sprite.setTextureRect(move_anim->getFrame(facingDir, current_frame ) );
 
-	owDisplay.overWorld_texture.draw(sprite);
+	owDisplay.overWorld_texture.draw(spriteCpt.sprite);
 }
 
 void PlayerCharacter::receiveItem(Collectible* collectible) {
@@ -45,8 +45,9 @@ void PlayerCharacter::receiveItem(Collectible* collectible) {
 
 void PlayerCharacter::teleportTo(sf::Vector2f pos, ZoneContainer* destinationZC) {
 	position = pos;
-	boundingBoxRectReal = sf::FloatRect(pos.x, pos.y, boundingBoxSize.x,  boundingBoxSize.y);
-	positionSprite();
+
+	boundingBox.positionBoundingBox(pos);
+	spriteCpt.positionSprite(pos);
 
 	unregister();
 
@@ -57,7 +58,7 @@ void PlayerCharacter::teleportTo(sf::Vector2f pos, ZoneContainer* destinationZC)
 }
 
 void PlayerCharacter::drawDebugInfo(OverWorldDisplay& owDisplay) { 
-	drawRectangle(owDisplay.debug_texture, boundingBoxRectReal, sf::Color::Blue);
+	drawRectangle(owDisplay.debug_texture, boundingBox.boundingBoxRectReal, sf::Color::Blue);
 	drawRectangle(owDisplay.debug_texture, getActivableZone(), sf::Color::Red);
 	drawRectangle(owDisplay.debug_texture, getVisibilityRectangle(), sf::Color::Yellow);
 

@@ -168,7 +168,7 @@
     <ClInclude Include="include\utils\FrameAllocator.h">
       <Filter>Header Files\utils</Filter>
     </ClInclude>
-    <ClInclude Include="NavMeshGenerator.h">
+    <ClInclude Include="include\NavMeshGenerator.h">
       <Filter>Header Files\Recast</Filter>
     </ClInclude>
   </ItemGroup>
@@ -269,7 +269,7 @@
     <ClCompile Include="src\utils\FrameAllocator.cpp">
       <Filter>Source Files\utils</Filter>
     </ClCompile>
-    <ClCompile Include="NavMeshGenerator.cpp">
+    <ClCompile Include="src\NavMeshGenerator.cpp">
       <Filter>Source Files\Recast</Filter>
     </ClCompile>
   </ItemGroup>

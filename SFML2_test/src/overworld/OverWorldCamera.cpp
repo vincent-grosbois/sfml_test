@@ -40,7 +40,7 @@ void OverWorldCamera::setCenter(const sf::Vector2f& center) {
 	if(current_view.getCenter() == center) 
 		return;
 
-	current_view.setCenter(center);
+	current_view.setCenter(center.x, center.y);
 	same_as_last_view = false;
 }
 
@@ -69,7 +69,7 @@ OverWorldCamera::OverWorldCamera(const sf::Vector2f& defaultSize):
 	same_as_last_view(false),
 	camera_set_for_frame(false),
 	current_zoom(1.f),
-	min_zoom(0.2f),
+	min_zoom(0.15f),
 	max_zoom(7.f),
 	defaultSize(defaultSize)
 { }

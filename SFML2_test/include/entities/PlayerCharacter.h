@@ -73,12 +73,9 @@ public:
 
 			*coord_to_change +=  increment;
 
-			float boundingBoxWidth = boundingBoxSize.x;
-			float boundingBoxHeight = boundingBoxSize.y;
+			boundingBox.positionBoundingBox(position);
+			spriteCpt.positionSprite(position);
 
-			boundingBoxRectReal = sf::FloatRect(position.x + boundingBoxOffset.x, position.y + boundingBoxOffset.y, boundingBoxWidth, boundingBoxHeight);
-
-			positionSprite();
 			isMoving = true;
 
 			registerInMaps();

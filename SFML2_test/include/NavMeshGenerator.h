@@ -3,7 +3,7 @@
 
 #include "DetourNavMesh.h"
 #include "Recast.h"
-#include "include\utils\Array2D.h"
+#include "utils/Array2D.h"
 
 class Sample
 {

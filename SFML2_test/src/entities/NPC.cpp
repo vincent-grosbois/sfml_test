@@ -139,21 +139,21 @@ sf::FloatRect NPC::getAwarenessZone() const {
 	float advance = 400;
 	float width = 300;
 
-	float side_size_x = width/2  - boundingBoxSize.x/2;
-	float side_size_y = width/2  - boundingBoxSize.y/2;
+	float side_size_x = width/2  - boundingBox.boundingBoxRectReal.width/2;
+	float side_size_y = width/2  - boundingBox.boundingBoxRectReal.height/2;
 
 	switch(facingDir) {
 	case DIRECTION::RIGHT:
-		return sf::FloatRect(boundingBoxRectReal.left + boundingBoxRectReal.width, boundingBoxRectReal.top - side_size_y, advance, width);
+		return sf::FloatRect(boundingBox.boundingBoxRectReal.left + boundingBox.boundingBoxRectReal.width, boundingBox.boundingBoxRectReal.top - side_size_y, advance, width);
 		break;
 	case DIRECTION::LEFT:
-		return sf::FloatRect(boundingBoxRectReal.left - advance, boundingBoxRectReal.top -  side_size_y, advance, width);
+		return sf::FloatRect(boundingBox.boundingBoxRectReal.left - advance, boundingBox.boundingBoxRectReal.top -  side_size_y, advance, width);
 		break;
 	case DIRECTION::DOWN:
-		return sf::FloatRect(boundingBoxRectReal.left - side_size_x, boundingBoxRectReal.top + boundingBoxRectReal.height, width, advance);
+		return sf::FloatRect(boundingBox.boundingBoxRectReal.left - side_size_x, boundingBox.boundingBoxRectReal.top + boundingBox.boundingBoxRectReal.height, width, advance);
 		break;
 	case DIRECTION::UP:
-		return sf::FloatRect(boundingBoxRectReal.left - side_size_x, boundingBoxRectReal.top - advance, width, advance);
+		return sf::FloatRect(boundingBox.boundingBoxRectReal.left - side_size_x, boundingBox.boundingBoxRectReal.top - advance, width, advance);
 		break;
 	}
 	assert(false);
@@ -164,7 +164,7 @@ sf::FloatRect NPC::getAwarenessZone() const {
 
 void  NPC::drawDebugInfo(OverWorldDisplay& owDisplay)  { 
 
-	drawRectangle(owDisplay.debug_texture,  boundingBoxRectReal, sf::Color::Blue);
+	drawRectangle(owDisplay.debug_texture, boundingBox.boundingBoxRectReal, sf::Color::Blue);
 	drawRectangle(owDisplay.debug_texture,  getAwarenessZone(), sf::Color::Green);
 	drawRectangle(owDisplay.debug_texture,  getVisibilityRectangle(), sf::Color::Yellow);
 	

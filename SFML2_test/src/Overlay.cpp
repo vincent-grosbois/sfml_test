@@ -27,7 +27,7 @@ overlayScene(NULL)
 	mapSprite.setScale(2.f/3,2.f/3);
 	
 	
-	cursor.loadFromFile("../../ressources/here.png");
+	//cursor.loadFromFile("../../ressources/here.png");
 	cursorSprite = sf::Sprite(cursor);
 }
 

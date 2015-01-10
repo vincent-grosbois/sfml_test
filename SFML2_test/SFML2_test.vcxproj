@@ -31,6 +31,7 @@
     <ClInclude Include="include\Map.h" />
     <ClInclude Include="include\MapEntitiesLoader.h" />
     <ClInclude Include="include\MoveAnimation.h" />
+    <ClInclude Include="include\NavMeshGenerator.h" />
     <ClInclude Include="include\Overlay.h" />
     <ClInclude Include="include\OverlayScreen.h" />
     <ClInclude Include="include\overworld\OverWorldCamera.h" />
@@ -53,10 +54,8 @@
     <ClInclude Include="include\utils\StringUtils.h" />
     <ClInclude Include="include\ZoneContainer.h" />
     <ClInclude Include="include\ZoneContainerData.h" />
-    <ClInclude Include="NavMeshGenerator.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="NavMeshGenerator.cpp" />
     <ClCompile Include="src\CallBackSystem.cpp" />
     <ClCompile Include="src\entities\Character.cpp" />
     <ClCompile Include="src\entities\Collectible.cpp" />
@@ -73,6 +72,7 @@
     <ClCompile Include="src\Map.cpp" />
     <ClCompile Include="src\MapEntitiesLoader.cpp" />
     <ClCompile Include="src\MoveAnimation.cpp" />
+    <ClCompile Include="src\NavMeshGenerator.cpp" />
     <ClCompile Include="src\Overlay.cpp" />
     <ClCompile Include="src\overworld\OverWorldCamera.cpp" />
     <ClCompile Include="src\overworld\OverworldCommands.cpp" />
@@ -127,10 +127,10 @@
     <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\cpp\Thor\extlibs\aurora\include;C:\cpp\Thor\include;include\;C:\cpp\SFML-2.2\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\cpp\Thor\extlibs\aurora\include;C:\cpp\Thor\include;include\;C:\cpp\SFML-2.2\include;C:\cpp\recastnavigation\Detour\Include;C:\cpp\recastnavigation\Recast\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LibraryPath>C:\cpp\Thor\src\Release;C:\cpp\SFML-2.2\lib;C:\Users\Vincent\Documents\Visual Studio 2010\Projects\SFML2_test\SFML2_test\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\cpp\Thor\src\Release;C:\cpp\SFML-2.2\lib;C:\Users\Vincent\Documents\Visual Studio 2010\Projects\SFML2_test\SFML2_test\Debug;C:\cpp\recastnavigation\RecastDemo\Build\vs2010\lib\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -158,7 +158,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>sfml-graphics.lib;sfml-audio.lib;sfml-window.lib;sfml-network.lib;sfml-system.lib;thor.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sfml-graphics.lib;sfml-audio.lib;sfml-window.lib;sfml-network.lib;sfml-system.lib;thor.lib;Recast.lib;Detour.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
