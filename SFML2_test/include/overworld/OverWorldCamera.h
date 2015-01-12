@@ -17,6 +17,7 @@ public:
 	sf::Vector2f getCenter() const;
 	void zoom(float value);
 	void resetSize();
+	float getZoom() const;
 
 private:
 	sf::View current_view;

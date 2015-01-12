@@ -120,14 +120,14 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\cpp\Thor\extlibs\aurora\include;C:\cpp\Thor\include;C:\cpp\SFML-2.2\include;include\;C:\cpp\recastnavigation\Detour\Include;C:\cpp\recastnavigation\Recast\Include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\cpp\Thor\extlibs\aurora\include;C:\cpp\Thor\include;C:\cpp\SFML-2.2\include;include\;C:\cpp\recastnavigation\Detour\Include;C:\cpp\recastnavigation\Recast\Include;C:\cpp\recastnavigation\DetourCrowd\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LibraryPath>C:\cpp\Thor\src\Debug;C:\Users\Vincent\Documents\Visual Studio 2010\Projects\SFML2_test\SFML2_test\Debug;C:\cpp\SFML-2.2\lib;C:\cpp\recastnavigation\RecastDemo\Build\vs2010\lib\Debug;$(LibraryPath)</LibraryPath>
     <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\cpp\Thor\extlibs\aurora\include;C:\cpp\Thor\include;include\;C:\cpp\SFML-2.2\include;C:\cpp\recastnavigation\Detour\Include;C:\cpp\recastnavigation\Recast\Include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\cpp\Thor\extlibs\aurora\include;C:\cpp\Thor\include;include\;C:\cpp\SFML-2.2\include;C:\cpp\recastnavigation\Detour\Include;C:\cpp\recastnavigation\Recast\Include;C:\cpp\recastnavigation\DetourCrowd\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LibraryPath>C:\cpp\Thor\src\Release;C:\cpp\SFML-2.2\lib;C:\Users\Vincent\Documents\Visual Studio 2010\Projects\SFML2_test\SFML2_test\Debug;C:\cpp\recastnavigation\RecastDemo\Build\vs2010\lib\Release;$(LibraryPath)</LibraryPath>
@@ -141,7 +141,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>sfml-audio-d.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-network-d.lib;thor-d.lib;Recast.lib;Detour.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sfml-audio-d.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-network-d.lib;thor-d.lib;Recast.lib;Detour.lib;DetourCrowd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Users\Vincent\Documents\Visual Studio 2010\Projects\SFML2_test\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -158,7 +158,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>sfml-graphics.lib;sfml-audio.lib;sfml-window.lib;sfml-network.lib;sfml-system.lib;thor.lib;Recast.lib;Detour.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sfml-graphics.lib;sfml-audio.lib;sfml-window.lib;sfml-network.lib;sfml-system.lib;thor.lib;Recast.lib;Detour.lib;DetourCrowd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

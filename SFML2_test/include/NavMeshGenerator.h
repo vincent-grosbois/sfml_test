@@ -2,10 +2,13 @@
 
 
 #include "DetourNavMesh.h"
+#include "DetourCrowd.h"
 #include "Recast.h"
 #include "utils/Array2D.h"
 
-class Sample
+
+
+class NavMeshGenerator
 {
 protected:
 	class dtNavMesh* m_navMesh;
@@ -28,30 +31,8 @@ protected:
 	float m_detailSampleDist;
 	float m_detailSampleMaxError;
 	int m_partitionType;
-	
-public:
-	Sample();
-	virtual ~Sample();
-	
-	virtual bool handleBuild() { return true; }
 
 
-	virtual class dtNavMesh* getNavMesh() { return m_navMesh; }
-	virtual class dtNavMeshQuery* getNavMeshQuery() { return m_navQuery; }
-	virtual class dtCrowd* getCrowd() { return m_crowd; }
-	virtual float getAgentRadius() { return m_agentRadius; }
-	virtual float getAgentHeight() { return m_agentHeight; }
-	virtual float getAgentClimb() { return m_agentMaxClimb; }
-
-	
-	inline unsigned char getNavMeshDrawFlags() const { return m_navMeshDrawFlags; }
-	inline void setNavMeshDrawFlags(unsigned char flags) { m_navMeshDrawFlags = flags; }
-
-};
-
-class NavMeshGenerator : public Sample
-{
-protected:
 	bool m_keepInterResults;
 	float m_totalBuildTimeMs;
 
@@ -66,11 +47,23 @@ protected:
 	void cleanup();
 		
 public:
-	NavMeshGenerator(rcContext* ctx);
-	virtual ~NavMeshGenerator();
+	
+	class dtNavMesh* getNavMesh() { return m_navMesh; }
+	class dtNavMeshQuery* getNavMeshQuery() { return m_navQuery; }
+	class dtCrowd* getCrowd() { return m_crowd; }
+	float getAgentRadius() { return m_agentRadius; }
+	float getAgentHeight() { return m_agentHeight; }
+	float getAgentClimb() { return m_agentMaxClimb; }
 
 	
-	virtual bool handleBuild(const Array2D<int>& tab);
+	inline unsigned char getNavMeshDrawFlags() const { return m_navMeshDrawFlags; }
+	inline void setNavMeshDrawFlags(unsigned char flags) { m_navMeshDrawFlags = flags; }
+
+	NavMeshGenerator(rcContext* ctx);
+	~NavMeshGenerator();
+
+	
+	bool handleBuild(const Array2D<int>& tab);
 };
 
 /// Recast build context.
@@ -107,4 +100,105 @@ protected:
 	virtual void doStopTimer(const rcTimerLabel /*label*/);
 	virtual int doGetAccumulatedTime(const rcTimerLabel /*label*/) const;
 	///@}
+};
+
+
+
+////////////
+// Tool to create crowds.
+
+struct CrowdToolParams
+{
+	bool m_expandSelectedDebugDraw;
+	bool m_showCorners;
+	bool m_showCollisionSegments;
+	bool m_showPath;
+	bool m_showVO;
+	bool m_showOpt;
+	bool m_showNeis;
+	
+	bool m_expandDebugDraw;
+	bool m_showLabels;
+	bool m_showGrid;
+	bool m_showNodes;
+	bool m_showPerfGraph;
+	bool m_showDetailAll;
+	
+	bool m_expandOptions;
+	bool m_anticipateTurns;
+	bool m_optimizeVis;
+	bool m_optimizeTopo;
+	bool m_obstacleAvoidance;
+	float m_obstacleAvoidanceType;
+	bool m_separation;
+	float m_separationWeight;
+};
+struct OverWorldDisplay;
+
+class CrowdToolState 
+{
+	NavMeshGenerator* m_sample;
+	dtNavMesh* m_nav;
+	dtCrowd* m_crowd;
+	
+	float m_targetPos[3];
+	dtPolyRef m_targetRef;
+
+	dtCrowdAgentDebugInfo m_agentDebug;
+	dtObstacleAvoidanceDebugData* m_vod;
+	
+	static const int MAX_AGENTS = 128;
+	
+
+	CrowdToolParams m_toolParams;
+
+	bool m_run;
+
+public:
+	CrowdToolState();
+	~CrowdToolState();
+	
+	void init(class NavMeshGenerator* sample);
+	void reset();
+	void handleUpdate(const float dt);
+
+	inline bool isRunning() const { return m_run; }
+	inline void setRunning(const bool s) { m_run = s; }
+	
+	void addAgent(const float* pos);
+	void removeAgent(const int idx);
+	void hilightAgent(const int idx);
+	void updateAgentParams();
+	int hitTestAgents(const float* s, const float* p);
+	void setMoveTarget(const float* p, bool adjust);
+	void updateTick(const float dt);
+
+	inline CrowdToolParams* getToolParams() { return &m_toolParams; }
+
+	void handleRender(OverWorldDisplay& owd);
+};
+
+class CrowdTool
+{
+	NavMeshGenerator* m_sample;
+	CrowdToolState* m_state;
+	
+	enum ToolMode
+	{
+		TOOLMODE_CREATE,
+		TOOLMODE_MOVE_TARGET,
+		TOOLMODE_SELECT,
+		TOOLMODE_TOGGLE_POLYS,
+	};
+	ToolMode m_mode;
+	
+	void updateAgentParams();
+	void updateTick(const float dt);
+	
+public:
+	CrowdTool();
+	~CrowdTool();
+	
+	int type() { return 0; }
+	void init(NavMeshGenerator* sample);
 };

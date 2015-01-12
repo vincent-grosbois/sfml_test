@@ -21,6 +21,7 @@
 #include "GameResource.h"
 #include "ZoneContainerData.h"
 #include "Map.h"
+#include "DetourCrowd.h"
 
 bool z_orderer (const Entity* lhs, const Entity* rhs) {
 	return lhs->getPosition().y < rhs->getPosition().y;
@@ -96,6 +97,15 @@ void OverWorldScene::onInit() {
 	owTransition.time_remaining_ms = owTransition.total_time_ms;
 
 	navMeshGenerator.handleBuild(ZC->getCollisionArray());
+	crowdTool.init(&navMeshGenerator);
+	crowdToolState.init(&navMeshGenerator);
+	float pos[3] = { 200, 0, 200};
+	float pos2[3] = { 300, 0, 200};
+	float target[3] = { 500, 0, 500};
+	
+	crowdToolState.addAgent(pos);
+	crowdToolState.addAgent(pos2);
+	crowdToolState.setMoveTarget(target, false);
 }
 
 
@@ -350,11 +360,6 @@ void OverWorldScene::update(int deltaTime) {
 		owDisplay.changeWaterParameters(owDisplay.myWaveParameters);
 	}
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::B))
-	{
-		this->navMeshGenerator.handleBuild(ZC->getCollisionArray());
-	}
-
 	if(torchLight->isOn_()) {
 		torchLight->setPosition(PC->getSpriteCenter());
 	}
@@ -481,7 +486,31 @@ void OverWorldScene::update(int deltaTime) {
 		}
 	}
 
+	auto crowd = this->navMeshGenerator.getCrowd();
+	dtCrowdAgentDebugInfo m_agentDebug;
+	crowd->update(myDeltaTime/1000.f, 0);// &m_agentDebug);
 
+
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+	{
+		
+		sf::Vector2i localPosition = sf::Mouse::getPosition(*App);
+		float target[3] = { 0, 0, 0};
+		auto rect = camera.getViewRect();
+		target[0] = localPosition.x * camera.getZoom() + rect.left;
+		target[2] = localPosition.y * camera.getZoom() + rect.top;
+		crowdToolState.setMoveTarget(target, false);
+	} else if (sf::Mouse::isButtonPressed(sf::Mouse::Right) ) {
+		sf::Vector2i localPosition = sf::Mouse::getPosition(*App);
+		float target[3] = { 0, 0, 0};
+		auto rect = camera.getViewRect();
+		target[0] = localPosition.x * camera.getZoom() + rect.left;
+		target[2] = localPosition.y * camera.getZoom() + rect.top;
+		static int i = 2;
+		++i;
+		std::cout << "Agents : " << i <<'\n';
+		crowdToolState.addAgent(target);
+	}
 }
 
 
@@ -555,7 +584,7 @@ void OverWorldScene::draw() {
 
 	owDisplay.updateToneParameters(t);
 
-	
+	crowdToolState.handleRender(owDisplay);
 
 	owDisplay.draw(*App);
 
@@ -593,6 +622,8 @@ void OverWorldScene::draw() {
 	overlay->draw(false);
 
 	//
+
+
 
 	App->display();
 }

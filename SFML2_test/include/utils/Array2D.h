@@ -53,7 +53,7 @@ public:
 	data(from.data),
 	data_size(from.data_size)
 	{
-		from.data = NULL;
+		from.data = 0;
 	}
 
 	Array2D& operator=(Array2D&& from) {

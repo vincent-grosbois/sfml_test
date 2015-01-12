@@ -219,7 +219,10 @@ private:
 
 
 	BuildContext buildContext;
+
 	NavMeshGenerator  navMeshGenerator;
+	CrowdTool crowdTool;
+	CrowdToolState crowdToolState;
 
 private:
 	void changeZone(const std::string& newZC);

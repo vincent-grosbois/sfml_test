@@ -7,6 +7,7 @@
 #include "Map.h"
 
 
+void loadMapFromImage(sf::Image& map, const std::string& path);
 
 ZoneContainer::ZoneContainer(const std::string& dataFile, GameResource& gr):
 	data(dataFile),
@@ -23,6 +24,7 @@ ZoneContainer::ZoneContainer(const std::string& dataFile, GameResource& gr):
 
 	sf::Image MAP;
 	
+	loadMapFromImage(MAP, data.mapDataPath);
 	MAP.loadFromFile(data.mapDataPath);
 
 	int map_size_x  = MAP.getSize().x*3 / TILES_PER_MAP_X;
@@ -195,3 +197,6 @@ void ZoneContainer::addForDeletion(Entity* e) {
 	to_delete.insert(e);
 }
 
+void loadMapFromImage(sf::Image& map, const std::string& path) {
+
+};

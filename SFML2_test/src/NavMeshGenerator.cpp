@@ -13,12 +13,24 @@
 
 #include "DetourNavMesh.h"
 #include "DetourNavMeshQuery.h"
-//#include "DetourCrowd.h"
+#include "DetourCrowd.h"
 
 #include <stdarg.h>
 #include <iostream>
+#include <SFML/Graphics.hpp>
+#include "utils/DrawingUtils.h"
+#include "overworld/OverWorldScene.h"
 
-Sample::Sample() :
+
+NavMeshGenerator::NavMeshGenerator(rcContext* ctx) : 
+	m_ctx(ctx),
+	m_keepInterResults(true),
+	m_totalBuildTimeMs(0),
+	m_solid(0),
+	m_chf(0),
+	m_cset(0),
+	m_pmesh(0),
+	m_dmesh(0),
 	m_navMesh(0),
 	m_navQuery(0),
 	m_crowd(0)
@@ -39,34 +51,16 @@ Sample::Sample() :
 
 	m_partitionType = 0; //SAMPLE_PARTITION_WATERSHED;
 	m_navQuery = dtAllocNavMeshQuery();
-	//m_crowd = dtAllocCrowd();
-
-}
-
-Sample::~Sample()
-{
-	dtFreeNavMeshQuery(m_navQuery);
-	dtFreeNavMesh(m_navMesh);
-	//dtFreeCrowd(m_crowd);
-
-}
-
-NavMeshGenerator::NavMeshGenerator(rcContext* ctx) : 
-	m_ctx(ctx),
-	m_keepInterResults(true),
-	m_totalBuildTimeMs(0),
-	m_solid(0),
-	m_chf(0),
-	m_cset(0),
-	m_pmesh(0),
-	m_dmesh(0)
-{
-	
+	m_crowd = dtAllocCrowd();
 }
 		
 NavMeshGenerator::~NavMeshGenerator()
 {
 	cleanup();
+
+	dtFreeNavMeshQuery(m_navQuery);
+	dtFreeNavMesh(m_navMesh);
+	dtFreeCrowd(m_crowd);
 }
 	
 void NavMeshGenerator::cleanup()
@@ -120,7 +114,7 @@ bool NavMeshGenerator::handleBuild(const Array2D<int>& tab)
 	m_cfg.walkableSlopeAngle = 0; // < height info, not used
 	m_cfg.walkableHeight = 0; // < height info, not used
 	m_cfg.walkableClimb = 0; // < height info, not used
-
+	 
 
 	// Set the area where the navigation will be build.
 	m_cfg.bmin[0] = 0;
@@ -347,27 +341,20 @@ bool NavMeshGenerator::handleBuild(const Array2D<int>& tab)
 		int navDataSize = 0;
 
 		// Update poly flags from areas.
-		/*for (int i = 0; i < m_pmesh->npolys; ++i)
+		for (int i = 0; i < m_pmesh->npolys; ++i)
 		{
-			if (m_pmesh->areas[i] == RC_WALKABLE_AREA)
-				m_pmesh->areas[i] = SAMPLE_POLYAREA_GROUND;
+			//if (m_pmesh->areas[i] == RC_WALKABLE_AREA)
+			//	m_pmesh->areas[i] = SAMPLE_POLYAREA_GROUND;
 				
-			if (m_pmesh->areas[i] == SAMPLE_POLYAREA_GROUND ||
-				m_pmesh->areas[i] == SAMPLE_POLYAREA_GRASS ||
-				m_pmesh->areas[i] == SAMPLE_POLYAREA_ROAD)
+			if (m_pmesh->areas[i] == RC_WALKABLE_AREA)
 			{
-				m_pmesh->flags[i] = SAMPLE_POLYFLAGS_WALK;
+				m_pmesh->flags[i] = 1;
 			}
-			else if (m_pmesh->areas[i] == SAMPLE_POLYAREA_WATER)
-			{
-				m_pmesh->flags[i] = SAMPLE_POLYFLAGS_SWIM;
-			}
-			else if (m_pmesh->areas[i] == SAMPLE_POLYAREA_DOOR)
-			{
-				m_pmesh->flags[i] = SAMPLE_POLYFLAGS_WALK | SAMPLE_POLYFLAGS_DOOR;
+			else {
+				m_pmesh->flags[i] = 0;
 			}
 		}
-		*/
+		
 
 		dtNavMeshCreateParams params;
 		memset(&params, 0, sizeof(params));
@@ -426,12 +413,12 @@ bool NavMeshGenerator::handleBuild(const Array2D<int>& tab)
 			return false;
 		}
 		
-		/*status = m_navQuery->init(m_navMesh, 2048);
+		status = m_navQuery->init(m_navMesh, 2048);
 		if (dtStatusFailed(status))
 		{
 			m_ctx->log(RC_LOG_ERROR, "Could not init Detour navmesh query");
 			return false;
-		}*/
+		}
 	}
 	
 	m_ctx->stopTimer(RC_TIMER_TOTAL);
@@ -567,4 +554,525 @@ int BuildContext::getLogCount() const
 const char* BuildContext::getLogText(const int i) const
 {
 	return m_messages[i]+1;
+}
+
+
+///////////////// crowd tool
+
+
+
+CrowdToolState::CrowdToolState() :
+	m_sample(0),
+	m_nav(0),
+	m_crowd(0),
+	m_targetRef(0),
+	m_run(true)
+{
+	m_toolParams.m_expandSelectedDebugDraw = true;
+	m_toolParams.m_showCorners = false;
+	m_toolParams.m_showCollisionSegments = false;
+	m_toolParams.m_showPath = false;
+	m_toolParams.m_showVO = false;
+	m_toolParams.m_showOpt = false;
+	m_toolParams.m_showNeis = false;
+	m_toolParams.m_expandDebugDraw = false;
+	m_toolParams.m_showLabels = false;
+	m_toolParams.m_showGrid = false;
+	m_toolParams.m_showNodes = false;
+	m_toolParams.m_showPerfGraph = false;
+	m_toolParams.m_showDetailAll = false;
+	m_toolParams.m_expandOptions = true;
+	m_toolParams.m_anticipateTurns = true;
+	m_toolParams.m_optimizeVis = true;
+	m_toolParams.m_optimizeTopo = true;
+	m_toolParams.m_obstacleAvoidance = true;
+	m_toolParams.m_obstacleAvoidanceType = 3.0f;
+	m_toolParams.m_separation = true;
+	m_toolParams.m_separationWeight = 2.0f;
+
+	
+	m_vod = dtAllocObstacleAvoidanceDebugData();
+	m_vod->init(2048);
+	
+	memset(&m_agentDebug, 0, sizeof(m_agentDebug));
+	m_agentDebug.idx = -1;
+	m_agentDebug.vod = m_vod;
+}
+
+CrowdToolState::~CrowdToolState()
+{
+	dtFreeObstacleAvoidanceDebugData(m_vod);
+}
+
+unsigned short SAMPLE_POLYFLAGS_DISABLED = 0x10;
+
+void CrowdToolState::init(class NavMeshGenerator* sample)
+{
+
+	m_sample = sample;
+
+	dtNavMesh* nav = m_sample->getNavMesh();
+	dtCrowd* crowd = m_sample->getCrowd();
+	
+	if (nav && crowd && (m_nav != nav || m_crowd != crowd))
+	{
+		m_nav = nav;
+		m_crowd = crowd;
+	
+		crowd->init(MAX_AGENTS, m_sample->getAgentRadius(), nav);
+		
+		// Make polygons with 'disabled' flag invalid.
+		crowd->getEditableFilter(0)->setExcludeFlags(SAMPLE_POLYFLAGS_DISABLED);
+		
+		// Setup local avoidance params to different qualities.
+		dtObstacleAvoidanceParams params;
+		// Use mostly default settings, copy from dtCrowd.
+		memcpy(&params, crowd->getObstacleAvoidanceParams(0), sizeof(dtObstacleAvoidanceParams));
+		
+		// Low (11)
+		params.velBias = 0.5f;
+		params.adaptiveDivs = 5;
+		params.adaptiveRings = 2;
+		params.adaptiveDepth = 1;
+		crowd->setObstacleAvoidanceParams(0, &params);
+		
+		// Medium (22)
+		params.velBias = 0.5f;
+		params.adaptiveDivs = 5; 
+		params.adaptiveRings = 2;
+		params.adaptiveDepth = 2;
+		crowd->setObstacleAvoidanceParams(1, &params);
+		
+		// Good (45)
+		params.velBias = 0.5f;
+		params.adaptiveDivs = 7;
+		params.adaptiveRings = 2;
+		params.adaptiveDepth = 3;
+		crowd->setObstacleAvoidanceParams(2, &params);
+		
+		// High (66)
+		params.velBias = 0.5f;
+		params.adaptiveDivs = 7;
+		params.adaptiveRings = 3;
+		params.adaptiveDepth = 3;
+		
+		crowd->setObstacleAvoidanceParams(3, &params);
+	}
+}
+
+
+void CrowdToolState::addAgent(const float* p)
+{
+	if (!m_sample) return;
+	dtCrowd* crowd = m_sample->getCrowd();
+	
+	dtCrowdAgentParams ap;
+	memset(&ap, 0, sizeof(ap));
+	ap.radius = 10;//m_sample->getAgentRadius();
+	ap.height = m_sample->getAgentHeight();
+	ap.maxAcceleration = 3*80.0f;
+	ap.maxSpeed = 120.f;
+	ap.collisionQueryRange = ap.radius * 12.0f;
+	ap.pathOptimizationRange = ap.radius * 30.0f;
+	ap.updateFlags = 0; 
+	if (m_toolParams.m_anticipateTurns)
+		ap.updateFlags |= DT_CROWD_ANTICIPATE_TURNS;
+	if (m_toolParams.m_optimizeVis)
+		ap.updateFlags |= DT_CROWD_OPTIMIZE_VIS;
+	if (m_toolParams.m_optimizeTopo)
+		ap.updateFlags |= DT_CROWD_OPTIMIZE_TOPO;
+	if (m_toolParams.m_obstacleAvoidance)
+		ap.updateFlags |= DT_CROWD_OBSTACLE_AVOIDANCE;
+	if (m_toolParams.m_separation)
+		ap.updateFlags |= DT_CROWD_SEPARATION;
+	ap.obstacleAvoidanceType = (unsigned char)m_toolParams.m_obstacleAvoidanceType;
+	ap.separationWeight = m_toolParams.m_separationWeight;
+	
+	int idx = crowd->addAgent(p, &ap);
+	if (idx != -1)
+	{
+		if (m_targetRef)
+			crowd->requestMoveTarget(idx, m_targetRef, m_targetPos);
+	}
+}
+
+void CrowdToolState::removeAgent(const int idx)
+{
+	if (!m_sample) return;
+	dtCrowd* crowd = m_sample->getCrowd();
+
+	crowd->removeAgent(idx);
+	
+	if (idx == m_agentDebug.idx)
+		m_agentDebug.idx = -1;
+}
+
+
+void CrowdToolState::setMoveTarget(const float* p, bool adjust)
+{
+	if (!m_sample)
+		return;
+	
+	// Find nearest point on navmesh and set move request to that location.
+	dtNavMeshQuery* navquery = m_sample->getNavMeshQuery();
+	dtCrowd* crowd = m_sample->getCrowd();
+	const dtQueryFilter* filter = crowd->getFilter(0);
+	const float* ext = crowd->getQueryExtents();
+
+	if (adjust)
+	{
+		assert(false);
+		/*float vel[3];
+		// Request velocity
+		if (m_agentDebug.idx != -1)
+		{
+			const dtCrowdAgent* ag = crowd->getAgent(m_agentDebug.idx);
+			if (ag && ag->active)
+			{
+				calcVel(vel, ag->npos, p, ag->params.maxSpeed);
+				crowd->requestMoveVelocity(m_agentDebug.idx, vel);
+			}
+		}
+		else
+		{
+			for (int i = 0; i < crowd->getAgentCount(); ++i)
+			{
+				const dtCrowdAgent* ag = crowd->getAgent(i);
+				if (!ag->active) continue;
+				calcVel(vel, ag->npos, p, ag->params.maxSpeed);
+				crowd->requestMoveVelocity(i, vel);
+			}
+		}*/
+	}
+	else
+	{
+		navquery->findNearestPoly(p, ext, filter, &m_targetRef, m_targetPos);
+		
+		if (m_agentDebug.idx != -1)
+		{
+			const dtCrowdAgent* ag = crowd->getAgent(m_agentDebug.idx);
+			if (ag && ag->active)
+				crowd->requestMoveTarget(m_agentDebug.idx, m_targetRef, m_targetPos);
+		}
+		else
+		{
+			for (int i = 0; i < crowd->getAgentCount(); ++i)
+			{
+				const dtCrowdAgent* ag = crowd->getAgent(i);
+				if (!ag->active) continue;
+				crowd->requestMoveTarget(i, m_targetRef, m_targetPos);
+			}
+		}
+	}
+}
+
+
+void CrowdToolState::updateAgentParams()
+{
+	if (!m_sample) return;
+	dtCrowd* crowd = m_sample->getCrowd();
+	if (!crowd) return;
+	
+	unsigned char updateFlags = 0;
+	unsigned char obstacleAvoidanceType = 0;
+	
+	if (m_toolParams.m_anticipateTurns)
+		updateFlags |= DT_CROWD_ANTICIPATE_TURNS;
+	if (m_toolParams.m_optimizeVis)
+		updateFlags |= DT_CROWD_OPTIMIZE_VIS;
+	if (m_toolParams.m_optimizeTopo)
+		updateFlags |= DT_CROWD_OPTIMIZE_TOPO;
+	if (m_toolParams.m_obstacleAvoidance)
+		updateFlags |= DT_CROWD_OBSTACLE_AVOIDANCE;
+	if (m_toolParams.m_obstacleAvoidance)
+		updateFlags |= DT_CROWD_OBSTACLE_AVOIDANCE;
+	if (m_toolParams.m_separation)
+		updateFlags |= DT_CROWD_SEPARATION;
+	
+	obstacleAvoidanceType = (unsigned char)m_toolParams.m_obstacleAvoidanceType;
+	
+	dtCrowdAgentParams params;
+	
+	for (int i = 0; i < crowd->getAgentCount(); ++i)
+	{
+		const dtCrowdAgent* ag = crowd->getAgent(i);
+		if (!ag->active) continue;
+		memcpy(&params, &ag->params, sizeof(dtCrowdAgentParams));
+		params.updateFlags = updateFlags;
+		params.obstacleAvoidanceType = obstacleAvoidanceType;
+		params.separationWeight = m_toolParams.m_separationWeight;
+		crowd->updateAgentParameters(i, &params);
+	}	
+}
+
+void CrowdToolState::updateTick(const float dt)
+{
+	if (!m_sample) return;
+	dtNavMesh* nav = m_sample->getNavMesh();
+	dtCrowd* crowd = m_sample->getCrowd();
+	if (!nav || !crowd) return;
+	
+	//TimeVal startTime = getPerfTime();
+	
+	crowd->update(dt, &m_agentDebug);
+	
+	//TimeVal endTime = getPerfTime();
+		
+	m_agentDebug.vod->normalizeSamples();
+
+}
+
+
+CrowdTool::CrowdTool() :
+	m_sample(0),
+	m_state(0),
+	m_mode(TOOLMODE_CREATE)
+{
+}
+
+CrowdTool::~CrowdTool()
+{
+}
+
+void CrowdTool::init(NavMeshGenerator* sample)
+{
+	if (m_sample != sample)
+	{
+		m_sample = sample;
+	}
+	
+	if (!sample)
+		return;
+		
+	m_state = NULL;
+	if (!m_state)
+	{
+		m_state = new CrowdToolState();
+	}
+	m_state->init(sample);
+}
+
+
+
+void CrowdToolState::handleRender(OverWorldDisplay& owd)
+{
+	//DebugDrawGL dd;
+	const float rad = m_sample->getAgentRadius();
+	
+	dtNavMesh* nav = m_sample->getNavMesh();
+	dtCrowd* crowd = m_sample->getCrowd();
+	if (!nav || !crowd)
+		return;
+	
+	if (m_toolParams.m_showNodes && crowd->getPathQueue())
+	{
+		const dtNavMeshQuery* navquery = crowd->getPathQueue()->getNavQuery();
+		//if (navquery)
+		//	duDebugDrawNavMeshNodes(&dd, *navquery);
+	}
+
+	//dd.depthMask(false);
+	
+	// Draw paths
+	if (m_toolParams.m_showPath)
+	{
+		for (int i = 0; i < crowd->getAgentCount(); i++)
+		{
+			if (m_toolParams.m_showDetailAll == false && i != m_agentDebug.idx)
+				continue;
+			const dtCrowdAgent* ag =crowd->getAgent(i);
+			if (!ag->active)
+				continue;
+			const dtPolyRef* path = ag->corridor.getPath();
+			const int npath = ag->corridor.getPathCount();			
+			//for (int j = 0; j < npath; ++j)
+			//	duDebugDrawNavMeshPoly(&dd, *nav, path[j], duRGBA(255,255,255,24));
+		}
+	}
+	
+	if (m_targetRef) {
+		utils::drawPoint(owd.debug_texture, sf::Vector2f(m_targetPos[0],m_targetPos[2]), sf::Color::Red);
+	}
+	
+	// Occupancy grid.
+	/*if (m_toolParams.m_showGrid)
+	{
+		float gridy = -FLT_MAX;
+		for (int i = 0; i < crowd->getAgentCount(); ++i)
+		{
+			const dtCrowdAgent* ag = crowd->getAgent(i);
+			if (!ag->active) continue;
+			const float* pos = ag->corridor.getPos();
+			gridy = dtMax(gridy, pos[1]);
+		}
+		gridy += 1.0f;
+		
+		dd.begin(DU_DRAW_QUADS);
+		const dtProximityGrid* grid = crowd->getGrid();
+		const int* bounds = grid->getBounds();
+		const float cs = grid->getCellSize();
+		for (int y = bounds[1]; y <= bounds[3]; ++y)
+		{
+			for (int x = bounds[0]; x <= bounds[2]; ++x)
+			{
+				const int count = grid->getItemCountAt(x,y); 
+				if (!count) continue;
+				unsigned int col = duRGBA(128,0,0,dtMin(count*40,255));
+				dd.vertex(x*cs, gridy, y*cs, col);
+				dd.vertex(x*cs, gridy, y*cs+cs, col);
+				dd.vertex(x*cs+cs, gridy, y*cs+cs, col);
+				dd.vertex(x*cs+cs, gridy, y*cs, col);
+			}
+		}
+		dd.end();
+	}*/
+	
+	// Trail
+	/*for (int i = 0; i < crowd->getAgentCount(); ++i)
+	{
+		const dtCrowdAgent* ag = crowd->getAgent(i);
+		if (!ag->active) continue;
+		
+		const AgentTrail* trail = &m_trails[i];
+		const float* pos = ag->npos;
+		
+		dd.begin(DU_DRAW_LINES,3.0f);
+		float prev[3], preva = 1;
+		dtVcopy(prev, pos);
+		for (int j = 0; j < AGENT_MAX_TRAIL-1; ++j)
+		{
+			const int idx = (trail->htrail + AGENT_MAX_TRAIL-j) % AGENT_MAX_TRAIL;
+			const float* v = &trail->trail[idx*3];
+			float a = 1 - j/(float)AGENT_MAX_TRAIL;
+			dd.vertex(prev[0],prev[1]+0.1f,prev[2], duRGBA(0,0,0,(int)(128*preva)));
+			dd.vertex(v[0],v[1]+0.1f,v[2], duRGBA(0,0,0,(int)(128*a)));
+			preva = a;
+			dtVcopy(prev, v);
+		}
+		dd.end();
+		
+	}*/
+	
+	// Corners & co
+	/*for (int i = 0; i < crowd->getAgentCount(); i++)
+	{
+		if (m_toolParams.m_showDetailAll == false && i != m_agentDebug.idx)
+			continue;
+		const dtCrowdAgent* ag =crowd->getAgent(i);
+		if (!ag->active)
+			continue;
+			
+		const float radius = ag->params.radius;
+		const float* pos = ag->npos;
+		
+		if (m_toolParams.m_showCorners)
+		{
+			if (ag->ncorners)
+			{
+				dd.begin(DU_DRAW_LINES, 2.0f);
+				for (int j = 0; j < ag->ncorners; ++j)
+				{
+					const float* va = j == 0 ? pos : &ag->cornerVerts[(j-1)*3];
+					const float* vb = &ag->cornerVerts[j*3];
+					dd.vertex(va[0],va[1]+radius,va[2], duRGBA(128,0,0,192));
+					dd.vertex(vb[0],vb[1]+radius,vb[2], duRGBA(128,0,0,192));
+				}
+				if (ag->ncorners && ag->cornerFlags[ag->ncorners-1] & DT_STRAIGHTPATH_OFFMESH_CONNECTION)
+				{
+					const float* v = &ag->cornerVerts[(ag->ncorners-1)*3];
+					dd.vertex(v[0],v[1],v[2], duRGBA(192,0,0,192));
+					dd.vertex(v[0],v[1]+radius*2,v[2], duRGBA(192,0,0,192));
+				}
+				
+				dd.end();
+				
+				
+				if (m_toolParams.m_anticipateTurns)
+				{
+					/*					float dvel[3], pos[3];
+					 calcSmoothSteerDirection(ag->pos, ag->cornerVerts, ag->ncorners, dvel);
+					 pos[0] = ag->pos[0] + dvel[0];
+					 pos[1] = ag->pos[1] + dvel[1];
+					 pos[2] = ag->pos[2] + dvel[2];
+					 
+					 const float off = ag->radius+0.1f;
+					 const float* tgt = &ag->cornerVerts[0];
+					 const float y = ag->pos[1]+off;
+					 
+					 dd.begin(DU_DRAW_LINES, 2.0f);
+					 
+					 dd.vertex(ag->pos[0],y,ag->pos[2], duRGBA(255,0,0,192));
+					 dd.vertex(pos[0],y,pos[2], duRGBA(255,0,0,192));
+					 
+					 dd.vertex(pos[0],y,pos[2], duRGBA(255,0,0,192));
+					 dd.vertex(tgt[0],y,tgt[2], duRGBA(255,0,0,192));
+					 
+					 dd.end();
+				}
+			}
+		}*/
+		
+		/*if (m_toolParams.m_showCollisionSegments)
+		{
+			const float* center = ag->boundary.getCenter();
+			duDebugDrawCross(&dd, center[0],center[1]+radius,center[2], 0.2f, duRGBA(192,0,128,255), 2.0f);
+			duDebugDrawCircle(&dd, center[0],center[1]+radius,center[2], ag->params.collisionQueryRange,
+							  duRGBA(192,0,128,128), 2.0f);
+			
+			dd.begin(DU_DRAW_LINES, 3.0f);
+			for (int j = 0; j < ag->boundary.getSegmentCount(); ++j)
+			{
+				const float* s = ag->boundary.getSegment(j);
+				unsigned int col = duRGBA(192,0,128,192);
+				if (dtTriArea2D(pos, s, s+3) < 0.0f)
+					col = duDarkenCol(col);
+				
+				duAppendArrow(&dd, s[0],s[1]+0.2f,s[2], s[3],s[4]+0.2f,s[5], 0.0f, 0.3f, col);
+			}
+			dd.end();
+		}*/
+		
+	
+	
+	// Agent cylinders.
+	for (int i = 0; i < crowd->getAgentCount(); ++i)
+	{
+		const dtCrowdAgent* ag = crowd->getAgent(i);
+		if (!ag->active) continue;
+		
+		const float radius = ag->params.radius;
+		const float* pos = ag->npos;
+		
+		sf::Color col(0,0,0,32);
+		if (m_agentDebug.idx == i)
+			col = sf::Color(255,0,0,128);
+			
+		//duDebugDrawCircle(&dd, pos[0], pos[1], pos[2], radius, col, 2.0f);
+	}
+	
+	for (int i = 0; i < crowd->getAgentCount(); ++i)
+	{
+		const dtCrowdAgent* ag = crowd->getAgent(i);
+		if (!ag->active) continue;
+		
+		const float height = ag->params.height;
+		const float radius = ag->params.radius;
+		const float* pos = ag->npos;
+		
+		sf::Color col = sf::Color(220,220,220,225);
+		if (ag->targetState == DT_CROWDAGENT_TARGET_REQUESTING || ag->targetState == DT_CROWDAGENT_TARGET_WAITING_FOR_QUEUE)
+			col = sf::Color(128,0,255,128);
+		else if (ag->targetState == DT_CROWDAGENT_TARGET_WAITING_FOR_PATH)
+			col = sf::Color (128,0,255,128);
+		else if (ag->targetState == DT_CROWDAGENT_TARGET_FAILED)
+			col = sf::Color(255,32,16,128);
+		else if (ag->targetState == DT_CROWDAGENT_TARGET_VELOCITY)
+			col = sf::Color(64,255,0,128);
+
+
+		sf::FloatRect rect(pos[0]-radius, pos[2]-radius, radius*2, radius*2);
+		utils::drawRectangle(owd.debug_texture, rect, col);
+
+	}
+
 }

@@ -40,7 +40,7 @@ void OverWorldCamera::setCenter(const sf::Vector2f& center) {
 	if(current_view.getCenter() == center) 
 		return;
 
-	current_view.setCenter(center.x, center.y);
+	current_view.setCenter(int(center.x), int(center.y));
 	same_as_last_view = false;
 }
 
@@ -48,11 +48,27 @@ sf::Vector2f OverWorldCamera::getCenter() const {
 	return current_view.getCenter();
 }
 
+float OverWorldCamera::getZoom() const {
+	return current_zoom;
+}
+
 void OverWorldCamera::zoom(float value) {
 	current_zoom *= value;
 	if(current_zoom > max_zoom || current_zoom < min_zoom) {
 		current_zoom /= value;
 	} else {
+		/*auto size = current_view.getSize();
+		size.x = int(size.x * value);
+		size.y = int(size.y * value);
+
+
+		size.x = defaultSize.x * (int(32*size.x) / int(defaultSize.x) ) / 32.f;
+		size.y = defaultSize.y * (int(32*size.y) / int(defaultSize.y) ) / 32.f;
+
+		current_view.setSize(size);
+		*/
+
+
 		current_view.zoom(value);
 		same_as_last_view = false;
 	}
@@ -70,7 +86,7 @@ OverWorldCamera::OverWorldCamera(const sf::Vector2f& defaultSize):
 	camera_set_for_frame(false),
 	current_zoom(1.f),
 	min_zoom(0.15f),
-	max_zoom(7.f),
+	max_zoom(10.f),
 	defaultSize(defaultSize)
 { }
 
@@ -82,8 +98,8 @@ OverWorldCamera::OverWorldCamera(const sf::Vector2i& defaultSize):
 	same_as_last_view(false),
 	camera_set_for_frame(false),
 	current_zoom(1.f),
-	min_zoom(0.2f),
-	max_zoom(7.f),
+	min_zoom(0.15f),
+	max_zoom(10.f),
 	defaultSize(defaultSize)
 { }
 
