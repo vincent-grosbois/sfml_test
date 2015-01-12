@@ -24,7 +24,7 @@ struct LightEmitter {
 	void recolorVertexArray(const sf::Vector2f& pos);
 
 
-	void draw(OverWorldDisplay& owDisplay) const;
+	void draw(OverworldDisplay& owDisplay) const;
 };
 
 class Projectile : public EntityPhysical
@@ -33,8 +33,8 @@ public:
 	Projectile(const sf::Vector2f & position,  ZoneContainer& ZC, DIRECTION::e dir);
 	virtual ~Projectile(void);
 	virtual void update(int delta_ms, bool will_be_drawn) override;
-	virtual void draw(OverWorldDisplay& owDisplay) override;
-	virtual void drawDebugInfo(OverWorldDisplay& owDisplay) override;
+	virtual void draw(OverworldDisplay& owDisplay) override;
+	virtual void drawDebugInfo(OverworldDisplay& owDisplay) override;
 	virtual sf::FloatRect getVisibilityRectangle() const override;
 
 	virtual bool onCollision(Entity& activator) override {

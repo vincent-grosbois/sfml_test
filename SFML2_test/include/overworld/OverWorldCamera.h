@@ -2,10 +2,10 @@
 
 #include <SFML/Graphics/View.hpp>
 
-class OverWorldCamera {
+class OverworldCamera {
 public:
-	OverWorldCamera(const sf::Vector2f& defaultSize);
-	OverWorldCamera(const sf::Vector2i& defaultSize);
+	OverworldCamera(const sf::Vector2f& defaultSize);
+	OverworldCamera(const sf::Vector2i& defaultSize);
 
 	bool movedSinceLastFrame() const;
 	void newFrame();

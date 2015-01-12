@@ -1,7 +1,7 @@
 #pragma once
 #include "Character.h"
 #include "ZoneContainer.h"
-#include "overworld/OverWorldScene.h"
+#include "overworld/OverworldScene.h"
 
 enum class NPC_BEHAVIOR  { STILL, WANDER, WANDER_NOSTOP, USE_WAYPOINT } ;
 
@@ -21,7 +21,7 @@ public:
 
 	NPC_BEHAVIOR getBehavior() const { return behavior; };
 
-	virtual void drawDebugInfo(OverWorldDisplay& owDisplay) override ;
+	virtual void drawDebugInfo(OverworldDisplay& owDisplay) override ;
 
 	
 

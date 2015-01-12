@@ -2,7 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "overworld/OverWorldScene.h"
+#include "overworld/OverworldScene.h"
 #include "SceneManager.h"
 #include "TitleMenuScene.h"
 #include "ZoneContainerData.h"
@@ -33,7 +33,7 @@ int main()
 
 	SceneManager sceneManager(app);
 
-	GameScene* scene = new OverWorldScene(metaGame, gameResource);
+	GameScene* scene = new OverworldScene(metaGame, gameResource);
 	sceneManager.pushState(*scene);
 	
 	GameScene* currentScene;

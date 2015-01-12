@@ -114,9 +114,6 @@
     <ClInclude Include="include\entities\Character.h">
       <Filter>Header Files\Entities</Filter>
     </ClInclude>
-    <ClInclude Include="include\entities\Collectible.h">
-      <Filter>Header Files\Entities</Filter>
-    </ClInclude>
     <ClInclude Include="include\entities\Entity.h">
       <Filter>Header Files\Entities</Filter>
     </ClInclude>
@@ -216,9 +213,6 @@
       <Filter>Source Files\utils</Filter>
     </ClCompile>
     <ClCompile Include="src\entities\Character.cpp">
-      <Filter>Source Files\Entities</Filter>
-    </ClCompile>
-    <ClCompile Include="src\entities\Collectible.cpp">
       <Filter>Source Files\Entities</Filter>
     </ClCompile>
     <ClCompile Include="src\entities\Entity.cpp">

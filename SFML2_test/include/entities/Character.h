@@ -14,7 +14,7 @@ public:
 	Character(const sf::Vector2f& position, ZoneContainer& ZC, GameTicks& ticks, MoveAnimation& move_anim);
 	bool tryMoving(int value, DIRECTION::e);
 	virtual ~Character() override;
-	virtual void draw(OverWorldDisplay& owDisplay) override;
+	virtual void draw(OverworldDisplay& owDisplay) override;
 	const sf::FloatRect getActivableZone() const;
 	void activateThings();
 	void receiveItem(Collectible* collectible);

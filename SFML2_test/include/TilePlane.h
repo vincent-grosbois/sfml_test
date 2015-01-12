@@ -12,8 +12,8 @@
 class Map;
 class Tileset;
 class Entity;
-class OverWorldCamera;
-struct OverWorldDisplay;
+class OverworldCamera;
+struct OverworldDisplay;
 struct Tile;
 
 struct MapElement {
@@ -40,13 +40,13 @@ class TilePlane {
 public:
 	TilePlane(Tileset& tileset, sf::Vector2<tile_units> size, sf::Vector2<tile_units> offset, Array2D<int>& table, bool waterPlane = false);
 
-	void draw(const sf::View& view, OverWorldDisplay& owDisplay);
+	void draw(const sf::View& view, OverworldDisplay& owDisplay);
 
 	bool collideWith(const sf::FloatRect& rect, sf::Vector2f* CollidingPos) const;
 	void getCollidingEntitySets(const sf::FloatRect& rect, std::set<MapElement*>& result);
 	void unloadAllGraphics();
-	void updateGraphics(const OverWorldCamera& camera,  bool checkAnimatedTilesUpdate, int deltaTime);
-	void loadAndWakeUp(const OverWorldCamera& camera);
+	void updateGraphics(const OverworldCamera& camera,  bool checkAnimatedTilesUpdate, int deltaTime);
+	void loadAndWakeUp(const OverworldCamera& camera);
 	sf::Vector2i size() const; // <* map size, in tile units
 
 	void dumpLoadedTiles() const ;

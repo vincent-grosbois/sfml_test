@@ -5,31 +5,20 @@
 class Collectible;
 class Overlay;
 
+enum class PlayerCharacterState {
+	STANDING,
+	WALKING,
+	ATTACKING
+
+};
+
 class PlayerCharacter : public Character
 {
 public:
 	PlayerCharacter(const sf::Vector2f& position, ZoneContainer& ZC, GameTicks& ticks, MoveAnimation& move_anim, Overlay& overlay);
 
-	virtual void drawDebugInfo(OverWorldDisplay& owDisplay) override;
-
-	void DialogWindow(const std::string& str, bool forceFocus = false, NPC* originator = NULL);
-	void receiveItem(Collectible* collectible);
-	virtual void draw(OverWorldDisplay& owDisplay) override;
-
-	bool tryMoving(int value, DIRECTION::e d, int ticks, bool first_press, bool debug ) { 
-
-		if( tryMoving(value, d, ticks, debug) ) {
-
-			_first_moving = first_press;
-
-			return true;
-		}
-		else {
-			_first_moving = false;
-			return false;
-		}
-
-	}
+	virtual void drawDebugInfo(OverworldDisplay& owDisplay) override;
+	virtual void draw(OverworldDisplay& owDisplay) override;
 
 	bool tryMoving(int value, DIRECTION::e dir, int ticks, bool debug) {
 		if(!debug)
@@ -41,7 +30,7 @@ public:
 			if(locationList.empty()) 
 				return false;
 
-			float * coord_to_change;
+			float* coord_to_change;
 			int sign;
 
 			switch(dir) {
@@ -91,6 +80,5 @@ public:
 
 private:
 	Overlay& overlay;
-	bool _first_moving;
 };
 

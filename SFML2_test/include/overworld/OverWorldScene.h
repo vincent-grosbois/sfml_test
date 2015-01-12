@@ -6,7 +6,7 @@
 #include "MoveAnimation.h"
 #include "GameClock.h"
 #include "GameTicks.h"
-#include "OverWorldCamera.h"
+#include "OverworldCamera.h"
 
 #include "CallBackSystem.h"
 #include "OverworldCommands.h"
@@ -36,7 +36,7 @@ struct WaveParameters {
 	WaveParameters();
 };
 
-struct OverWorldDisplay 
+struct OverworldDisplay 
 {
 	sf::Shader colorizeShader;
 	sf::Shader waterShader;
@@ -64,73 +64,9 @@ struct OverWorldDisplay
 };
 
 class EntityPhysical;
-
-
-struct OverWorldCommandsState {
-	bool flashlight_on;
-
-	bool already_pressed_u;
-	bool already_pressed_d ;
-	bool already_pressed_l;
-	bool already_pressed_r;
-
-	void init() {
-		flashlight_on = true;
-		already_pressed_u = true;
-		already_pressed_d = true;
-		already_pressed_l = true;
-		already_pressed_r = true;
-	}
-};
-
 class GameResource;
 
-struct PauseDelayedStruct {
-private:
-	bool unpause_on_next_frame;
-	bool pause_on_next_frame;
-	bool paused;
-
-public:
-	operator bool() const {
-		return paused;
-	}
-
-	PauseDelayedStruct() :
-		paused(false),
-		unpause_on_next_frame(false),
-		pause_on_next_frame(false) {
-	}
-
-	bool isPaused() const {
-		return paused;
-	}
-
-	void pauseOnNextFrame() {
-		pause_on_next_frame = true;
-		unpause_on_next_frame = false;
-	}
-
-	void unpauseOnNextFrame() {
-		pause_on_next_frame = false;
-		unpause_on_next_frame = true;
-	}
-
-	void beginNewFrame() {
-		if(pause_on_next_frame)  {
-			unpause_on_next_frame = false;
-			pause_on_next_frame = false;
-			paused = true;
-		} else if (unpause_on_next_frame) {
-			unpause_on_next_frame = false;
-			pause_on_next_frame = false;
-			paused = false;
-		}
-	}
-
-};
-
-struct OverWorldTransition {
+struct OverworldTransition {
 
 	int time_remaining_ms;
 	int total_time_ms;
@@ -141,7 +77,7 @@ struct OverWorldTransition {
 		return time_remaining_ms > 0;
 	}
 
-	OverWorldTransition():
+	OverworldTransition():
 		time_remaining_ms(-1),
 		total_time_ms(500)
 	{
@@ -157,13 +93,13 @@ enum class OverworldSceneState {
 	TRANSITIONING_IN
 };
 
-class OverWorldScene : public GameScene
+class OverworldScene : public GameScene
 {
 public:
 	
-	virtual ~OverWorldScene() override;
+	virtual ~OverworldScene() override;
 
-	OverWorldScene(const MetaGameData& metaGameData, GameResource& gr);
+	OverworldScene(const MetaGameData& metaGameData, GameResource& gr);
 
 	virtual void draw() override;
 
@@ -178,12 +114,11 @@ private:
 
 	GameResource& gameResources;
 
-	OverWorldCamera camera;
-	OverWorldDisplay owDisplay;
+	OverworldCamera camera;
+	OverworldDisplay owDisplay;
 	OverworldCommands owCommands;
-	OverWorldCommandsState owCommandsState;
 	OverworldGameStateRequest owStateChangeRequest;
-	OverWorldTransition owTransition;
+	OverworldTransition owTransition;
 
 	CallBackSystem callbackSystem;		 // <* Callback system used only when the game is paused
 	CallBackSystem callbackSystemAlways; // <* Callback system used even when the game is paused
@@ -205,8 +140,6 @@ private:
 	int myDeltaTimeAlways;
 	int myTotalTimeAlways;
 
-	PauseDelayedStruct pause_state;
-
 	LightEntity* torchLight;
 
 	bool debug_key_pressed;
@@ -217,8 +150,8 @@ private:
 	clock_t part1_total;
 	clock_t part2_total;
 
-
-	BuildContext buildContext;
+	//recast / detour related
+	RecastBuildContext buildContext;
 
 	NavMeshGenerator  navMeshGenerator;
 	CrowdTool crowdTool;
@@ -229,6 +162,7 @@ private:
 	void bindContentToClock();
 	void unbindContentToClock();
 	void loadEntities(bool already_created);
+	void handleStateChange();
 	void drawNavMesh();
 };
 

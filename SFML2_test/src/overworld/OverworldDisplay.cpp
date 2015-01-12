@@ -1,9 +1,9 @@
-#include "overworld/OverWorldScene.h"
+#include "overworld/OverworldScene.h"
 #include "ZoneContainerData.h"
 #include "overworld/OverWorldTone.h"
 #include "utils/AngleUtils.h"
 
-void OverWorldDisplay::init(const MetaGameData& metaGameData) {
+void OverworldDisplay::init(const MetaGameData& metaGameData) {
 
 	colorizeShader.loadFromFile(metaGameData.basePath+"shader/colorize.sfx", sf::Shader::Fragment);
 	waterShader.loadFromFile(metaGameData.basePath+"shader/wave.vert", sf::Shader::Vertex);
@@ -22,7 +22,7 @@ void OverWorldDisplay::init(const MetaGameData& metaGameData) {
 	shader_render_state = sf::RenderStates(&colorizeShader);
 }
 
-void OverWorldDisplay::draw(sf::RenderWindow& app) {
+void OverworldDisplay::draw(sf::RenderWindow& app) {
 	overWorld_texture.display();
 	light_texture.display();
 	debug_texture.display();
@@ -30,7 +30,7 @@ void OverWorldDisplay::draw(sf::RenderWindow& app) {
 	app.draw(debug_sprite);
 }
 
-void OverWorldDisplay::updateToneParameters(const Tone& t) {
+void OverworldDisplay::updateToneParameters(const Tone& t) {
 	colorizeShader.setParameter("Alpha", 1 - t.gray);
 	colorizeShader.setParameter("ToneColor", t.red, t.green, t.blue);
 }
@@ -43,14 +43,14 @@ WaveParameters::WaveParameters() :
 	wave_amplitude(1.8f) {
 }
 
-void OverWorldDisplay::updateWaterParameters(int time_ms) {
+void OverworldDisplay::updateWaterParameters(int time_ms) {
 
 	float time_phase = 2*utils::angles::pi*time_ms/(myWaveParameters.wave_time_period*1000.f);
 
 	waterShader.setParameter("waveTimePhase", time_phase);
 }
 
-void OverWorldDisplay::changeWaterParameters(const WaveParameters& waveParameters) {
+void OverworldDisplay::changeWaterParameters(const WaveParameters& waveParameters) {
 
 	myWaveParameters = waveParameters;
 
@@ -60,7 +60,7 @@ void OverWorldDisplay::changeWaterParameters(const WaveParameters& waveParameter
 	waterShader.setParameter("waveInfo", dir_x,  dir_y, waveParameters.wave_amplitude);
 }
 
-void OverWorldDisplay::clearAndSetView(const sf::View& view) {
+void OverworldDisplay::clearAndSetView(const sf::View& view) {
 	overWorld_texture.clear(sf::Color::Red);
 	light_texture.clear(sf::Color(0,0,0,0));
 	debug_texture.clear(sf::Color(0,0,0,0));

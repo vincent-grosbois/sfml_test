@@ -1,7 +1,7 @@
 #include "entities/LightEntity.h"
 
 #include "ZoneContainer.h"
-#include "overworld/OverWorldScene.h"
+#include "overworld/OverworldScene.h"
 #include "ZoneContainer.h"
 #include "TilePlane.h"
 #include "Map.h"
@@ -35,7 +35,7 @@ void LightEntity::update(int delta_ms, bool will_be_drawn) {
 	
 }
 
-void LightEntity::draw(OverWorldDisplay& owDisplay) {
+void LightEntity::draw(OverworldDisplay& owDisplay) {
 	if(isOn){
 		owDisplay.light_texture.draw(lightZone, sf::RenderStates(sf::BlendAdd));
 	}

@@ -13,8 +13,8 @@ class TilePlane;
 class Entity;
 class LightEntity;
 class ZoneContainer;
-struct OverWorldDisplay;
-class OverWorldCamera;
+struct OverworldDisplay;
+class OverworldCamera;
 
 struct NoElementPredicate {
 	bool operator()(const std::set<Entity*>& set) {
@@ -82,14 +82,14 @@ public:
 
 	~Map();
 
-	void drawLayer(const sf::View& view, OverWorldDisplay& owDisplay, int layer);
+	void drawLayer(const sf::View& view, OverworldDisplay& owDisplay, int layer);
 
 	void printDebug() const;
 
 	void unloadAll();
 
-	void updateGraphics(const OverWorldCamera& camera, bool checkAnimatedTilesUpdate, int deltaTime);
-	void loadTilesFromNothing(const OverWorldCamera& camera);
+	void updateGraphics(const OverworldCamera& camera, bool checkAnimatedTilesUpdate, int deltaTime);
+	void loadTilesFromNothing(const OverworldCamera& camera);
 
 	sf::Vector2i getMapCoords() const;
 

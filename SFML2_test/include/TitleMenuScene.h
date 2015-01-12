@@ -1,6 +1,6 @@
 #pragma once
 #include "gamescene.h"
-#include "overworld/OverWorldScene.h"
+#include "overworld/OverworldScene.h"
 
 #include <iostream>
 
@@ -28,7 +28,7 @@ public:
 			}
 
 			if(Event.type == sf::Event::KeyPressed) {
-				//pushNewScene(new OverWorldScene("") );
+				//pushNewScene(new OverworldScene("") );
 			}
 
 		};

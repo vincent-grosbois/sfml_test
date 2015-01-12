@@ -38,7 +38,7 @@ Map::Map(ZoneContainer& ZC, TilePlane* waterLayer, TilePlane* layer0, TilePlane*
 }
 
 
-void Map::drawLayer(const sf::View& view, OverWorldDisplay& owDisplay, int layer) {
+void Map::drawLayer(const sf::View& view, OverworldDisplay& owDisplay, int layer) {
 
 	if(layer == -1 && waterLayer!=NULL)
 		waterLayer->draw(view, owDisplay);
@@ -68,7 +68,7 @@ void Map::printDebug() const {
 	std::cout << "Map @" << id << " X:" << position.x << " Y:"  << position.y << "\n"; 
 }
 
-void Map::updateGraphics(const OverWorldCamera& camera, bool checkAnimatedTilesUpdate, int deltaTime) {
+void Map::updateGraphics(const OverworldCamera& camera, bool checkAnimatedTilesUpdate, int deltaTime) {
 
 	if(waterLayer)
 		waterLayer->updateGraphics(camera, checkAnimatedTilesUpdate, deltaTime);
@@ -84,7 +84,7 @@ void Map::updateGraphics(const OverWorldCamera& camera, bool checkAnimatedTilesU
 
 }
 
-void Map::loadTilesFromNothing(const OverWorldCamera& camera) {
+void Map::loadTilesFromNothing(const OverworldCamera& camera) {
 
 	if(waterLayer)
 		waterLayer->loadAndWakeUp(camera);

@@ -2,7 +2,7 @@
 
 #include "entities/EntityPhysical.h"
 #include "ZoneContainer.h"
-#include "overworld/OverWorldScene.h"
+#include "overworld/OverworldScene.h"
 
 
 EntityPhysical::EntityPhysical(const sf::Vector2f& position,  ZoneContainer& ZC):
@@ -14,7 +14,7 @@ EntityPhysical::EntityPhysical(const sf::Vector2f& position,  ZoneContainer& ZC)
 	registerInMaps();
 }
 
-void EntityPhysical::draw(OverWorldDisplay& owDisplay) {
+void EntityPhysical::draw(OverworldDisplay& owDisplay) {
 	owDisplay.overWorld_texture.draw(spriteCpt.sprite);
 }
 
@@ -42,6 +42,6 @@ bool EntityPhysical::intersectsForCollision(const sf::FloatRect& rectangle, sf::
 	}
 }
 
-void EntityPhysical::drawDebugInfo(OverWorldDisplay& owd) { 
+void EntityPhysical::drawDebugInfo(OverworldDisplay& owd) { 
 	//
 }

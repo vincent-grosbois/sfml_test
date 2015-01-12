@@ -11,7 +11,7 @@ class ZoneContainer;
 class TilePlane;
 class Tileset;
 struct EntitySet;
-struct OverWorldDisplay;
+struct OverworldDisplay;
 
 enum class EntityType {
 	PLAYER_CHARACTER,
@@ -30,8 +30,8 @@ public:
 	
 	virtual void update(int delta_ms, bool will_be_drawn) {  }
 
-	virtual void draw(OverWorldDisplay& owDisplay) { }
-	virtual void drawDebugInfo(OverWorldDisplay& owDisplay) { }
+	virtual void draw(OverworldDisplay& owDisplay) { }
+	virtual void drawDebugInfo(OverworldDisplay& owDisplay) { }
 	
 	virtual sf::FloatRect getVisibilityRectangle() const { return sf::FloatRect(position, sf::Vector2f(1,1)); }
 	virtual sf::FloatRect getPresenceRectangle() const { return sf::FloatRect(position, sf::Vector2f(1,1)); }

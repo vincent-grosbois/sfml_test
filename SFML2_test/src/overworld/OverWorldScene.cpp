@@ -1,10 +1,9 @@
 #include <iostream>
 #include <sstream>
 
-#include "overworld/OverWorldScene.h"
+#include "overworld/OverworldScene.h"
 #include "Tileset.h"
 #include "entities/NPC.h"
-#include "entities/Collectible.h"
 #include "entities/GatewayZC.h"
 #include "entities/LightEntity.h"
 #include "overworld/OverWorldTone.h"
@@ -28,7 +27,7 @@ bool z_orderer (const Entity* lhs, const Entity* rhs) {
 };
 
 
-OverWorldScene::OverWorldScene(const MetaGameData& metaGameData, GameResource& gr) :
+OverworldScene::OverworldScene(const MetaGameData& metaGameData, GameResource& gr) :
 	metaGameData(metaGameData),
 	camera(metaGameData.resolution),
 	gameClock(
@@ -42,11 +41,11 @@ OverWorldScene::OverWorldScene(const MetaGameData& metaGameData, GameResource& g
 	navMeshGenerator(&buildContext)
 { }
 
-OverWorldScene::~OverWorldScene() {
+OverworldScene::~OverworldScene() {
 	gameResources.releaseZoneContainer(ZC->getData().dataPath);
 }
 
-void OverWorldScene::bindContentToClock() {
+void OverworldScene::bindContentToClock() {
 
 	for(auto anim : ZC->getTileset().get_tile_animators()) {
 		using namespace std::placeholders;
@@ -59,24 +58,23 @@ void OverWorldScene::bindContentToClock() {
 	}
 }
 
-void OverWorldScene::unbindContentToClock() {
+void OverworldScene::unbindContentToClock() {
 
 	for(auto anim : ZC->getTileset().get_tile_animators()) {
 		anim->removePendingCallbacks();
 	}
 }
 
-void OverWorldScene::loadEntities(bool already_created) {
+void OverworldScene::loadEntities(bool already_created) {
 	if(!already_created) {
 		generateEntityFromFile(ZC->getData().entitiesDataPath , *ZC, gameResources, ticks, owStateChangeRequest);
 	}
 }
 
-void OverWorldScene::onInit() {
+void OverworldScene::onInit() {
 	pagedVectorStatic.resetForNewFrame();
 
 	owDisplay.init(metaGameData);
-	owCommandsState.init();
 	OverWorldTone::init();
 
 	PC_moved = false;
@@ -111,7 +109,7 @@ void OverWorldScene::onInit() {
 
 struct UpdateMapGraphics {
 
-	UpdateMapGraphics(OverWorldCamera& camera, bool checkAnimatedTilesUpdate, int deltaTime) :
+	UpdateMapGraphics(OverworldCamera& camera, bool checkAnimatedTilesUpdate, int deltaTime) :
 		camera(camera), checkAnimatedTilesUpdate(checkAnimatedTilesUpdate), deltaTime(deltaTime)
 	{ }
 
@@ -131,7 +129,7 @@ struct UpdateMapGraphics {
 		map->updateGraphics(camera, checkAnimatedTilesUpdate, deltaTime);
 	}
 
-	OverWorldCamera& camera;
+	OverworldCamera& camera;
 	bool checkAnimatedTilesUpdate;
 	int deltaTime;
 };
@@ -170,39 +168,54 @@ std::string getGameStateName(OverworldSceneState e) {
 	return "unknown";
 }
 
-void OverWorldScene::update(int deltaTime) {
+void OverworldScene::handleStateChange() {
 
-	pagedVectorStatic.resetForNewFrame();
-	pause_state.beginNewFrame();
-
-	if(myState == OverworldSceneState::TRANSITIONING_IN && !owTransition.isActive()) {
-		myState = OverworldSceneState::NORMAL;
-	}
-	else if(myState == OverworldSceneState::TRANSITIONING_OUT && !owTransition.isActive()) {
-		myState = OverworldSceneState::TRANSITIONING_IN;
-		this->changeZone(owTransition.ZoneId);
-		deltaTime = 1;
-		owTransition.time_remaining_ms = owTransition.total_time_ms;
-	}
-	else if(myState == OverworldSceneState::NORMAL) {
-
-		if(pause_state) {
-			myState = OverworldSceneState::PAUSED;
-		}
-		else {
-			if(ChangeZCRequest* changeZoneRequest = owStateChangeRequest.popZoneChangeRequest()) {
-				owTransition.ZoneId  = changeZoneRequest->newZC;
-				owTransition.time_remaining_ms = owTransition.total_time_ms;
-				myState = OverworldSceneState::TRANSITIONING_OUT;
-				delete changeZoneRequest;
+	switch(myState) {
+	case OverworldSceneState::NORMAL :
+		if(PauseRequest* pauseRequest = owStateChangeRequest.popPauseRequest()) {
+			if(pauseRequest->pause) {
+				myState = OverworldSceneState::PAUSED;
 			}
+			delete pauseRequest;
 		}
-	}
-	else if(myState == OverworldSceneState::PAUSED) {
-		if(!pause_state) {
+		else if(ChangeZCRequest* changeZoneRequest = owStateChangeRequest.popZoneChangeRequest()) {
+			owTransition.ZoneId  = changeZoneRequest->newZC;
+			owTransition.time_remaining_ms = owTransition.total_time_ms;
+			myState = OverworldSceneState::TRANSITIONING_OUT;
+			delete changeZoneRequest;
+		}
+
+		break;
+	case OverworldSceneState::PAUSED:
+		if(PauseRequest* pauseRequest = owStateChangeRequest.popPauseRequest()) {
+			if(!pauseRequest->pause) {
+				myState = OverworldSceneState::NORMAL;
+			}
+			delete pauseRequest;
+		}
+		break;
+	case OverworldSceneState::TRANSITIONING_IN:
+		if(!owTransition.isActive()) {
 			myState = OverworldSceneState::NORMAL;
 		}
+		break;
+	case OverworldSceneState::TRANSITIONING_OUT:
+		if(!owTransition.isActive()) {
+			myState = OverworldSceneState::TRANSITIONING_IN;
+			this->changeZone(owTransition.ZoneId);
+			//deltaTime = 1;
+			owTransition.time_remaining_ms = owTransition.total_time_ms;
+		}
+		break;
 	}
+
+}
+
+void OverworldScene::update(int deltaTime) {
+	//reset memory allocator
+	pagedVectorStatic.resetForNewFrame();
+
+	handleStateChange();
 
 	owCommands.pollComands(*App);
 
@@ -219,11 +232,7 @@ void OverWorldScene::update(int deltaTime) {
 	if ( (myState == OverworldSceneState::NORMAL || myState == OverworldSceneState::PAUSED)
 		&& owCommands.isActive(OVERWORLD_COMMANDS::PAUSE) 
 		) {
-		if(pause_state) {
-			pause_state.unpauseOnNextFrame();
-		} else {
-			pause_state.pauseOnNextFrame();
-		}
+			owStateChangeRequest.pushPauseRequest(myState == OverworldSceneState::NORMAL);
 	}
 
 	myDeltaTimeAlways = deltaTime;
@@ -259,8 +268,7 @@ void OverWorldScene::update(int deltaTime) {
 
 
 	if(owCommands.isActive(OVERWORLD_COMMANDS::FLASHLIGHT)) {
-		owCommandsState.flashlight_on = !owCommandsState.flashlight_on;
-		torchLight->setOn(owCommandsState.flashlight_on) ;
+		torchLight->setOn(!torchLight->isOn_()) ;
 	}
 
 	if(owCommands.isActive(OVERWORLD_COMMANDS::ACTIVATE)) {
@@ -272,54 +280,42 @@ void OverWorldScene::update(int deltaTime) {
 	bool debug_move_through = owCommands.isActive(OVERWORLD_COMMANDS::DEBUG_NO_COLLIDE);
 
 	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_UP) ) {  
-		PC->tryMoving(deltaTime, DIRECTION::UP, 0, !owCommandsState.already_pressed_u, debug_move_through);
+		PC->tryMoving(deltaTime, DIRECTION::UP, 0, debug_move_through);
 		PC_moved = true;
-		owCommandsState.already_pressed_u = true;
-	} else {
-		owCommandsState.already_pressed_u = false;
-	}
+	} 
 
 	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_DOWN) )  {
-		PC->tryMoving(deltaTime, DIRECTION::DOWN, 0, !owCommandsState.already_pressed_d, debug_move_through);
+		PC->tryMoving(deltaTime, DIRECTION::DOWN, 0, debug_move_through);
 		PC_moved = true;
-		owCommandsState.already_pressed_d= true;
-	}else {
-		owCommandsState.already_pressed_d = false;
 	}
 
 	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_LEFT) )  {
-		PC->tryMoving(deltaTime, DIRECTION::LEFT, 0, !owCommandsState.already_pressed_l, debug_move_through);
-		owCommandsState.already_pressed_l= true;
+		PC->tryMoving(deltaTime, DIRECTION::LEFT, 0, debug_move_through);
 		PC_moved = true;
-	}else {
-		owCommandsState.already_pressed_l = false;
 	}
 
 	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_RIGHT) )  { 
-		PC->tryMoving(deltaTime, DIRECTION::RIGHT, 0, !owCommandsState.already_pressed_r, debug_move_through);
+		PC->tryMoving(deltaTime, DIRECTION::RIGHT, 0, debug_move_through);
 		PC_moved = true;
-		owCommandsState.already_pressed_r= true;
-	}else {
-		owCommandsState.already_pressed_r = false;
 	}
 
 	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_UP_FAST) )  {  
-		PC->tryMoving(deltaTime*10, DIRECTION::UP, 0, owCommandsState.already_pressed_u, debug_move_through);
+		PC->tryMoving(deltaTime*10, DIRECTION::UP, 0, debug_move_through);
 	}
 
 	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_DOWN_FAST))  {
-		PC->tryMoving(deltaTime*10, DIRECTION::DOWN, 0, owCommandsState.already_pressed_u, debug_move_through);
+		PC->tryMoving(deltaTime*10, DIRECTION::DOWN, 0, debug_move_through);
 	}
 
 	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_LEFT_FAST))  {
-		PC->tryMoving(deltaTime*10, DIRECTION::LEFT, 0, owCommandsState.already_pressed_u, debug_move_through);
+		PC->tryMoving(deltaTime*10, DIRECTION::LEFT, 0, debug_move_through);
 	}
 
 	if (owCommands.isActive(OVERWORLD_COMMANDS::MOVE_RIGHT_FAST))  { 
-		PC->tryMoving(deltaTime*10, DIRECTION::RIGHT, 0,owCommandsState.already_pressed_u, debug_move_through);
+		PC->tryMoving(deltaTime*10, DIRECTION::RIGHT, 0, debug_move_through);
 	}
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::T))
+	/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::T))
 	{
 		owDisplay.myWaveParameters.wave_amplitude += 0.1;
 		owDisplay.changeWaterParameters(owDisplay.myWaveParameters);
@@ -358,7 +354,7 @@ void OverWorldScene::update(int deltaTime) {
 	{
 		owDisplay.myWaveParameters.wave_time_period += 0.1;
 		owDisplay.changeWaterParameters(owDisplay.myWaveParameters);
-	}
+	}*/
 
 	if(torchLight->isOn_()) {
 		torchLight->setPosition(PC->getSpriteCenter());
@@ -384,6 +380,7 @@ void OverWorldScene::update(int deltaTime) {
 
 
 	camera.cameraSetForFrame();
+	
 
 	sf::Vector2f cameraCenter = camera.getCenter();
 	sf::FloatRect viewRect = camera.getViewRect();
@@ -401,9 +398,7 @@ void OverWorldScene::update(int deltaTime) {
 
 	entities_visible.clear();
 
-	clock_t start;
-
-	start = clock();
+	clock_t start = clock();
 	part1_total = 0;
 	part2_total = 0;
 
@@ -486,7 +481,7 @@ void OverWorldScene::update(int deltaTime) {
 		}
 	}
 
-	auto crowd = this->navMeshGenerator.getCrowd();
+	dtCrowd* crowd = navMeshGenerator.getCrowd();
 	dtCrowdAgentDebugInfo m_agentDebug;
 	crowd->update(myDeltaTime/1000.f, 0);// &m_agentDebug);
 
@@ -514,40 +509,22 @@ void OverWorldScene::update(int deltaTime) {
 }
 
 
-void OverWorldScene::draw() {  
+void OverworldScene::draw() {  
 
 	App->clear();
-
-	// --- overlay info 
-	if(ticks.getTicks(TICKS::_100MS) > 0) {
-		std::stringstream text;
-		text << EntitySet::entitySetStorage.size_in_use() << " entities set in use, "<< EntitySet::entitySetStorage.size_available()<< " extra available\n";
-	
-		text << visibleMaps.size() << " maps visible\n";
-		if (visibleMaps.size() < 20) {
-			for (auto& map : visibleMaps) {
-				sf::Vector2i v = map->getMapCoords();
-				text << "map <"<< v.x <<","<< v.y <<"> in view\n";
-			}
-		}
-
-		overlay->MapInfosText.setString(text.str()+'\n'+gameClock.getCurrentTimeOfDayStr());
-	}
-	// --- overlay info 
-
 
 	owDisplay.clearAndSetView(camera.getView());
 	owDisplay.updateWaterParameters(myTotalTimeAlways);
 
-
 	//draw the world:
 	clock_t world_draw = clock();
-	for (auto map = visibleMaps.begin() ; map != visibleMaps.end(); ++map ) {
-		(*map)->drawLayer(camera.getView(), owDisplay, -1);
+	for (auto& map : visibleMaps) {
+		map->drawLayer(camera.getView(), owDisplay, -1);
 	}
-	for (auto map = visibleMaps.begin() ; map != visibleMaps.end(); ++map ) {
-		(*map)->drawLayer(camera.getView(), owDisplay, 0);
+	for (auto& map : visibleMaps) {
+		map->drawLayer(camera.getView(), owDisplay, 0);
 	}
+
 	world_draw = clock() - world_draw;
 
 	//draw the entities:
@@ -571,7 +548,6 @@ void OverWorldScene::draw() {
 		for(auto& ent : entities_visible) {
 			ent->drawDebugInfo(owDisplay);
 		}
-
 		drawNavMesh();
 	}
 
@@ -592,10 +568,11 @@ void OverWorldScene::draw() {
 		sf::RectangleShape shape(sf::Vector2f(metaGameData.resolution.x, metaGameData.resolution.y));
 		shape.setPosition(0,0);
 
-		float opacity = myState == OverworldSceneState::TRANSITIONING_OUT ?
-			255.f*(1.f - float(owTransition.time_remaining_ms) / float(owTransition.total_time_ms))
-			:
-		255.f*( float(owTransition.time_remaining_ms) / float(owTransition.total_time_ms));
+		float opacity = 255.f*( float(owTransition.time_remaining_ms) / float(owTransition.total_time_ms));
+
+		if(myState == OverworldSceneState::TRANSITIONING_OUT) {
+			opacity = 255.f - opacity;
+		}
 
 		sf::Uint8 o = 0;
 		if(opacity > 0 && opacity <= 255.f) {
@@ -611,7 +588,23 @@ void OverWorldScene::draw() {
 
 
 	//infos : 
-	if(myState == OverworldSceneState::PAUSED || ticks.getTicks(TICKS::_100MS) > 0) {
+
+	const bool redrawOverlayNow = myState == OverworldSceneState::PAUSED || ticks.getTicks(TICKS::_100MS) > 0;
+
+	if(redrawOverlayNow) {
+		std::stringstream text;
+		text << EntitySet::entitySetStorage.size_in_use() << " entities set in use, "<< EntitySet::entitySetStorage.size_available()<< " extra available\n";
+
+		text << visibleMaps.size() << " maps visible\n";
+		if (visibleMaps.size() < 20) {
+			for (auto& map : visibleMaps) {
+				sf::Vector2i v = map->getMapCoords();
+				text << "map <"<< v.x <<","<< v.y <<"> in view\n";
+			}
+		}
+
+		overlay->MapInfosText.setString(text.str()+'\n'+gameClock.getCurrentTimeOfDayStr());
+
 		std::stringstream oss;
 		int FPS = int(1000/myDeltaTimeAlways);
 		oss << "FPS: " << FPS<<  " ent update: " << 1000.f*part1_total/CLOCKS_PER_SEC  << "ms, ent z sort: " << 1000.f*part2_total/CLOCKS_PER_SEC <<"ms";
@@ -624,11 +617,10 @@ void OverWorldScene::draw() {
 	//
 
 
-
 	App->display();
 }
 
-void OverWorldScene::changeZone(const std::string& newZC) {
+void OverworldScene::changeZone(const std::string& newZC) {
 
 	bool zone_already_loaded = false;
 	ZoneContainer& newZone = gameResources.getZoneContainer(newZC, zone_already_loaded);
@@ -645,7 +637,7 @@ void OverWorldScene::changeZone(const std::string& newZC) {
 
 void drawMeshTile(sf::RenderTexture& rt, const dtNavMesh&, const dtMeshTile*);
 
-void OverWorldScene::drawNavMesh() {
+void OverworldScene::drawNavMesh() {
 
 	const dtNavMesh* mesh = navMeshGenerator.getNavMesh();
 

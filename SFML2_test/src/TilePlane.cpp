@@ -7,7 +7,7 @@
 #include "Tileset.h"
 #include "Map.h"
 #include "TileAnimator.h"
-#include "overworld/OverWorldScene.h"
+#include "overworld/OverworldScene.h"
 
 
 TilePlane::TilePlane(Tileset& tileset, sf::Vector2<tile_units> size, sf::Vector2<tile_units> offset, Array2D<int>& table, bool waterPlane /*= false*/):
@@ -89,7 +89,7 @@ sf::Vertex* TilePlane::getQuadVertexFromTileIndex(int i, int j) {
 
 }
 
-void TilePlane::updateGraphics(const OverWorldCamera& camera, bool checkAnimatedTilesUpdate, int deltaTime) {
+void TilePlane::updateGraphics(const OverworldCamera& camera, bool checkAnimatedTilesUpdate, int deltaTime) {
 
 	auto rect = camera.getViewRect();
 
@@ -126,7 +126,7 @@ void TilePlane::updateGraphics(const OverWorldCamera& camera, bool checkAnimated
 void TilePlane::unloadAllGraphics() {
 }
 
-void TilePlane::loadAndWakeUp(const OverWorldCamera& camera) {
+void TilePlane::loadAndWakeUp(const OverworldCamera& camera) {
 	updateGraphics(camera, true, 1);
 }
 
@@ -135,7 +135,7 @@ void TilePlane::unloadGraphics(const sf::FloatRect& rect) {
 }
 
 
-void TilePlane::draw(const sf::View& view, OverWorldDisplay& owDisplay) {
+void TilePlane::draw(const sf::View& view, OverworldDisplay& owDisplay) {
 
 	sf::Rect<float> viewrec(view.getCenter() -sf::Vector2f(view.getSize().x/2, view.getSize().y/2) ,view.getSize());
 

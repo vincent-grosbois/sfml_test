@@ -67,7 +67,7 @@ public:
 };
 
 /// Recast build context.
-class BuildContext : public rcContext
+class RecastBuildContext : public rcContext
 {
 	//TimeVal m_startTime[RC_MAX_TIMERS];
 	int m_accTime[RC_MAX_TIMERS];
@@ -80,8 +80,8 @@ class BuildContext : public rcContext
 	int m_textPoolSize;
 	
 public:
-	BuildContext();
-	virtual ~BuildContext();
+	RecastBuildContext();
+	virtual ~RecastBuildContext();
 	
 	/// Dumps the log to stdout.
 	void dumpLog(const char* format, ...);
@@ -133,7 +133,7 @@ struct CrowdToolParams
 	bool m_separation;
 	float m_separationWeight;
 };
-struct OverWorldDisplay;
+struct OverworldDisplay;
 
 class CrowdToolState 
 {
@@ -175,7 +175,7 @@ public:
 
 	inline CrowdToolParams* getToolParams() { return &m_toolParams; }
 
-	void handleRender(OverWorldDisplay& owd);
+	void handleRender(OverworldDisplay& owd);
 };
 
 class CrowdTool

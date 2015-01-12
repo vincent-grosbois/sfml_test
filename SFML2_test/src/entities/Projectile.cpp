@@ -1,6 +1,6 @@
 #include "entities/Projectile.h"
 
-#include "overworld/OverWorldScene.h"
+#include "overworld/OverworldScene.h"
 
 
 #include "utils/DrawingUtils.h"
@@ -44,7 +44,7 @@ void LightEmitter::recolorVertexArray(const sf::Vector2f& pos) {
 }
 
 
-void LightEmitter::draw(OverWorldDisplay& owDisplay) const {
+void LightEmitter::draw(OverworldDisplay& owDisplay) const {
 	owDisplay.light_texture.draw(lightZone, sf::RenderStates(sf::BlendAdd));
 }
 
@@ -101,12 +101,12 @@ void Projectile::update(int delta_ms, bool will_be_drawn) {
 	}
 }
 
-void Projectile::draw(OverWorldDisplay& owDisplay) {
+void Projectile::draw(OverworldDisplay& owDisplay) {
 	light1.draw(owDisplay);
 	light2.draw(owDisplay);
 }
 
-void Projectile::drawDebugInfo(OverWorldDisplay& owDisplay) { 
+void Projectile::drawDebugInfo(OverworldDisplay& owDisplay) { 
 	drawRectangle(owDisplay.debug_texture, boundingBox.boundingBoxRectReal, sf::Color::Blue);
 	drawRectangle(owDisplay.debug_texture, getVisibilityRectangle(), sf::Color::Yellow);
 }

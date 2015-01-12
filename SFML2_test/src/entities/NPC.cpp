@@ -129,7 +129,7 @@ bool NPC::onActivated(Entity& activator) {
 		facingDir = getOppositeDir(activator_character->getFacingDir());
 
 	if(activator_PC) {
-		activator_PC->DialogWindow("hurr\ndurr\ndd", true, this);
+		//activator_PC->DialogWindow("hurr\ndurr\ndd", true, this);
 	}
 
 	return true; 
@@ -162,7 +162,7 @@ sf::FloatRect NPC::getAwarenessZone() const {
 
 
 
-void  NPC::drawDebugInfo(OverWorldDisplay& owDisplay)  { 
+void  NPC::drawDebugInfo(OverworldDisplay& owDisplay)  { 
 
 	drawRectangle(owDisplay.debug_texture, boundingBox.boundingBoxRectReal, sf::Color::Blue);
 	drawRectangle(owDisplay.debug_texture,  getAwarenessZone(), sf::Color::Green);

@@ -19,7 +19,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "utils/DrawingUtils.h"
-#include "overworld/OverWorldScene.h"
+#include "overworld/OverworldScene.h"
 
 
 NavMeshGenerator::NavMeshGenerator(rcContext* ctx) : 
@@ -31,9 +31,7 @@ NavMeshGenerator::NavMeshGenerator(rcContext* ctx) :
 	m_cset(0),
 	m_pmesh(0),
 	m_dmesh(0),
-	m_navMesh(0),
-	m_navQuery(0),
-	m_crowd(0)
+	m_navMesh(0)
 {
 	m_cellSize = 0.3f;
 	m_cellHeight = 0.2f;
@@ -433,25 +431,25 @@ bool NavMeshGenerator::handleBuild(const Array2D<int>& tab)
 }
 
 
-BuildContext::BuildContext() :
+RecastBuildContext::RecastBuildContext() :
 	m_messageCount(0),
 	m_textPoolSize(0)
 {
 	resetTimers();
 }
 
-BuildContext::~BuildContext()
+RecastBuildContext::~RecastBuildContext()
 {
 }
 
 // Virtual functions for custom implementations.
-void BuildContext::doResetLog()
+void RecastBuildContext::doResetLog()
 {
 	m_messageCount = 0;
 	m_textPoolSize = 0;
 }
 
-void BuildContext::doLog(const rcLogCategory category, const char* msg, const int len)
+void RecastBuildContext::doLog(const rcLogCategory category, const char* msg, const int len)
 {
 	if (!len) return;
 	if (m_messageCount >= MAX_MESSAGES)
@@ -475,18 +473,18 @@ void BuildContext::doLog(const rcLogCategory category, const char* msg, const in
 	std::cout << msg << '\n';
 }
 
-void BuildContext::doResetTimers()
+void RecastBuildContext::doResetTimers()
 {
 	for (int i = 0; i < RC_MAX_TIMERS; ++i)
 		m_accTime[i] = -1;
 }
 
-void BuildContext::doStartTimer(const rcTimerLabel label)
+void RecastBuildContext::doStartTimer(const rcTimerLabel label)
 {
 	//m_startTime[label] = getPerfTime();
 }
 
-void BuildContext::doStopTimer(const rcTimerLabel label)
+void RecastBuildContext::doStopTimer(const rcTimerLabel label)
 {
 	//const TimeVal endTime = getPerfTime();
 	//const int deltaTime = (int)(endTime - m_startTime[label]);
@@ -496,12 +494,12 @@ void BuildContext::doStopTimer(const rcTimerLabel label)
 	//	m_accTime[label] += deltaTime;
 }
 
-int BuildContext::doGetAccumulatedTime(const rcTimerLabel label) const
+int RecastBuildContext::doGetAccumulatedTime(const rcTimerLabel label) const
 {
 	return m_accTime[label];
 }
 
-void BuildContext::dumpLog(const char* format, ...)
+void RecastBuildContext::dumpLog(const char* format, ...)
 {
 	// Print header.
 	va_list ap;
@@ -546,12 +544,12 @@ void BuildContext::dumpLog(const char* format, ...)
 	}
 }
 
-int BuildContext::getLogCount() const
+int RecastBuildContext::getLogCount() const
 {
 	return m_messageCount;
 }
 
-const char* BuildContext::getLogText(const int i) const
+const char* RecastBuildContext::getLogText(const int i) const
 {
 	return m_messages[i]+1;
 }
@@ -619,7 +617,7 @@ void CrowdToolState::init(class NavMeshGenerator* sample)
 		m_nav = nav;
 		m_crowd = crowd;
 	
-		crowd->init(MAX_AGENTS, m_sample->getAgentRadius(), nav);
+		crowd->init(MAX_AGENTS, 12, nav);
 		
 		// Make polygons with 'disabled' flag invalid.
 		crowd->getEditableFilter(0)->setExcludeFlags(SAMPLE_POLYFLAGS_DISABLED);
@@ -854,7 +852,7 @@ void CrowdTool::init(NavMeshGenerator* sample)
 
 
 
-void CrowdToolState::handleRender(OverWorldDisplay& owd)
+void CrowdToolState::handleRender(OverworldDisplay& owd)
 {
 	//DebugDrawGL dd;
 	const float rad = m_sample->getAgentRadius();

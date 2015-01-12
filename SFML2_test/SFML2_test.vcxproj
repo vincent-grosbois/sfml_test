@@ -15,7 +15,6 @@
     <ClInclude Include="include\AI\WaypointModule.h" />
     <ClInclude Include="include\Constants.h" />
     <ClInclude Include="include\entities\Character.h" />
-    <ClInclude Include="include\entities\Collectible.h" />
     <ClInclude Include="include\entities\Entity.h" />
     <ClInclude Include="include\entities\EntityPhysical.h" />
     <ClInclude Include="include\entities\GatewayZC.h" />
@@ -58,7 +57,6 @@
   <ItemGroup>
     <ClCompile Include="src\CallBackSystem.cpp" />
     <ClCompile Include="src\entities\Character.cpp" />
-    <ClCompile Include="src\entities\Collectible.cpp" />
     <ClCompile Include="src\entities\Entity.cpp" />
     <ClCompile Include="src\entities\EntityPhysical.cpp" />
     <ClCompile Include="src\entities\LightEntity.cpp" />

@@ -1,11 +1,10 @@
 #include <algorithm>
 
 #include "entities/Character.h"
-#include "entities/Collectible.h"
 #include "ZoneContainer.h"
 #include "TilePlane.h"
 #include "Map.h"
-#include "overworld/OverWorldScene.h"
+#include "overworld/OverworldScene.h"
 #include "GameTicks.h"
 
 Character::Character(const sf::Vector2f& position, ZoneContainer& ZC, GameTicks& ticks, MoveAnimation& move_anim):
@@ -18,8 +17,8 @@ Character::Character(const sf::Vector2f& position, ZoneContainer& ZC, GameTicks&
 	ticks(ticks),
 	waypointModule(NULL)
 {
-	spriteCpt.spriteOffset.x = - move_anim.getFrame(DIRECTION::DOWN,0).width/2;
-	spriteCpt.spriteOffset.y = - move_anim.getFrame(DIRECTION::DOWN,0).height + 10;
+	spriteCpt.spriteOffset.x = - move_anim.getFrame(DIRECTION::DOWN,0).width/2.f;
+	spriteCpt.spriteOffset.y = - move_anim.getFrame(DIRECTION::DOWN,0).height + 10.f;
 
 	spriteCpt.sprite.setTexture(move_anim.getTexture());
 	spriteCpt.sprite.setTextureRect(move_anim.getFrame(facingDir, current_frame ) );
@@ -27,7 +26,7 @@ Character::Character(const sf::Vector2f& position, ZoneContainer& ZC, GameTicks&
 	spriteCpt.positionSprite(position);
 }
 
-void Character::draw(OverWorldDisplay& owDisplay) {
+void Character::draw(OverworldDisplay& owDisplay) {
 
 	int ticks = this->ticks.getTicks(TICKS::e::_250MS);
 	int old_frame = current_frame;
@@ -241,12 +240,7 @@ void Character::activateThings() {
 
 void Character::receiveItem(Collectible* collectible) {
 
-	if( false ) {
-		collectible->markForDeletion();
-	}
-	else {
-		//couldn't add item...
-	}
+	
 
 }
 

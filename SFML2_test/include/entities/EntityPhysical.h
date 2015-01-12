@@ -42,9 +42,9 @@ public:
 		unregister();
 	}
 
-	virtual void draw(OverWorldDisplay& owDisplay) override;
+	virtual void draw(OverworldDisplay& owDisplay) override;
 
-	virtual void drawDebugInfo(OverWorldDisplay& owDisplay) override;
+	virtual void drawDebugInfo(OverworldDisplay& owDisplay) override;
 
 	virtual sf::FloatRect getVisibilityRectangle() const override { return getSpriteRectangle();}
 

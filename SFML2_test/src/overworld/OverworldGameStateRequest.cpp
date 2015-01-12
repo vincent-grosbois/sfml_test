@@ -35,3 +35,28 @@ ChangeZCRequest* OverworldGameStateRequest::popZoneChangeRequest() {
 	}
 }
 
+bool OverworldGameStateRequest::pushPauseRequest(bool pause) {
+	
+	bool erased_previous_state = true;
+
+	if(!myPauseRequest) {
+		myPauseRequest = new PauseRequest();
+		erased_previous_state = false;
+	}
+
+	myPauseRequest->pause = pause;
+	return erased_previous_state;
+}
+
+
+PauseRequest* OverworldGameStateRequest::popPauseRequest() {
+	if(!myPauseRequest) {
+		return NULL;
+	}
+
+	else {
+		PauseRequest* temp = myPauseRequest;
+		myPauseRequest = NULL;
+		return temp;
+	}
+}
