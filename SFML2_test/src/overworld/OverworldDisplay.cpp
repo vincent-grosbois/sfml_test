@@ -43,7 +43,7 @@ WaveParameters::WaveParameters() :
 	wave_amplitude(1.8f) {
 }
 
-void OverworldDisplay::updateWaterParameters(int time_ms) {
+void OverworldDisplay::updateWaterMovement(int time_ms) {
 
 	float time_phase = 2*utils::angles::pi*time_ms/(myWaveParameters.wave_time_period*1000.f);
 

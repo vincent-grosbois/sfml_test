@@ -3,60 +3,44 @@
 
 
 OverworldGameStateRequest::OverworldGameStateRequest():
-	myPauseRequest(NULL),
-	myChangeZCRequest(NULL) { }
+	changeZCRequest_(false),
+	pauseRequest_(false) { }
 
 
 
 bool OverworldGameStateRequest::pushZoneChangeRequest(const std::string& ZC, const sf::Vector2f& position) {
-	
-	bool erased_previous_state = true;
-
-	if(!myChangeZCRequest) {
-		myChangeZCRequest = new ChangeZCRequest();
-		erased_previous_state = false;
-	}
-
-	myChangeZCRequest->newZC = ZC;
-	myChangeZCRequest->position = position;
+	bool erased_previous_state = changeZCRequest_;
+	myChangeZCRequest.newZC = ZC;
+	myChangeZCRequest.position = position;
+	changeZCRequest_ = true;
 	return erased_previous_state;
 }
 
-
-ChangeZCRequest* OverworldGameStateRequest::popZoneChangeRequest() {
-	if(!myChangeZCRequest) {
-		return NULL;
-	}
-
-	else {
-		ChangeZCRequest* temp = myChangeZCRequest;
-		myChangeZCRequest = NULL;
-		return temp;
-	}
-}
 
 bool OverworldGameStateRequest::pushPauseRequest(bool pause) {
-	
-	bool erased_previous_state = true;
-
-	if(!myPauseRequest) {
-		myPauseRequest = new PauseRequest();
-		erased_previous_state = false;
-	}
-
-	myPauseRequest->pause = pause;
+	bool erased_previous_state = pauseRequest_;
+	myPauseRequest.pause = pause;
+	pauseRequest_ = true;
 	return erased_previous_state;
 }
 
+bool OverworldGameStateRequest::hasZoneChangeRequest() const {
+	return changeZCRequest_;
+}
 
-PauseRequest* OverworldGameStateRequest::popPauseRequest() {
-	if(!myPauseRequest) {
-		return NULL;
-	}
+bool OverworldGameStateRequest::hasPauseRequest() const {
+	return pauseRequest_;
+}
 
-	else {
-		PauseRequest* temp = myPauseRequest;
-		myPauseRequest = NULL;
-		return temp;
-	}
+const ChangeZCRequest& OverworldGameStateRequest::getZoneChangeRequest() const {
+	return myChangeZCRequest;
+}
+
+const PauseRequest& OverworldGameStateRequest::getPauseRequest() const {
+	return myPauseRequest;
+}
+
+void OverworldGameStateRequest::clear() {
+	changeZCRequest_ = false;
+	pauseRequest_ = false;
 }

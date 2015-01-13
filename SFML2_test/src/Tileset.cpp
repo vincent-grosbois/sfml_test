@@ -11,6 +11,7 @@
 #include "utils/StringUtils.h"
 
 using namespace utils;
+using namespace constants;
 
 Tile::~Tile() {
 	delete myAnimator;

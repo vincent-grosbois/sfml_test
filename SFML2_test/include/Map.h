@@ -83,9 +83,6 @@ public:
 	~Map();
 
 	void drawLayer(const sf::View& view, OverworldDisplay& owDisplay, int layer);
-
-	void printDebug() const;
-
 	void unloadAll();
 
 	void updateGraphics(const OverworldCamera& camera, bool checkAnimatedTilesUpdate, int deltaTime);

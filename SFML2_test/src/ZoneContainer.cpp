@@ -6,6 +6,7 @@
 #include "GameResource.h"
 #include "Map.h"
 
+using namespace constants;
 
 void loadMapFromImage(sf::Image& map, const std::string& path);
 
@@ -20,7 +21,7 @@ ZoneContainer::ZoneContainer(const std::string& dataFile, GameResource& gr):
 
 	std::cout << "Generating map" <<std::endl;
 
-	clock_t start = clock();
+	sf::Clock clock;
 
 	sf::Image MAP;
 	
@@ -111,8 +112,8 @@ ZoneContainer::ZoneContainer(const std::string& dataFile, GameResource& gr):
 		
 
 	}
-	clock_t end = clock();
-	std::cout << "Map generated, in "<< (float)(1000*(end-start))/CLOCKS_PER_SEC << "ms." <<std::endl;
+	
+	std::cout << "Map generated, in "<< clock.getElapsedTime().asMilliseconds() << "ms.\n" ;
 
 	maps = std::move(mapList);
 

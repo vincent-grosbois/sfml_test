@@ -10,13 +10,13 @@ using namespace utils::angles;
 
 
 
-LightEmitter::LightEmitter(const sf::Vector2f& pos, int sides, float radius, sf::Color& color):
+LightEmitterCpt::LightEmitterCpt(const sf::Vector2f& pos, int sides, float radius, sf::Color& color):
 	lightZone(sf::TrianglesFan, sides+2),sides(sides), radius(radius), color(color)
 {
 	rebuildVertexArray(pos);
 }
 
-void LightEmitter::moveVertexArray(const sf::Vector2f& pos) {
+void LightEmitterCpt::moveVertexArray(const sf::Vector2f& pos) {
 	float angle = 0.f;
 	lightZone[0].position = pos;
 	for(int i = 1; i<sides+2; ++i) {
@@ -25,7 +25,7 @@ void LightEmitter::moveVertexArray(const sf::Vector2f& pos) {
 	}
 }
 
-void LightEmitter::rebuildVertexArray(const sf::Vector2f& pos) {
+void LightEmitterCpt::rebuildVertexArray(const sf::Vector2f& pos) {
 	float angle = 0.f;
 	lightZone[0].position = pos;
 	lightZone[0].color = color;
@@ -36,7 +36,7 @@ void LightEmitter::rebuildVertexArray(const sf::Vector2f& pos) {
 	}
 }
 
-void LightEmitter::recolorVertexArray(const sf::Vector2f& pos) {
+void LightEmitterCpt::recolorVertexArray(const sf::Vector2f& pos) {
 	lightZone[0].color = color;
 	for(int i = 1; i<sides+2; ++i) {
 		lightZone[i].color = sf::Color(0, 0, 0, 0);
@@ -44,14 +44,13 @@ void LightEmitter::recolorVertexArray(const sf::Vector2f& pos) {
 }
 
 
-void LightEmitter::draw(OverworldDisplay& owDisplay) const {
+void LightEmitterCpt::draw(OverworldDisplay& owDisplay) const {
 	owDisplay.light_texture.draw(lightZone, sf::RenderStates(sf::BlendAdd));
 }
 
 
 Projectile::Projectile(const sf::Vector2f& position,  ZoneContainer& ZC, DIRECTION::e dir):
 	EntityPhysical(position, ZC),
-	sides(6),
 	light1(position, 8, 10, sf::Color(10,10,200, 225)),
 	light2(position, 20, 300, sf::Color(10, 0, 0, 40))
 {

@@ -11,7 +11,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FramePagedMemory.h" />
     <ClInclude Include="include\AI\WaypointModule.h" />
     <ClInclude Include="include\Constants.h" />
     <ClInclude Include="include\entities\Character.h" />

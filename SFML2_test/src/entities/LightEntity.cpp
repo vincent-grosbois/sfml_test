@@ -15,7 +15,7 @@ LightEntity::LightEntity(sf::Vector2f const& position,  ZoneContainer& ZC, float
 	sides(sides), color(color),
 	radius(radius),
 	lightZone(sf::TrianglesFan, sides+2),
-	isOn(true)
+	activated(true)
 {
 	type = EntityType::LIGHT;
 	registerInMaps();
@@ -36,7 +36,7 @@ void LightEntity::update(int delta_ms, bool will_be_drawn) {
 }
 
 void LightEntity::draw(OverworldDisplay& owDisplay) {
-	if(isOn){
+	if(activated){
 		owDisplay.light_texture.draw(lightZone, sf::RenderStates(sf::BlendAdd));
 	}
 }

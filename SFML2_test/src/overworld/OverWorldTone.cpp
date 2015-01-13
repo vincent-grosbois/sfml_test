@@ -2,6 +2,13 @@
 
 std::vector<Tone> OverWorldTone::hourly_tones(25, Tone());
 
+struct OverWorldToneInitaliser {
+	OverWorldToneInitaliser() {
+		OverWorldTone::init();
+	}
+};
+
+OverWorldToneInitaliser overWorldToneInitialiser;
 
 void OverWorldTone::init()
 {

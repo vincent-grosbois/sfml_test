@@ -19,11 +19,11 @@ public:
 	//float getRadius() { return radius; };
 
 	void setOn(bool on) {
-		isOn = on;
+		activated = on;
 	}
 
-	bool isOn_() const {
-		return isOn;
+	bool isOn() const {
+		return activated;
 	}
 
 	void setPosition(const sf::Vector2f& pos);
@@ -32,7 +32,7 @@ protected:
 	sf::Color color;
 	int sides;
 	float radius;
-	bool isOn;
+	bool activated;
 	sf::VertexArray lightZone;
 
 };

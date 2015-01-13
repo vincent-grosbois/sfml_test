@@ -16,7 +16,7 @@ struct BoundingBoxCpt {
 		positionBoundingBox(position);
 	}
 
-	void positionBoundingBox(const sf::Vector2f & position) {
+	void positionBoundingBox(const sf::Vector2f& position) {
 		boundingBoxRectReal.left = position.x + boundingBoxOffset.x;
 		boundingBoxRectReal.top = position.y + boundingBoxOffset.y;
 	} 
@@ -43,13 +43,9 @@ public:
 	}
 
 	virtual void draw(OverworldDisplay& owDisplay) override;
-
 	virtual void drawDebugInfo(OverworldDisplay& owDisplay) override;
-
 	virtual sf::FloatRect getVisibilityRectangle() const override { return getSpriteRectangle();}
-
 	virtual sf::FloatRect getPresenceRectangle() const override { return boundingBox.boundingBoxRectReal; }
-
 	virtual bool intersectsForCollision(const sf::FloatRect& rectangle, sf::FloatRect* result = NULL) override;
 
 	sf::Vector2f getSpriteCenter() const { 
@@ -58,7 +54,6 @@ public:
 
 protected:
 	SpriteCpt spriteCpt;
-
 	BoundingBoxCpt boundingBox;
 
 	sf::FloatRect getSpriteRectangle() const { 

@@ -3,11 +3,11 @@
 //memory created for one page and thrashed / released at the end of the frame
 #include <vector>
 
-class PagedVector {
+class MemoryPages {
 
 public :
-	PagedVector();
-	~PagedVector();
+	MemoryPages();
+	~MemoryPages();
 
 	void resetForNewFrame();
 
@@ -54,11 +54,11 @@ private :
 	int current_page;
 
 	//non-copiable:
-	PagedVector(PagedVector&);
-	PagedVector& operator=(PagedVector&);
+	MemoryPages(MemoryPages&);
+	MemoryPages& operator=(MemoryPages&);
 };
 
-extern PagedVector pagedVectorStatic;
+extern MemoryPages memoryPagesStatic;
 
 template<typename T>
 class FrameAllocator {
@@ -81,18 +81,18 @@ public :
 
 public : 
 	FrameAllocator() {
-		pagedVector = &pagedVectorStatic;
+		memoryPages = &memoryPagesStatic;
 	}
 
 	~FrameAllocator() {}
 
 	explicit FrameAllocator(const FrameAllocator& other) {
-		pagedVector = other.pagedVector;
+		memoryPages = &memoryPagesStatic;
 	}
 
 	template<typename U>
 	explicit FrameAllocator(const FrameAllocator<U>& other) {
-		pagedVector = other.pagedVector;
+		memoryPages = &memoryPagesStatic;
 	}
 
 
@@ -103,11 +103,11 @@ public :
 	//    memory allocation
 	pointer allocate(size_type cnt, 
 		typename std::allocator<void>::const_pointer = 0) { 
-			return reinterpret_cast<pointer>(pagedVector->getNextAdress<T>(cnt)); 
+			return reinterpret_cast<pointer>(memoryPages->getNextAdress<T>(cnt)); 
 	}
 
 	void deallocate(pointer p, size_type) { 
-		//do nothing, deallocation is handled through pagedVector member
+		//do nothing, deallocation is handled through MemoryPages member
 	}
 
 	//    size
@@ -123,6 +123,6 @@ public :
 	bool operator!=(FrameAllocator const&) { return false; }
 
 
-	PagedVector* pagedVector;
+	MemoryPages* memoryPages;
 };
 

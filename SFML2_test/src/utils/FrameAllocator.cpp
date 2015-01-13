@@ -1,9 +1,9 @@
 #include "utils/FrameAllocator.h"
 #include <iostream>
 
-PagedVector pagedVectorStatic;
+MemoryPages memoryPagesStatic;
 
-PagedVector::PagedVector():
+MemoryPages::MemoryPages():
 	pageSize(5*1024*1024), // 5 MB 
 	current_byte_offset(0),
 	current_page(0)
@@ -13,14 +13,13 @@ PagedVector::PagedVector():
 	pages.push_back(std::make_pair(ptr, pageSize));
 }
 
-PagedVector::~PagedVector() {
+MemoryPages::~MemoryPages() {
 	for(auto it = pages.begin() ; it != pages.end(); ++it) {
 		free(it->first);
 	}
 }
 
-void PagedVector::resetForNewFrame() {
-
+void MemoryPages::resetForNewFrame() {
 
 	//remove pages except the first one
 	auto it = pages.begin();
@@ -35,4 +34,3 @@ void PagedVector::resetForNewFrame() {
 	current_page = 0;
 	current_byte_offset = 0;
 }
-

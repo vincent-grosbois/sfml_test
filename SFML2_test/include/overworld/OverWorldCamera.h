@@ -8,16 +8,22 @@ public:
 	OverworldCamera(const sf::Vector2i& defaultSize);
 
 	bool movedSinceLastFrame() const;
+
 	void newFrame();
 	void cameraSetForFrame();
+
 	const sf::View& getView() const;
-	const sf::FloatRect& getViewRect() const;
 	const sf::View& getPreviousView() const;
+
+	const sf::FloatRect& getViewRect() const;
+
 	void setCenter(const sf::Vector2f& center);
 	sf::Vector2f getCenter() const;
+
 	void zoom(float value);
-	void resetSize();
 	float getZoom() const;
+
+	void resetSize();
 
 private:
 	sf::View current_view;

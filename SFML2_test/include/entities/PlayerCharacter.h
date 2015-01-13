@@ -9,6 +9,29 @@ enum class PlayerCharacterState {
 	STANDING,
 	WALKING,
 	ATTACKING
+};
+
+struct DirectionalMoveInputRequest {
+	DIRECTION::e direction;
+	float speed;
+	bool move_through;
+};
+
+struct InputRequestCpt {
+	bool left_right_request;
+	DirectionalMoveInputRequest left_right_request_details;
+
+	bool up_down_request;
+	DirectionalMoveInputRequest up_down_request_details;
+
+	InputRequestCpt()  {
+		reset();
+	}
+
+	void reset() {
+		left_right_request = false;
+		up_down_request = false;
+	}
 
 };
 
@@ -20,65 +43,16 @@ public:
 	virtual void drawDebugInfo(OverworldDisplay& owDisplay) override;
 	virtual void draw(OverworldDisplay& owDisplay) override;
 
-	bool tryMoving(int value, DIRECTION::e dir, int ticks, bool debug) {
-		if(!debug)
-			return Character::tryMoving(value, dir);
-		else {
+	virtual void update(int delta_ms, bool will_be_drawn) override;
 
-			facingDir = dir;
-
-			if(locationList.empty()) 
-				return false;
-
-			float* coord_to_change;
-			int sign;
-
-			switch(dir) {
-			case DIRECTION::RIGHT:
-				coord_to_change = &position.x;
-				sign = 1;
-				break;
-			case DIRECTION::LEFT:
-				coord_to_change = &position.x;
-				sign = -1;
-				break;
-			case DIRECTION::DOWN:
-				coord_to_change = &position.y;
-				sign = 1;
-				break;
-			case DIRECTION::UP:
-				coord_to_change = &position.y;
-				sign = -1;
-				break;
-			}
-
-			float increment  = sign*speed*value;
-
-			if (increment > 32) 
-				increment = 32;
-			else if(increment < -32) 
-				increment = -32;
-
-
-			*coord_to_change +=  increment;
-
-			boundingBox.positionBoundingBox(position);
-			spriteCpt.positionSprite(position);
-
-			isMoving = true;
-
-			registerInMaps();
-
-			return true;
-		}
-
-	}
-
-	void teleportTo(sf::Vector2f pos, ZoneContainer* ZC = NULL);
-
+	void moveRequest(DIRECTION::e dir, float speed = 1.f, bool debug  = false);
+	void teleportTo(const sf::Vector2f& pos, ZoneContainer* ZC = NULL);
 
 
 private:
-	Overlay& overlay;
+	bool tryMoving(int delta_time_ms, DIRECTION::e dir, bool debug);
+
+	PlayerCharacterState myState;
+	InputRequestCpt myInputRequest;
 };
 

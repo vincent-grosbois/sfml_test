@@ -11,6 +11,8 @@ namespace TILE_PASSABILITY { enum e { PASSABLE, NOTPASSABLE } ;};
 class TileAnimator;
 
 struct Tile {
+	
+
 	int id;
 	TILE_PASSABILITY::e tilePassability; 
 	EDGES_PASSABILITY::e edgesPassability[4]; //4 directions
@@ -20,7 +22,7 @@ struct Tile {
 	Tile(const sf::Texture& atlas, const sf::Vector2i& offset, int id, bool collide = false) :
 		id(id),
 		myAtlas(atlas),
-		myRect(offset.x, offset.y, TILE_SIZE_X, TILE_SIZE_Y),
+		myRect(offset.x, offset.y, constants::TILE_SIZE_X, constants::TILE_SIZE_Y),
 		myAnimator(NULL)
 	{
 		tilePassability = collide ? TILE_PASSABILITY::NOTPASSABLE : TILE_PASSABILITY::PASSABLE;

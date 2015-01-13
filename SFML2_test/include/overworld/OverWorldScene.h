@@ -57,7 +57,7 @@ struct OverworldDisplay
 	void draw(sf::RenderWindow& app);
 	void updateToneParameters(const Tone& tone);
 
-	void updateWaterParameters(int time_ms);
+	void updateWaterMovement(int time_ms);
 	void changeWaterParameters(const WaveParameters& waveParameters);
 
 	void clearAndSetView(const sf::View& view);
@@ -96,19 +96,16 @@ enum class OverworldSceneState {
 class OverworldScene : public GameScene
 {
 public:
-	
+	OverworldScene(const MetaGameData& metaGameData, GameResource& gr);	
 	virtual ~OverworldScene() override;
 
-	OverworldScene(const MetaGameData& metaGameData, GameResource& gr);
-
 	virtual void draw() override;
-
 	virtual void update (int deltatime_ms) override;
-
 	virtual void onInit() override;
 
 private:
 	OverworldSceneState myState;
+	OverworldGameStateRequest owStateChangeRequest;
 
 	const MetaGameData& metaGameData;
 
@@ -117,7 +114,7 @@ private:
 	OverworldCamera camera;
 	OverworldDisplay owDisplay;
 	OverworldCommands owCommands;
-	OverworldGameStateRequest owStateChangeRequest;
+
 	OverworldTransition owTransition;
 
 	CallBackSystem callbackSystem;		 // <* Callback system used only when the game is paused
@@ -126,10 +123,10 @@ private:
 	GameClock gameClock;
 	GameTicks ticks;
 
-	bool PC_moved;
-
 	Overlay* overlay;
+
 	PlayerCharacter* PC;
+	LightEntity* torchLight;
 
 	std::set<Map*> visibleMaps; // <* maps that intersects with the current camera
 	ZoneContainer* ZC;
@@ -140,15 +137,14 @@ private:
 	int myDeltaTimeAlways;
 	int myTotalTimeAlways;
 
-	LightEntity* torchLight;
 
 	bool debug_key_pressed;
 
 	std::set<Entity*> entities_visible;
 
 	
-	clock_t part1_total;
-	clock_t part2_total;
+	sf::Time part1_total;
+	sf::Time part2_total;
 
 	//recast / detour related
 	RecastBuildContext buildContext;
@@ -156,8 +152,11 @@ private:
 	NavMeshGenerator  navMeshGenerator;
 	CrowdTool crowdTool;
 	CrowdToolState crowdToolState;
+	dtCrowdAgentDebugInfo m_agentDebug;
 
 private:
+	sf::Vector2f getMouseWorldPosition() const;
+
 	void changeZone(const std::string& newZC);
 	void bindContentToClock();
 	void unbindContentToClock();

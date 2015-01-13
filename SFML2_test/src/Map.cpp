@@ -7,6 +7,8 @@ const int map_elements_cell_start = 1000;
 const int map_elements_cell_max_before_delete = 1500;
 const int map_elements_additional_batches_size = 10;
 
+using namespace constants;
+
 StorageProvider<std::set<Entity*>, NoElementPredicate> EntitySet::entitySetStorage = 
 	StorageProvider<std::set<Entity*>, NoElementPredicate>(map_elements_cell_start, 
 	map_elements_cell_max_before_delete,
@@ -62,10 +64,6 @@ Map::~Map()
 	delete layer0;
 	delete layer1;	
 	delete layer2;
-}
-
-void Map::printDebug() const {
-	std::cout << "Map @" << id << " X:" << position.x << " Y:"  << position.y << "\n"; 
 }
 
 void Map::updateGraphics(const OverworldCamera& camera, bool checkAnimatedTilesUpdate, int deltaTime) {

@@ -17,6 +17,7 @@
 #include "Map.h"
 
 using namespace utils;
+using namespace constants;
 
 struct entity_type_descriptions_builder {
 	entity_type_descriptions_builder();
@@ -245,7 +246,7 @@ void generateEntityFromFile(const std::string& fileName, ZoneContainer& ZC, Game
 
 	std::string line;
 	std::ifstream myfile (fileName);
-	clock_t c = clock();
+	sf::Clock clock;
 	int entities_count = 0;
 	if (myfile.is_open())
 	{
@@ -257,9 +258,8 @@ void generateEntityFromFile(const std::string& fileName, ZoneContainer& ZC, Game
 	}
 	else std::cout << "\nUnable to open file " << fileName << "\n"; 
 
-	int t = clock() - c;
 
-	std::cout << "Generated "<< entities_count<< " entities in " << t << " ms\n";
+	std::cout << "Generated "<< entities_count<< " entities in " << clock.restart().asMilliseconds() << " ms\n";
 }
 
 int entityFactory(const std::string& desc, ZoneContainer& ZC, GameResource& gr, GameTicks& ticks, OverworldGameStateRequest& request) {

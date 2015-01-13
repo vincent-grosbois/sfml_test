@@ -1,8 +1,12 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
 
 #include "SceneManager.h"
+
+namespace sf {
+	class RenderWindow;
+};
+
 
 
 class GameScene

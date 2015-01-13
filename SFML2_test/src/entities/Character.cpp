@@ -7,12 +7,13 @@
 #include "overworld/OverworldScene.h"
 #include "GameTicks.h"
 
+using namespace constants;
+
 Character::Character(const sf::Vector2f& position, ZoneContainer& ZC, GameTicks& ticks, MoveAnimation& move_anim):
 	EntityPhysical(position, ZC),
 	move_anim(&move_anim),
 	facingDir(DIRECTION::DOWN),
 	current_frame(0),
-	isMoving(false),
 	speed(185.f/1000),
 	ticks(ticks),
 	waypointModule(NULL)
@@ -27,14 +28,6 @@ Character::Character(const sf::Vector2f& position, ZoneContainer& ZC, GameTicks&
 }
 
 void Character::draw(OverworldDisplay& owDisplay) {
-
-	int ticks = this->ticks.getTicks(TICKS::e::_250MS);
-	int old_frame = current_frame;
-	current_frame = isMoving ? (current_frame + ticks) %9 : 0;
-
-	if(old_frame != current_frame) {
-		spriteCpt.sprite.setTextureRect(move_anim->getFrame(facingDir, current_frame ) );
-	}
 	owDisplay.overWorld_texture.draw(spriteCpt.sprite);
 }
 
@@ -111,7 +104,6 @@ bool Character::tryMoving(int value, DIRECTION::e dir) {
 
 			if(*coord_to_change == oldvalue) 
 			{   
-				isMoving = false; 
 				return false; 
 			}
 
@@ -159,7 +151,6 @@ bool Character::tryMoving(int value, DIRECTION::e dir) {
 
 					if(*coord_to_change == oldvalue) //if not moved at all
 					{   
-						isMoving = false; 
 						return false; 
 					}
 
@@ -179,7 +170,6 @@ bool Character::tryMoving(int value, DIRECTION::e dir) {
 	boundingBox.boundingBoxRectReal = BoundingBoxRect;
 
 	spriteCpt.positionSprite(position);
-	isMoving = true;
 
 	registerInMaps();
 
@@ -205,43 +195,6 @@ const sf::FloatRect Character::getActivableZone() const {
 
 	assert(false);
 	return sf::FloatRect();
-}
-
-void Character::activateThings() {
-
-	std::set<Map*> set = ZC->getCollidingMaps(getActivableZone());
-	std::set<Map*>::iterator iter_maps;
-	std::set<EntitySet*>::iterator it_set;
-	std::set<EntitySet*> colliding_tiles;
-	std::set<Entity*>::iterator it_element;
-
-	for(iter_maps = set.begin(); iter_maps != set.end(); ++iter_maps) {
-
-		(*iter_maps)->getCollidingEntitySets(getActivableZone(), colliding_tiles);
-
-		for (it_set = colliding_tiles.begin() ; it_set != colliding_tiles.end(); ++it_set) {
-
-			for( it_element = (*it_set)->entities().begin(); it_element != (*it_set)->entities().end(); ++it_element) {
-
-				if(*it_element != this) {
-
-					if( !(*it_element)->isMarkedForDeletion() && (*it_element)->intersectsForCollision(getActivableZone()) && (*it_element)->onActivated(*this) ) {
-						return;
-					}
-
-				}
-			}
-
-		}
-
-	}
-
-}
-
-void Character::receiveItem(Collectible* collectible) {
-
-	
-
 }
 
 Character::~Character()

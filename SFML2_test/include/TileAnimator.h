@@ -27,9 +27,9 @@ public:
 			for(auto vect : in) {
 				frames.push_back(
 					sf::IntRect(
-					vect.x*TILE_SIZE_X,
-					vect.y*TILE_SIZE_Y,
-					TILE_SIZE_X,TILE_SIZE_Y)
+					vect.x*constants::TILE_SIZE_X,
+					vect.y*constants::TILE_SIZE_Y,
+					constants::TILE_SIZE_X,constants::TILE_SIZE_Y)
 					);
 
 			}

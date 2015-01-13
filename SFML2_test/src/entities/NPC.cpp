@@ -1,5 +1,4 @@
 #include "entities/NPC.h"
-#include "entities/PlayerCharacter.h"
 #include "utils/DrawingUtils.h"
 #include "GameTicks.h"
 #include "AI/WaypointModule.h"
@@ -8,14 +7,16 @@ using namespace utils;
 
 DIRECTION::e getOppositeDir(DIRECTION::e dir) {
 
-	if(dir == DIRECTION::UP)
+	switch(dir) {
+	case DIRECTION::UP:
 		return DIRECTION::DOWN;
-	else if(dir == DIRECTION::DOWN)
+	case DIRECTION::DOWN:
 		return DIRECTION::UP;
-	else if(dir == DIRECTION::LEFT)
+	case DIRECTION::LEFT:
 		return DIRECTION::RIGHT;
-	else if(dir == DIRECTION::RIGHT)
+	case DIRECTION::RIGHT:
 		return DIRECTION::LEFT;
+	}
 
 	assert(false);
 	return DIRECTION::UP;
@@ -23,54 +24,48 @@ DIRECTION::e getOppositeDir(DIRECTION::e dir) {
 
 NPC::NPC(sf::Vector2f const& position,  ZoneContainer& ZC, GameTicks& ticks, MoveAnimation& move_anim):
 	Character(position,  ZC, ticks, move_anim),
-	behavior(NPC_BEHAVIOR::WANDER_NOSTOP)
+	behavior(NpcBehavior::WANDER_NOSTOP), myState(NpcState::STANDING)
 {
 	type = EntityType::NPC;
-	this->waypointModule = new WaypointModule();
-	waypointModule->active = true;
-	waypointModule->loop = true;
-
-	waypointModule->waypoints.push_back(sf::Vector2f(15000,10000));
-	waypointModule->waypoints.push_back(sf::Vector2f(15000,12000-500));
+	waypointModule = NULL;
 }
 
 
 NPC::~NPC()
-{
-	//std::cout << "deleting NPC " << this << '\n';
-}
+{ }
 
 bool NPC::moveAtRandom(float value) {
 
-	DIRECTION::e dir;
+	DIRECTION::e dir = facingDir;
 
-	if(!isMoving || rand()%100 == 0) 
+	if(myState != NpcState::WALKING || rand()%100 == 0) 
 		dir = (DIRECTION::e)(rand()%4);
-	else
-		dir = facingDir;
 
 	bool ret = Character::tryMoving(value, dir);
 
-	if(!ret) { isMoving = false ; }
-
-	if(isMoving) {
-		facingDir = dir;
+	if(!ret) {
+		myState = NpcState::STANDING;
+	} else {
+		myState = NpcState::WALKING;
 	}
 
-	return ret;
+	facingDir = dir;
 
+	return ret;
 }
 
 void NPC::update(int value, bool will_be_drawn)  { 
 
-	if(behavior == NPC_BEHAVIOR::WANDER ){
+	auto facingDirOld = facingDir;
 
-		if(isMoving) {
+	if(behavior == NpcBehavior::WANDER ){
+
+		if(myState == NpcState::WALKING) {
 
 			if( rand()%500 != 0 )
 				moveAtRandom(value);
 			else
-				isMoving = false;
+				myState = NpcState::STANDING;
 
 		}
 		else if ( rand()%100 == 0 ) {
@@ -78,16 +73,23 @@ void NPC::update(int value, bool will_be_drawn)  {
 		}
 
 	}
-	else if(behavior == NPC_BEHAVIOR::WANDER_NOSTOP ) {
+	else if(behavior == NpcBehavior::WANDER_NOSTOP ) {
 		moveAtRandom(value);
 	}
-	else if(behavior == NPC_BEHAVIOR::USE_WAYPOINT ) {
+	else if(behavior == NpcBehavior::USE_WAYPOINT ) {
 		moveToWaypoint(value);
 	}
-	else if(behavior == NPC_BEHAVIOR::STILL ) {
+	else if(behavior == NpcBehavior::STILL ) {
 		//do nothing
 	}
 
+	int ticks = this->ticks.getTicks(TICKS::e::_250MS);
+	int old_frame = current_frame;
+	current_frame = myState == NpcState::WALKING ? (current_frame + ticks) %9 : 0;
+
+	if(old_frame != current_frame || facingDirOld != facingDir ) {
+		spriteCpt.sprite.setTextureRect(move_anim->getFrame(facingDir, current_frame ) );
+	}
 
 }
 
@@ -123,14 +125,9 @@ void NPC::moveToWaypoint(int delta_ms) {
 bool NPC::onActivated(Entity& activator) { 
 
 	Character* activator_character = dynamic_cast<Character*>(&activator);
-	PlayerCharacter* activator_PC = dynamic_cast<PlayerCharacter*>(&activator);
 
-	if(activator_character)
+	if(activator.getType() == EntityType::NPC)
 		facingDir = getOppositeDir(activator_character->getFacingDir());
-
-	if(activator_PC) {
-		//activator_PC->DialogWindow("hurr\ndurr\ndd", true, this);
-	}
 
 	return true; 
 }
@@ -171,7 +168,7 @@ void  NPC::drawDebugInfo(OverworldDisplay& owDisplay)  {
 	drawPoint(owDisplay.debug_texture, getPosition(), sf::Color::Green);
 	drawPoint(owDisplay.debug_texture, getSpriteCenter(), sf::Color::Cyan);
 
-	if(waypointModule && behavior == NPC_BEHAVIOR::USE_WAYPOINT ) {
+	if(waypointModule && behavior == NpcBehavior::USE_WAYPOINT ) {
 
 		std::vector<sf::Vertex> waypoint(waypointModule->waypoints.size() + 1);
 		waypoint[0] = getPosition();

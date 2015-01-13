@@ -19,12 +19,20 @@ public:
 	bool pushZoneChangeRequest(const std::string& ZC, const sf::Vector2f& position);
 	bool pushPauseRequest(bool pause);
 
-	ChangeZCRequest* popZoneChangeRequest();
-	PauseRequest* popPauseRequest();
+	bool hasZoneChangeRequest() const;
+	bool hasPauseRequest() const;
+
+	const ChangeZCRequest& getZoneChangeRequest() const;
+	const PauseRequest& getPauseRequest() const;
+
+	void clear();
 
 private:
-	ChangeZCRequest* myChangeZCRequest;
-	PauseRequest*	myPauseRequest;
+	ChangeZCRequest myChangeZCRequest;
+	bool changeZCRequest_;
+
+	PauseRequest	myPauseRequest;
+	bool pauseRequest_;
 
 	OverworldGameStateRequest(const OverworldGameStateRequest&);
 	OverworldGameStateRequest& operator=(OverworldGameStateRequest&);

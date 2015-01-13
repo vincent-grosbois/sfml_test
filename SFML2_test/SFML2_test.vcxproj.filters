@@ -135,9 +135,6 @@
     <ClInclude Include="include\entities\Projectile.h">
       <Filter>Header Files\Entities</Filter>
     </ClInclude>
-    <ClInclude Include="FramePagedMemory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\AI\WaypointModule.h">
       <Filter>Header Files\AI</Filter>
     </ClInclude>

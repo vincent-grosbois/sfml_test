@@ -12,18 +12,16 @@ class Character : public EntityPhysical
 {
 public:
 	Character(const sf::Vector2f& position, ZoneContainer& ZC, GameTicks& ticks, MoveAnimation& move_anim);
-	bool tryMoving(int value, DIRECTION::e);
 	virtual ~Character() override;
+
 	virtual void draw(OverworldDisplay& owDisplay) override;
+
 	const sf::FloatRect getActivableZone() const;
-	void activateThings();
-	void receiveItem(Collectible* collectible);
 	DIRECTION::e getFacingDir() const { return facingDir; };
 
-public:
-	bool isMoving;
-
 protected:
+	bool tryMoving(int value, DIRECTION::e);
+
 	DIRECTION::e facingDir;
 	float speed;
 	MoveAnimation* move_anim;

@@ -9,6 +9,7 @@
 #include "TileAnimator.h"
 #include "overworld/OverworldScene.h"
 
+using namespace constants;
 
 TilePlane::TilePlane(Tileset& tileset, sf::Vector2<tile_units> size, sf::Vector2<tile_units> offset, Array2D<int>& table, bool waterPlane /*= false*/):
 elements(size),
