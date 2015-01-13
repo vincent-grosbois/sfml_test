@@ -66,7 +66,7 @@ Projectile::Projectile(const sf::Vector2f& position,  ZoneContainer& ZC, DIRECTI
 
 	boundingBox.positionBoundingBox(position);
 	
-	speed = 1.5f*350.f/1000;
+	speed = 1.f*350.f/1000;
 	angle = dir2angle(dir);
 			
 

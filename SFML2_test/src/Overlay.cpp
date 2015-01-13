@@ -4,8 +4,7 @@
 
 Overlay::Overlay(sf::RenderWindow& App):
 App(App),
-MapInfosText(),
-overlayScene(NULL)
+MapInfosText()
 {
 
 	myFont.loadFromFile("../../ressources/FuturaExtended.ttf");
@@ -54,8 +53,5 @@ void Overlay::draw(bool DrawMap) {
 		//App.draw(sf::Shape::Rectangle( rect,sf::Color(0,0,0,0), 1, sf::Color::Green));
 	}
 
-	if(overlayScene) {
-		overlayScene->Update();
-		overlayScene->draw();
-	}
+
 }

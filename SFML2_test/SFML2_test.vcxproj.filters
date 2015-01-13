@@ -102,9 +102,6 @@
     <ClInclude Include="include\Overlay.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\OverlayScreen.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\SceneManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -42,7 +42,7 @@ public:
 
 	void draw(const sf::View& view, OverworldDisplay& owDisplay);
 
-	bool collideWith(const sf::FloatRect& rect, sf::Vector2f* CollidingPos) const;
+	bool collideWith(const sf::FloatRect& rect, sf::Vector2f& CollidingPos) const;
 	void getCollidingEntitySets(const sf::FloatRect& rect, std::set<MapElement*>& result);
 	void unloadAllGraphics();
 	void updateGraphics(const OverworldCamera& camera,  bool checkAnimatedTilesUpdate, int deltaTime);

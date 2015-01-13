@@ -31,7 +31,6 @@
     <ClInclude Include="include\MoveAnimation.h" />
     <ClInclude Include="include\NavMeshGenerator.h" />
     <ClInclude Include="include\Overlay.h" />
-    <ClInclude Include="include\OverlayScreen.h" />
     <ClInclude Include="include\overworld\OverWorldCamera.h" />
     <ClInclude Include="include\overworld\OverworldCommands.h" />
     <ClInclude Include="include\overworld\OverworldGameStateRequest.h" />

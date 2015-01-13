@@ -22,6 +22,8 @@ public:
 protected:
 	bool tryMoving(int value, DIRECTION::e);
 
+	bool tryMovingAngle(int value, radian_t angle);
+
 	DIRECTION::e facingDir;
 	float speed;
 	MoveAnimation* move_anim;

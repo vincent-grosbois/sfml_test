@@ -178,7 +178,7 @@ void Map::dumpLoadedTiles() const  {
 		layer0->dumpLoadedTiles();
 }
 
-bool Map::collideWithLayer(int layer_id, const sf::FloatRect& rect, sf::Vector2f* collidingPos) const
+bool Map::collideWithLayer(int layer_id, const sf::FloatRect& rect, sf::Vector2f& collidingPos) const
 {
 	if(waterLayer && layer_id == -1) {
 		return waterLayer->collideWith(rect, collidingPos);

@@ -758,11 +758,9 @@ void CrowdTool::init(NavMeshGenerator* sample)
 	if (!sample)
 		return;
 		
-	m_state = NULL;
-	if (!m_state)
-	{
-		m_state = new CrowdToolState();
-	}
+	delete m_state;
+	m_state = new CrowdToolState();
+	
 	m_state->init(sample);
 }
 

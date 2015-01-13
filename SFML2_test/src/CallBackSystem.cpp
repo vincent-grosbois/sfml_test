@@ -119,9 +119,9 @@ void CallBackReceiver::createPeriodicCallback(frame_time_t timeStart, frame_time
 	assert(period > 0);
 
 	using namespace std::placeholders;
-	auto function2 = std::bind(function_repeat, _1, _2, function, period, std::ref(cbs), std::ref(*this));
+	auto repeated_function = std::bind(function_repeat, _1, _2, function, period, std::ref(cbs), std::ref(*this));
 
-	createCallback(timeStart, cbs, function2);
+	createCallback(timeStart, cbs, repeated_function);
 }
 
 void CallBackReceiver::createPeriodicCallback(frame_time_t timeStart, frame_time_t period, frame_time_t last,
@@ -131,9 +131,9 @@ void CallBackReceiver::createPeriodicCallback(frame_time_t timeStart, frame_time
 	assert(period > 0);
 
 	using namespace std::placeholders;
-	auto function2 = std::bind(function_repeat_until, _1, _2, function, period, last, std::ref(cbs), std::ref(*this));
+	auto repeated_function = std::bind(function_repeat_until, _1, _2, function, period, last, std::ref(cbs), std::ref(*this));
 
-	createCallback(timeStart, cbs, function2);
+	createCallback(timeStart, cbs, repeated_function);
 }
 
 void CallBackReceiver::removePendingCallbacks()

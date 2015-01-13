@@ -173,7 +173,7 @@ void TilePlane::draw(const sf::View& view, OverworldDisplay& owDisplay) {
 }
 
 
-bool TilePlane::collideWith(const sf::FloatRect& rect, sf::Vector2f* collidingPos) const {
+bool TilePlane::collideWith(const sf::FloatRect& rect, sf::Vector2f& collidingPos) const {
 
 	tile_units left = static_cast<tile_units>(floor( rect.left / TILE_SIZE_X )) - offset.x;
 	tile_units right = static_cast<tile_units>(ceil( (rect.left + rect.width) / TILE_SIZE_X ))  - offset.x;
@@ -190,8 +190,8 @@ bool TilePlane::collideWith(const sf::FloatRect& rect, sf::Vector2f* collidingPo
 		for(int j=top; j < bottom; j++) {
 
 			if(elements(i,j).tile().tilePassability == TILE_PASSABILITY::NOTPASSABLE) {
-				collidingPos->x = static_cast<float>(TILE_SIZE_X*(i + offset.x));
-				collidingPos->y = static_cast<float>(TILE_SIZE_Y*(j + offset.y));
+				collidingPos.x = static_cast<float>(TILE_SIZE_X*(i + offset.x));
+				collidingPos.y = static_cast<float>(TILE_SIZE_Y*(j + offset.y));
 				return true;
 			}
 		}

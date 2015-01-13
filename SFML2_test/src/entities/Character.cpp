@@ -84,8 +84,9 @@ bool Character::tryMoving(int value, DIRECTION::e dir) {
 	for ( it_maps = new_maps.begin() ; it_maps != new_maps.end(); ++it_maps ) {
 
 		//check collision with the static world:
-		if ( (*it_maps)->collideWithLayer(0, BoundingBoxRect, &collision_coords) )  {
+		if ( (*it_maps)->collideWithLayer(0, BoundingBoxRect, collision_coords) )  {
 
+			//adjust coordinates in case of collision:
 			switch(dir) {
 			case DIRECTION::RIGHT:
 				*coord_to_change = collision_coords.x + boundingBox.boundingBoxOffset.x;
@@ -110,8 +111,12 @@ bool Character::tryMoving(int value, DIRECTION::e dir) {
 			increment = *coord_to_change - oldvalue;
 			facingDir = dir;
 			boundingBox.positionBoundingBox(position);
+
+			BoundingBoxRect.left = position.x + boundingBox.boundingBoxOffset.x;
+			BoundingBoxRect.top = position.y + boundingBox.boundingBoxOffset.y;
 		}
 
+		//now check for collisions with entities :
 
 		std::set<EntitySet*> new_set;
 
@@ -167,7 +172,7 @@ bool Character::tryMoving(int value, DIRECTION::e dir) {
 
 
 	facingDir = dir;
-	boundingBox.boundingBoxRectReal = BoundingBoxRect;
+	boundingBox.positionBoundingBox(position);
 
 	spriteCpt.positionSprite(position);
 

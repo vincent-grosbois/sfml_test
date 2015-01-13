@@ -78,7 +78,9 @@ struct EntitySet {
 class Map
 {
 public:
-	Map(ZoneContainer& ZC, TilePlane* waterLayer, TilePlane* layer0, TilePlane* layer1, TilePlane* layer2, sf::Vector2<tile_units> position, int id);
+	Map(ZoneContainer& ZC, 
+		TilePlane* waterLayer, TilePlane* layer0, TilePlane* layer1, TilePlane* layer2, 
+		sf::Vector2<tile_units> position, int id);
 
 	~Map();
 
@@ -95,12 +97,12 @@ public:
 	void getCollidingEntitySets(const sf::FloatRect& rect, std::set<EntitySet*>& result);
 	void getCollidingVisibilitySets(const sf::FloatRect& rect, std::set<EntitySet*>& result, bool only_return_non_empty_sets = false);
 
-	void dumpLoadedTiles() const ;
+	void dumpLoadedTiles() const;
 
 	std::set<Entity*>& entities_list()  {
 		return entities_on_map;
 	}
-	bool collideWithLayer(int layer_id, const sf::FloatRect& rect, sf::Vector2f* collidingPos) const;
+	bool collideWithLayer(int layer_id, const sf::FloatRect& rect, sf::Vector2f& collidingPos) const;
 
 private:
 	ZoneContainer* myZC;

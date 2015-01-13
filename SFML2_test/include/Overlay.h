@@ -2,7 +2,6 @@
 
 #include "BoxedTextScrollable.h"
 #include "entities/NPC.h"
-#include "OverlayScreen.h"
 
 class Overlay
 {
@@ -14,7 +13,6 @@ public:
 	sf::Text MapInfosText;
 
 	void draw(bool DrawMap);
-	OverlayScreen* overlayScene;
 
 protected :
 	sf::RenderWindow& App;

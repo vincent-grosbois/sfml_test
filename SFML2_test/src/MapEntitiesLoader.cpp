@@ -320,7 +320,7 @@ int entityFactory(const std::string& desc, ZoneContainer& ZC, GameResource& gr, 
 			for ( it_maps = new_maps.begin() ; it_maps != new_maps.end(); ++it_maps ) {
 
 				//check collision with the static world:
-				if ( (*it_maps)->collideWithLayer(0, r, &coll_coords) )  {
+				if ( (*it_maps)->collideWithLayer(0, r, coll_coords) )  {
 					failed = true;
 					deleted++;
 					break;

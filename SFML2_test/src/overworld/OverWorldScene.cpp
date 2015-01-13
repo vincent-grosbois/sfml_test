@@ -51,15 +51,16 @@ void OverworldScene::bindContentToClock() {
 		using namespace std::placeholders;
 		auto changeAnimatedTileFrame = std::bind(&TileAnimator::process_frame, anim, _1, _2);
 
-		//next value of myTotalTime multiple of 400 :
-		int next = 400*(myTotalTime/400 + 1);
+		int frame_duration = anim->frame_duration;
 
-		anim->createPeriodicCallback(next, 400, callbackSystemAlways, changeAnimatedTileFrame);
+		//next value of myTotalTime multiple of frame_duration:
+		int next_event = frame_duration*(myTotalTime/frame_duration + 1);
+
+		anim->createPeriodicCallback(next_event, frame_duration, callbackSystemAlways, changeAnimatedTileFrame);
 	}
 }
 
 void OverworldScene::unbindContentToClock() {
-
 	for(auto anim : ZC->getTileset().get_tile_animators()) {
 		anim->removePendingCallbacks();
 	}
@@ -84,23 +85,17 @@ void OverworldScene::onInit() {
 
 	loadEntities(false);
 
-	auto& anim = gameResources.getMoveAnimation("../../ressources/male_walkcycle.png");
+	MoveAnimation& PC_walkAnim = gameResources.getMoveAnimation("../../ressources/male_walkcycle.png");
 	
-	PC = new PlayerCharacter(ZC->getData().startingPos, *ZC, ticks, anim, *overlay);
+	PC = new PlayerCharacter(ZC->getData().startingPos, *ZC, ticks, PC_walkAnim, *overlay);
 	torchLight = new LightEntity(PC->getSpriteCenter(), *ZC, 300, 20, sf::Color(10,10,10,250));
 
+	myState = OverworldSceneState::TRANSITIONING_IN;
 	owTransition.time_remaining_ms = owTransition.total_time_ms;
 
 	navMeshGenerator.handleBuild(ZC->getCollisionArray());
 	crowdTool.init(&navMeshGenerator);
 	crowdToolState.init(&navMeshGenerator);
-	float pos[3] = { 200, 0, 200};
-	float pos2[3] = { 300, 0, 200};
-	float target[3] = { 500, 0, 500};
-	
-	crowdToolState.addAgent(pos);
-	crowdToolState.addAgent(pos2);
-	crowdToolState.setMoveTarget(target, false);
 }
 
 
